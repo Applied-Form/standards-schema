@@ -1,8 +1,8 @@
 {
   "name": "Instrument",
   "background": "#FFFFFF",
-  "seriesOrder": ["#111111", "#6B6B6B", "#C8102E"],
-  "note": "Signal red marks the value under discussion, never a whole series.",
+  "seriesOrder": ["#111111", "#6B6B6B"],
+  "note": "All data marks stay ink or muted. Distinguish additional series with direct labels and line or marker patterns. A selected datum has a neutral label and an explicit word or weight cue; one red rule beside that label may accent it on a static surface. Red never fills a bar or point and never carries small text on white.",
   "font": { "labels": "DM Mono", "size": 11, "tabularFigures": true },
   "axis": {
     "lineColor": "#111111", "lineWidth": 1.5,

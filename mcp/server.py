@@ -19,6 +19,8 @@ Client config (Claude Code, Claude Desktop and anything else reading MCP stdio):
         "args": ["/absolute/path/to/standards/mcp/server.py"]}}}
 """
 import argparse, json, os, sys
+from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 PROTOCOL_VERSION = "2025-06-18"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -31,18 +33,52 @@ BUILDS = {"compact": "SKILL-compact.md",   # small and fast models
 
 # ---------------------------------------------------------------- catalogue
 
+def resolved(path):
+    try:
+        return path.resolve()
+    except RuntimeError as e:  # Older Python versions report symlink loops here.
+        raise ValueError("cannot resolve pack resource path") from e
+
+
+def pack_file(slug, filename):
+    """Resolve a file inside one installed pack, never a sibling or host file."""
+    if (not isinstance(slug, str) or not slug or slug in (".", "..")
+            or any(c in slug for c in "/\\:") or any(ord(c) < 32 for c in slug)):
+        raise ValueError("invalid system slug")
+    if (not isinstance(filename, str) or not filename
+            or any(c in filename for c in "\\:") or any(ord(c) < 32 for c in filename)
+            or any(part in ("", ".", "..") for part in filename.split("/"))):
+        raise ValueError("invalid pack resource path")
+    root = resolved(Path(PACKS))
+    pack = resolved(root / slug)
+    if pack == root or not pack.is_relative_to(root):
+        raise ValueError("system is outside the pack catalogue")
+    marker = resolved(pack / "manifest.json")
+    if not marker.is_relative_to(pack) or not marker.is_file():
+        raise FileNotFoundError(f"unknown system {slug!r}")
+    target = resolved(pack / filename)
+    if target == pack or not target.is_relative_to(pack):
+        raise ValueError("resource is outside the selected pack")
+    if not target.is_file():
+        raise FileNotFoundError(f"{slug} has no {filename}")
+    return target
+
+
 def slugs():
     if not os.path.isdir(PACKS):
         return []
-    return sorted(d for d in os.listdir(PACKS)
-                  if os.path.exists(os.path.join(PACKS, d, "manifest.json")))
+    found = []
+    for slug in os.listdir(PACKS):
+        try:
+            pack_file(slug, "manifest.json")
+        except (OSError, ValueError):
+            continue
+        found.append(slug)
+    return sorted(found)
 
 
 def read(slug, filename):
-    path = os.path.join(PACKS, slug, filename)
-    if not os.path.exists(path):
-        raise FileNotFoundError(f"{slug} has no {filename}")
-    return open(path, encoding="utf-8").read()
+    return pack_file(slug, filename).read_text(encoding="utf-8")
 
 
 def manifest(slug):
@@ -174,12 +210,27 @@ def resources():
     for s in slugs():
         for f in ("SKILL.md", "SKILL-compact.md", "REFERENCE.md",
                   "tokens.json", "archetypes.json", "manifest.json", "AGENTS.md"):
-            if os.path.exists(os.path.join(PACKS, s, f)):
-                out.append({"uri": f"standards://{s}/{f}",
-                            "name": f"{s} · {f}",
-                            "mimeType": "application/json" if f.endswith(".json")
-                                        else "text/markdown"})
+            try:
+                pack_file(s, f)
+            except (OSError, ValueError):
+                continue
+            out.append({"uri": f"standards://{s}/{f}",
+                        "name": f"{s} · {f}",
+                        "mimeType": "application/json" if f.endswith(".json")
+                                    else "text/markdown"})
     return out
+
+
+def resource_path(uri):
+    if (not isinstance(uri, str) or not uri.startswith("standards://")
+            or any(ord(c) < 32 for c in uri)):
+        raise ValueError("expected a standards:// resource URI")
+    parsed = urlsplit(uri)
+    if parsed.query or parsed.fragment or not parsed.path.startswith("/"):
+        raise ValueError("invalid Standards resource URI")
+    # Decode once before path checks. Encoded separators and dot segments receive
+    # the same containment checks as literal ones; no later decoding is performed.
+    return unquote(parsed.netloc, errors="strict"), unquote(parsed.path[1:], errors="strict")
 
 
 # ---------------------------------------------------------------- transport
@@ -192,10 +243,41 @@ def error(rid, code, message):
     return {"jsonrpc": "2.0", "id": rid, "error": {"code": code, "message": message}}
 
 
+def tool_error(rid, message):
+    return result(rid, {"isError": True,
+                        "content": [{"type": "text", "text": message}]})
+
+
+def validate_arguments(name, arguments):
+    """Enforce the small string-only schemas advertised by this server."""
+    schema = next(tool["inputSchema"] for tool in TOOLS if tool["name"] == name)
+    for field in schema.get("required", []):
+        if field not in arguments:
+            raise ValueError(f"missing required argument {field!r}")
+    for field, value in arguments.items():
+        spec = schema["properties"].get(field)
+        if spec is None:
+            raise ValueError(f"unknown argument {field!r}")
+        if not isinstance(value, str):
+            raise ValueError(f"argument {field!r} must be a string")
+        if "enum" in spec and value not in spec["enum"]:
+            raise ValueError(f"argument {field!r} must be one of {', '.join(spec['enum'])}")
+
+
 def handle(msg):
     """Return a response dict, or None for a notification."""
+    if not isinstance(msg, dict):
+        return error(None, -32600, "request must be an object")
     method, rid = msg.get("method"), msg.get("id")
-    params = msg.get("params") or {}
+    if (msg.get("jsonrpc") != "2.0" or not isinstance(method, str) or not method
+            or (rid is not None and (isinstance(rid, bool) or not isinstance(rid, (str, int))))):
+        return error(None, -32600, "invalid JSON-RPC request")
+    # JSON-RPC notifications do not receive replies, including unknown methods.
+    if "id" not in msg:
+        return None
+    params = msg.get("params", {})
+    if not isinstance(params, dict):
+        return error(rid, -32602, "params must be an object")
 
     if method == "initialize":
         return result(rid, {
@@ -213,29 +295,28 @@ def handle(msg):
     if method == "resources/list":
         return result(rid, {"resources": resources()})
     if method == "resources/read":
-        uri = params.get("uri", "")
-        if not uri.startswith("standards://"):
-            return error(rid, -32602, f"unknown resource {uri!r}")
-        slug, _, fname = uri[len("standards://"):].partition("/")
+        uri = params.get("uri")
         try:
+            slug, fname = resource_path(uri)
             text = read(slug, fname)
-        except (FileNotFoundError, ValueError) as e:
+        except (OSError, ValueError, UnicodeError) as e:
             return error(rid, -32602, str(e))
         return result(rid, {"contents": [{"uri": uri, "text": text}]})
     if method == "tools/call":
         name = params.get("name")
-        args = params.get("arguments") or {}
+        args = params.get("arguments", {})
+        if not isinstance(name, str) or not isinstance(args, dict):
+            return error(rid, -32602, "tool name must be a string and arguments must be an object")
         fn = DISPATCH.get(name)
         if not fn:
             return error(rid, -32601, f"unknown tool {name!r}")
         try:
+            validate_arguments(name, args)
             text = fn(**args)
         except TypeError as e:
-            return result(rid, {"isError": True,
-                                "content": [{"type": "text", "text": f"bad arguments: {e}"}]})
-        except (FileNotFoundError, ValueError, KeyError, json.JSONDecodeError) as e:
-            return result(rid, {"isError": True,
-                                "content": [{"type": "text", "text": str(e)}]})
+            return tool_error(rid, f"bad arguments: {e}")
+        except (OSError, ValueError, KeyError, UnicodeError) as e:
+            return tool_error(rid, str(e))
         return result(rid, {"content": [{"type": "text", "text": text}]})
     return error(rid, -32601, f"unknown method {method!r}")
 
@@ -248,8 +329,9 @@ def serve(stdin=sys.stdin, stdout=sys.stdout):
         try:
             msg = json.loads(line)
         except json.JSONDecodeError:
-            continue
-        resp = handle(msg)
+            resp = error(None, -32700, "invalid JSON")
+        else:
+            resp = handle(msg)
         if resp is not None:
             stdout.write(json.dumps(resp) + "\n")
             stdout.flush()

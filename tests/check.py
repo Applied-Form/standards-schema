@@ -5,15 +5,18 @@ Six checks, in the order they are cheapest to fix:
 
   1. every Python file parses
   2. every pack carries a licence
+     and Claude bundles contain their current referenced files and notices
   3. the packs recompile byte-identically  - enforces "never edit the builds"
   4. no build exceeds the constraint budget - enforces schema v0.4 rule 2
   5. every shipped brief regenerates its proof grid byte for byte
   6. every grid is generated from a brief, or listed as legacy
   7. the proof grids meet the Layer 0 contrast floor
   8. the MCP server answers the protocol
+     and rejects unsafe resource paths and malformed requests
   9. the study harnesses parse, if node is available
 """
 import os, subprocess, sys, glob, py_compile, shutil, tempfile, filecmp
+from pathlib import Path
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FAILED = []
@@ -59,26 +62,66 @@ def _():
     return f"{len(packs)} packs"
 
 
-@check("packs recompile byte-identically")
-def _():
-    """Drift is "recompiling changes a build", which is a property of the files
-    themselves. Comparing against git HEAD instead would report every
-    work-in-progress edit as drift, and would say nothing at all outside a
-    repository."""
+def build_files():
     # Generated: the top-level builds, and everything under dist/. Not
     # assets/, which is hand-maintained source alongside SOURCE.md.
-    builds = sorted(
+    return sorted(
         [f for f in glob.glob(os.path.join(ROOT, "packs", "*", "*"))
          if os.path.basename(f) != "SOURCE.md" and f.endswith((".md", ".json"))]
         + [f for f in glob.glob(os.path.join(ROOT, "packs", "*", "dist", "**", "*"),
                                 recursive=True) if os.path.isfile(f)]
     )
+
+
+@check("Claude bundles contain canonical references")
+def _():
+    # Check BEFORE recompilation, which would otherwise repair a missing file
+    # and hide a broken shipped bundle from CI.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("standards_compiler", os.path.join(ROOT, "schema", "compile.py"))
+    compiler = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(compiler)
+    count = 0
+    for source in sorted(Path(ROOT).glob("packs/*/SOURCE.md")):
+        pack = source.parent
+        bundle = pack / "dist/claude" / pack.name
+        expected = compiler.claude_bundle_sources(pack)
+        actual = {path.relative_to(bundle).as_posix(): path for path in bundle.rglob("*") if path.is_file()}
+        missing, extra = set(expected) - set(actual), set(actual) - set(expected)
+        assert not missing, f"{pack.name}: missing bundle files {', '.join(sorted(missing))}"
+        assert not extra, f"{pack.name}: stale bundle files {', '.join(sorted(extra))}"
+        for name, canonical in expected.items():
+            assert actual[name].resolve().is_relative_to(bundle.resolve()), f"{pack.name}: escaping bundled file {name}"
+            assert actual[name].read_bytes() == canonical.read_bytes(), f"{pack.name}: bundle file differs from canonical source: {name}"
+        count += len(expected)
+    return f"{count} bundled files match sources"
+
+
+@check("Claude bundle generation regressions")
+def _():
+    r = run(sys.executable, "tests/test_distribution.py")
+    assert r.returncode == 0, r.stderr.strip()[-2000:] or r.stdout.strip()[-2000:]
+    return "references, notices and stale-file cleanup"
+
+
+@check("Instrument chart semantics stay consistent")
+def _():
+    r = run(sys.executable, "tests/test_instrument_chart_semantics.py")
+    assert r.returncode == 0, r.stderr.strip()[-2000:] or r.stdout.strip()[-2000:]
+    return "neutral series in source and distribution"
+
+
+@check("packs recompile byte-identically")
+def _():
+    """Drift is "recompiling changes a build", independent of git state."""
+    builds = build_files()
     assert builds, "no build outputs found"
     before = {f: open(f, "rb").read() for f in builds}
     r = run(sys.executable, "schema/compile.py", "--all", "packs")
     assert r.returncode == 0, r.stderr.strip()[:300]
-    changed = [os.path.relpath(f, ROOT) for f in builds
-               if open(f, "rb").read() != before[f]]
+    after = {f: open(f, "rb").read() for f in build_files()}
+    changed = [os.path.relpath(f, ROOT) for f in sorted(set(before) | set(after))
+               if before.get(f) != after.get(f)]
     assert not changed, ("recompiling changed these, so a build no longer matches its "
                          "source - edit SOURCE.md and recompile, never edit a build:\n      "
                          + "\n      ".join(changed[:8]))
@@ -225,6 +268,13 @@ def _():
     assert r.returncode == 0, r.stdout.strip()[-300:] or r.stderr.strip()[-300:]
     assert "5 tools" in r.stdout, "tool list did not come back"
     return "self test clean"
+
+
+@check("mcp input and resource boundaries")
+def _():
+    r = run(sys.executable, "tests/test_mcp.py")
+    assert r.returncode == 0, r.stderr.strip()[-2000:] or r.stdout.strip()[-2000:]
+    return "boundary regressions clean"
 
 
 @check("study harnesses parse")

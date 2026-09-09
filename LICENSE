@@ -28,10 +28,11 @@ separate repository, which is why this one is safe to read end to end.
 ## Attribution
 
 For the CC BY 4.0 material, attribute as: *Standards by Applied Form —
-https://github.com/jordanberkowitz-afk/standards*
+https://github.com/appliedform/standards*
 
 ## Note
 
 Every system in this repository extends a design tradition. No organisation's marks,
 logotypes or identities are reproduced, and nothing here is affiliated with or endorsed by
-any institution referenced. Type is open licence throughout; see `HANDOVER.md` section 11.
+any institution referenced. Instrument names its open-licence typefaces in
+`packs/instrument/SOURCE.md`; font files are not distributed in this repository.

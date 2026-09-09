@@ -1,7 +1,9 @@
 # Contributor Licence Agreement
 
-Five of the six packs in this repository are for sale. A contribution therefore has to
-arrive with clear enough rights attached that it can be shipped in a paid pack.
+Standards has six packs. This public repository contains Instrument and the shared
+foundation; five paid packs live in a separate private repository. A contribution
+therefore has to arrive with clear enough rights attached that shared work can also be
+used in a paid pack where applicable.
 
 This is deliberately short. It is not legal advice and has not been reviewed by counsel —
 do that before the repository goes public.

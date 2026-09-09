@@ -9,7 +9,9 @@ axes.grid: True
 axes.grid.axis: y
 grid.color: D8D8D8
 grid.linewidth: 1.0
-axes.prop_cycle: cycler('color', ['111111', '6B6B6B', 'C8102E'])
+# All data marks are neutral. Use direct labels and line/marker patterns for
+# additional series; a selected datum may have one red rule by a neutral label.
+axes.prop_cycle: cycler('color', ['111111', '6B6B6B'])
 font.family: sans-serif
 font.sans-serif: Public Sans, DejaVu Sans
 font.size: 11

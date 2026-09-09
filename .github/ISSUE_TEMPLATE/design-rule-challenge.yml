@@ -1,0 +1,64 @@
+name: Design or rule challenge
+description: Challenge a rule or composition with a concrete brief and evidence; no code required.
+title: "Design: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A counterexample, accessibility concern or reasoned proposal is useful without code or a paid model run. Separate observations from hypotheses. Use original or clearly licensed synthetic examples and follow [CONTRIBUTING.md](https://github.com/appliedform/standards/blob/main/CONTRIBUTING.md).
+  - type: input
+    id: source
+    attributes:
+      label: Source and version
+      description: Commit or release, file path and the rule or move being challenged.
+    validations:
+      required: true
+  - type: dropdown
+    id: job
+    attributes:
+      label: Rhetorical job
+      options:
+        - E — Evidence
+        - S — Structure
+        - N — Narrative
+        - C — Change
+        - T — Transaction
+        - W — Wayfinding
+        - Unsure or more than one
+    validations:
+      required: true
+  - type: textarea
+    id: brief
+    attributes:
+      label: Brief and context
+      description: The reader's task, artefact type, fixed content/data and relevant viewport or page size. Include accessibility needs and what must survive a revision.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What fails, and why?
+      description: Identify the observed problem or rule conflict. Attach an annotated example if available; state explicitly if the concern has not been rendered or tested.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed resolution and tradeoff
+      description: What should change, what should remain, and what alternative did you consider? If adding a constraint, explain the budget impact or proposed replacement.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence and acceptance criteria
+      description: State what would demonstrate improvement. For model comparisons include prompts, model/settings, repetitions, failed attempts and review method; otherwise mark this as a counterexample or hypothesis. Do not infer general superiority from one example.
+    validations:
+      required: true
+  - type: checkboxes
+    id: rights_privacy
+    attributes:
+      label: Rights and privacy
+      options:
+        - label: My examples contain no secrets, private conversations, client material or proprietary packs; any third-party content is identified with a licence that permits sharing it.
+          required: true

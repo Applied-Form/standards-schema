@@ -4,17 +4,25 @@ Design systems written as rulesets a language model can execute, not as mood boa
 
 This repository holds the open half: the **schema** systems are authored against, the
 **compiler** that turns one source into three builds, an **MCP server** that serves them to
-agents, and **Instrument** — one complete system, free and unrestricted.
+agents, and **Instrument** — an open reference system, available under CC BY 4.0.
 
 ## Start here
 
 | If you want to… | Open |
 |---|---|
-| Use a system today | `packs/instrument/` — the whole thing, CC BY 4.0 |
-| Understand how systems are written | `schema/schema-v0.4.md` |
-| Serve the system to an agent | `mcp/README.md` |
-| Write your own system | `schema/schema-v0.4.md`, then `CONTRIBUTING.md` |
-| Check the evidence | `schema/schema-v0.4.md` section 5, and `schema/RUNNING-THE-STUDY.md` |
+| Use a system today | [Instrument](packs/instrument/README.md) — CC BY 4.0 |
+| Understand how systems are written | [Schema v0.4](schema/schema-v0.4.md) |
+| Serve the system to an agent | [MCP setup and tools](mcp/README.md) |
+| Contribute as a designer | [Design and rule challenges](CONTRIBUTING.md#choose-a-contribution-path) — no code required |
+| Contribute as a developer | [Implementation fixes and checks](CONTRIBUTING.md#edit-sources-then-regenerate) |
+| Write your own system | [Schema v0.4](schema/schema-v0.4.md), then [Contributing](CONTRIBUTING.md) |
+| Check the evidence | [Schema discussion and sources](schema/schema-v0.4.md), and [Study run sheet](schema/RUNNING-THE-STUDY.md) |
+| See proposed work | [Open foundation roadmap](ROADMAP.md) |
+
+Project process: [governance](GOVERNANCE.md), [conduct](CODE_OF_CONDUCT.md),
+[private security reporting](SECURITY.md) and [changelog](CHANGELOG.md).
+The [CLA](CLA.md) is an unreviewed draft; legal review remains required before active
+contributor recruitment.
 
 ## The argument
 
@@ -52,23 +60,25 @@ and stale in another.
 
 | Target | Path | Notes |
 |---|---|---|
-| **Claude Agent Skill** | `packs/<pack>/dist/claude/<pack>/` | `SKILL.md` plus the pack's assets. Drop the directory into your skills folder |
+| **Claude Agent Skill** | `packs/<pack>/dist/claude/<pack>/` | Instructions, reference, licence, assets and referenced templates. Drop the complete directory into your skills folder |
 | **Cursor rule** | `packs/<pack>/dist/cursor/<pack>.mdc` | Put it in `.cursor/rules/`. Uses the compact build, because a rule sits in context permanently |
 | **MCP** | `mcp/server.py` | Serves every pack to any MCP client |
 | **Tokens / charts** | `packs/<pack>/assets/` | CSS custom properties, chart theme, matplotlib style |
 
-## The one rule
+## Edit sources, regenerate builds
 
-**Edit `SOURCE.md` and `assets/tokens.css`. Nothing else is written by hand.**
+Author rules in `SOURCE.md` and tokens in `assets/tokens.css`; keep hand-authored chart
+assets and templates consistent with them. Do not hand-edit generated instructions,
+contracts or distribution files. See [Contributing](CONTRIBUTING.md#edit-sources-then-regenerate).
 
 ```bash
 python3 schema/compile.py --all packs    # regenerate every build
 python3 tests/check.py                   # the checks CI runs
 ```
 
-CI recompiles and fails on any difference, so a hand-edited build cannot survive a pull
-request. It also fails if a build exceeds the constraint budget, or if a colour drops below
-the contrast floor.
+CI checks reproducible builds, distribution completeness, constraint budgets, declared
+colour pairs, chart semantics and MCP boundaries. These checks do not establish rendered
+accessibility or design quality; report what was actually tested.
 
 ## On the evidence
 
@@ -107,8 +117,8 @@ system sold once. Import it, fork it, put it in your own repo and let your tooli
 
 ## Licence
 
-Split deliberately: schema CC BY 4.0, tooling MIT, Instrument CC BY 4.0. See `LICENSE`.
-Contributions are covered by `CLA.md`.
+Split deliberately: schema CC BY 4.0, tooling MIT, Instrument CC BY 4.0. See [LICENSE](LICENSE).
+The current contribution terms are in the [draft CLA](CLA.md).
 
 Every system extends a design tradition. No organisation's marks, logotypes or identities are
 reproduced, and nothing here is affiliated with or endorsed by any institution referenced.

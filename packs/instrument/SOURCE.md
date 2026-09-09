@@ -76,7 +76,12 @@ The set is open. A valid addition makes a specific class of data more legible.
 ## Data treatment
 
 DM Mono, tabular figures, right-aligned. Units always stated. Table headers tracked
-uppercase in muted, with a 1.5px ink rule beneath. Series order: ink, muted, signal.
+uppercase in muted, with a 1.5px ink rule beneath. Series colours: ink and muted only.
+Use direct labels and line or marker patterns to distinguish additional series.
+Data marks, including a singled-out bar or point, stay ink or muted. A selected datum
+has a neutral label and an explicit word or weight cue; one red rule beside that label
+may accent it on a static surface. The cue remains legible in one colour, and red never
+carries small text on white.
 
 ## Density and attention
 
