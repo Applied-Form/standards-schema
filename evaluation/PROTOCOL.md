@@ -1,6 +1,6 @@
 # Schedule comparison protocol
 
-Protocol version: 0.4.0. This is an exploratory analysis protocol for the first public
+Protocol version: 0.4.1. This is an exploratory analysis protocol for the first public
 Schedule evaluation. The CLI refuses confirmatory execution until the entry gates below
 are implemented. Amend and externally freeze this protocol before a confirmatory run;
 start a new run rather than changing a completed run.
@@ -150,6 +150,13 @@ first-pass agent-contract failure. Baseline trials are never eligible. Report su
 final contract passes, every repair provider call including a failed call, comparative
 source-fact coverage, and agent-contract fact preservation. Provider or renderer failures
 before a repair opportunity are reported separately and are not called repair failures.
+Group repeated findings by rule before generating a repair prompt so one high-volume rule
+cannot truncate later diagnostics. Retain every attempt, then select the deliverable by a
+fixed lexicographic policy: contract conformance, brief fulfilment, complete and proportional
+source-fact coverage, complete and proportional contract-fact preservation, fewer failed and
+unknown findings, and earliest attempt as the final tie-break. Count candidates that fail to
+improve this order as rejected regressions. A rejected candidate remains evidence and never
+replaces a stronger earlier artifact.
 
 Also report:
 

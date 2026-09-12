@@ -29,7 +29,7 @@ from .provider import CompletionResult, ModelProvider
 
 ROOT = Path(__file__).resolve().parents[1]
 EVALUATION_ROOT = Path(__file__).resolve().parent
-VERSION = "0.4.0"
+VERSION = "0.4.1"
 MINIMAL_BASELINE_CONDITIONS = ("raw_brief", "brand_bible")
 SCAFFOLDED_CONDITION = "scaffolded_html"
 BASELINE_CONDITIONS = MINIMAL_BASELINE_CONDITIONS + (SCAFFOLDED_CONDITION,)
@@ -783,17 +783,82 @@ def _completion_record(result: CompletionResult, raw_path: Path,
     }
 
 
+def _compact_repair_findings(packet: dict[str, Any]) -> list[dict[str, Any]]:
+    """Group repeated browser/fact findings so later rules are never truncated away."""
+    grouped: dict[tuple[str, str, str], dict[str, Any]] = {}
+    for finding in packet["report"].get("findings", []):
+        if finding.get("status") not in {"fail", "unknown"}:
+            continue
+        key = (str(finding.get("ruleId")), str(finding.get("severity")),
+               str(finding.get("status")))
+        group = grouped.setdefault(key, {
+            "ruleId": key[0], "severity": key[1], "status": key[2],
+            "occurrences": 0, "locations": [], "instances": [],
+        })
+        group["occurrences"] += 1
+        location = finding.get("location")
+        if location not in group["locations"]:
+            group["locations"].append(location)
+        instance = {name: finding.get(name) for name in ("location", "expected", "observed")}
+        if instance not in group["instances"] and len(group["instances"]) < 6:
+            group["instances"].append(instance)
+    severity_order = {"critical": 0, "error": 1, "warning": 2}
+    result = sorted(grouped.values(), key=lambda item: (
+        severity_order.get(item["severity"], 3), item["ruleId"], item["status"]))
+    for group in result:
+        if len(group["locations"]) > 24:
+            group["locations"] = [*group["locations"][:24],
+                                  f"… {len(group['locations']) - 24} more"]
+    return result
+
+
 def _compact_repair_prompt(plan: dict[str, Any], packet: dict[str, Any]) -> str:
-    findings = [{key: finding.get(key) for key in
-                 ("ruleId", "severity", "status", "location", "expected", "observed")}
-                for finding in packet["report"].get("findings", [])
-                if finding.get("status") in {"fail", "unknown"}]
+    findings = _compact_repair_findings(packet)
     return """Return a complete replacement HTML document only. Preserve every authoritative
-fact and data-std-fact id. Fix only the findings below. Do not add visible text or reuse
-old render evidence; the verifier will render the replacement independently.
+fact, exact visible text and data-std-fact id in its assigned semantic slot. Keep every
+currently passing check passing. Do not remove, hide, merge or reorder Schedule rows or
+numeric columns. Fix the grouped findings below without adding visible text. The verifier
+will render the replacement independently; never reuse old render evidence.
 
 AUTHORITATIVE FACTS
-""" + canonical(plan["facts"]) + "\n\nFINDINGS\n" + canonical(findings[:40])
+""" + canonical(plan["facts"]) + "\n\nGROUPED FINDINGS\n" + canonical(findings)
+
+
+def _attempt_selection_key(attempt: dict[str, Any], index: int) -> tuple[Any, ...]:
+    """Prefer a conforming result, then protect brief facts before cosmetic progress."""
+    metrics = attempt["metrics"]
+    brief = metrics["briefFulfilment"]
+    source = brief.get("sourceFactCoverage") or {}
+    contract_facts = metrics.get("agentContractFactPreservation") or {}
+    counts = metrics.get("checkerFindingCounts") or {}
+    source_rate = source.get("rate")
+    contract_rate = contract_facts.get("rate")
+    return (
+        int(metrics.get("agentContractConformance") is True),
+        int(brief.get("passed") is True),
+        int(source.get("allPreserved") is True),
+        source_rate if isinstance(source_rate, (int, float)) else -1,
+        int(contract_facts.get("allPreserved") is True),
+        contract_rate if isinstance(contract_rate, (int, float)) else -1,
+        -int(counts.get("fail", 0)),
+        -int(counts.get("unknown", 0)),
+        -index,
+    )
+
+
+def _select_final_attempt(attempts: list[dict[str, Any]]) -> tuple[int | None, int]:
+    if not attempts:
+        return None, 0
+    best_index = 0
+    best_key = _attempt_selection_key(attempts[0], 0)
+    rejected_regressions = 0
+    for index, attempt in enumerate(attempts[1:], start=1):
+        key = _attempt_selection_key(attempt, index)
+        if key > best_key:
+            best_index, best_key = index, key
+        else:
+            rejected_regressions += 1
+    return best_index, rejected_regressions
 
 
 def _attempt(renderer: UIRenderer, brief: dict[str, Any], plan: dict[str, Any], html: str,
@@ -943,7 +1008,10 @@ def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], cond
             messages = [*messages, {"role": "assistant", "content": result.text},
                         {"role": "user", "content": _compact_repair_prompt(plan, packet)}]
     first = base["attempts"][0]["metrics"] if base["attempts"] else None
-    final = base["attempts"][-1]["metrics"] if base["attempts"] else None
+    selected_attempt_index, rejected_regressions = _select_final_attempt(base["attempts"])
+    final = (base["attempts"][selected_attempt_index]["metrics"]
+             if selected_attempt_index is not None else None)
+    last = base["attempts"][-1]["metrics"] if base["attempts"] else None
     contract_eligible = condition in AGENT_NATIVE_CONDITIONS or condition == REFERENCE_CONDITION
     first_contract = ((first is not None and first["agentContractConformance"] is True)
                       if contract_eligible else None)
@@ -959,6 +1027,13 @@ def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], cond
         "repairEligible": first_repair_eligible,
         "repairSuccess": final_contract if first_repair_eligible else None,
         "repairAttempts": repair_calls,
+        "selectedAttemptIndex": selected_attempt_index,
+        "selectionPolicy": "contract, brief, source facts, contract facts, findings; earliest tie",
+        "repairRegressionsRejected": rejected_regressions,
+        "lastAttemptBriefFulfilment": (
+            last is not None and last["briefFulfilment"]["passed"] is True),
+        "lastAttemptSourceFactCoverage": (last["briefFulfilment"]["sourceFactCoverage"]
+                                          if last else None),
         "firstPassSourceFactCoverage": (first["briefFulfilment"]["sourceFactCoverage"]
                                         if first else None),
         "finalSourceFactCoverage": (final["briefFulfilment"]["sourceFactCoverage"]
@@ -1007,6 +1082,8 @@ def aggregate(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
                               for trial in members) if contract_eligible else None)
         eligible = [trial for trial in members if trial["metrics"]["repairEligible"]]
         repaired = sum(trial["metrics"]["repairSuccess"] is True for trial in eligible)
+        rejected_regressions = sum(trial["metrics"].get("repairRegressionsRejected", 0)
+                                   for trial in members)
         provider_failures = sum(
             any(call.get("ok") is not True for call in trial["calls"])
             or (trial.get("failure") or {}).get("stage") == "provider"
@@ -1085,6 +1162,7 @@ def aggregate(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "comparableAcross": "agent-native and deterministic-reference conditions only",
             },
             "repair": {"eligible": len(eligible), "succeeded": repaired,
+                       "regressionsRejected": rejected_regressions,
                        "denominator": len(eligible),
                        "rate": repaired / len(eligible) if eligible else None},
             "firstPassSourceFactCoverage": {

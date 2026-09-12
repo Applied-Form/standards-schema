@@ -167,15 +167,20 @@ provider-reported cost, and observed latency remain inspectable.
   the original brief in its semantic slot; and valid browser evidence, viewport fit,
   browser-observed table structure, every original-brief fact visibly present at every
   viewport, and screenshots. Provider and render failures are failures in this denominator.
-- **Final brief fulfilment:** the same neutral outcome for the final available artifact.
-  Baselines receive no repair, so their final result equals first pass.
+- **Final brief fulfilment:** the same neutral outcome for the deterministically selected
+  best attempt. Selection prefers contract conformance, then brief fulfilment, source facts,
+  contract facts, and fewer failed or unknown findings; an earlier attempt wins a tie.
+  Regressive repair outputs remain in the record and are counted, but they cannot replace a
+  stronger deliverable. Baselines receive no repair, so their final result equals first pass.
 - **Agent-contract conformance:** the full Instrument planner/checker contract before and
   after repair. Baseline values and denominators are null, including for `scaffolded_html`,
   because its generic prompt does not disclose the Instrument-specific parts of that
   contract. Compare this metric only among agent-native conditions and the deterministic
   reference.
 - **Repair success:** final agent-contract pass among agent-native trials that produced a
-  checkable, repairable first-pass contract failure.
+  checkable, repairable first-pass contract failure. Repeated findings are grouped by rule
+  before prompting so high-volume fact diagnostics cannot hide later structural or visual
+  rules. The summary also reports repair candidates rejected by the selection policy.
 - **Source-fact coverage:** normalized original-brief text in its marker-independent static
   semantic slot. Browser evidence separately requires every fact in a marker-ID-agnostic
   corpus of visible, unclipped, unobscured, contrast-passing text at every viewport. Both

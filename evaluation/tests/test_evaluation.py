@@ -15,8 +15,9 @@ from evaluation.cli import main as cli_main
 from evaluation.harness import (AGENT_NATIVE_CONDITIONS, BASELINE_CONDITIONS, CONDITIONS,
     MINIMAL_BASELINE_CONDITIONS, REFERENCE_CONDITION,
     SCAFFOLDED_CONDITION, EvaluationError, agent_contract_fact_metric, brief_fulfilment,
-    extract_html, generic_scaffold_context, load_fixtures, messages_for, parse_json_bytes,
-    plan_for, run_experiment, source_task_payload, summarize_designer_review)
+    _compact_repair_prompt, extract_html, generic_scaffold_context, load_fixtures,
+    messages_for, parse_json_bytes, plan_for, run_experiment, source_task_payload,
+    summarize_designer_review)
 from evaluation.openrouter import OpenRouterProvider, discover_free_models
 from evaluation.provider import CompletionResult
 from workflow.engine import digest, sha256
@@ -441,6 +442,49 @@ class EvaluationTests(unittest.TestCase):
             self.assertEqual(precommit["reviewAttemptPolicy"], "first-pass-for-H1")
             self.assertIn("workflow/schemas/render-evidence.schema.json",
                           precommit["protocolFiles"])
+
+    def test_repair_prompt_groups_repeated_findings_and_keeps_later_rules(self):
+        fixture = load_fixtures("dev", {"dev-archive-digitisation"})[0]
+        _, plan = plan_for(fixture, "full_rules", identity())
+        packet = {"report": {"findings": [
+            {"ruleId": "facts.unique", "severity": "critical", "status": "fail",
+             "location": f"fact:{index}", "expected": 1, "observed": 0}
+            for index in range(60)
+        ] + [{"ruleId": "instrument.invariant_band", "severity": "error",
+              "status": "fail", "location": "viewport:390x844",
+              "expected": {"height": 32}, "observed": {"height": 40}}]}}
+        prompt = _compact_repair_prompt(plan, packet)
+        self.assertEqual(prompt.count('"ruleId":"facts.unique"'), 1)
+        self.assertIn('"occurrences":60', prompt)
+        self.assertIn('"ruleId":"instrument.invariant_band"', prompt)
+        self.assertIn("Keep every\ncurrently passing check passing", prompt)
+        self.assertIn("Do not remove, hide, merge or reorder Schedule rows", prompt)
+
+    def test_regressive_last_repair_does_not_replace_best_guardrail_safe_attempt(self):
+        fixture = load_fixtures("dev", {"dev-archive-digitisation"})[0]
+        _, plan = plan_for(fixture, "full_rules", identity())
+        marked = html_for(plan)
+        first = re.sub(r' data-std-fact="[^"]+"', "", marked)
+        improved = marked.replace(' data-std-fact="schedule.note"', "")
+        regressed = marked.replace("£3,200", "£3,500")
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "run"
+            result = run_experiment(
+                output=output, provider=FakeProvider([first, improved, regressed]),
+                models=["fixture/model"], renderer=FakeRenderer(),
+                conditions=["full_rules"], split="dev", case_ids={fixture["id"]},
+                repetitions=1, max_repairs=2, max_tokens=1000, temperature=0,
+                model_snapshot={"models": []}, label="repair-selection-test",
+            )
+            trial = json.loads((next((output / "trials").iterdir()) / "trial.json").read_text())
+            self.assertEqual(len(trial["attempts"]), 3)
+            self.assertEqual(trial["metrics"]["selectedAttemptIndex"], 1)
+            self.assertEqual(trial["metrics"]["repairRegressionsRejected"], 1)
+            self.assertTrue(trial["metrics"]["finalBriefFulfilment"])
+            self.assertFalse(trial["metrics"]["lastAttemptBriefFulfilment"])
+            self.assertEqual(trial["metrics"]["finalSourceFactCoverage"]["rate"], 1.0)
+            self.assertLess(trial["metrics"]["lastAttemptSourceFactCoverage"]["rate"], 1.0)
+            self.assertEqual(result["summary"][0]["repair"]["regressionsRejected"], 1)
 
     def test_baselines_receive_no_repair_assistance(self):
         fixture = load_fixtures("dev", {"dev-archive-digitisation"})[0]
