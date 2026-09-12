@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "E",
+  "move": "Datum",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Evidence review",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "datum",
+    "data": {
+      "label": "Mean tensile strength",
+      "value": "1,240",
+      "unit": "MPa",
+      "supporting": [
+        {
+          "term": "Sample",
+          "value": "24"
+        }
+      ],
+      "note": "Approved batch R-118."
+    }
+  }
+}

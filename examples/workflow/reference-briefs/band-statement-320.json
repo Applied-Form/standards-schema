@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "N",
+  "move": "Band statement",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Narrative narrow acceptance",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "bandStatement",
+    "data": {
+      "label": "Operating position",
+      "statement": "One coherent source should produce every approved customer-facing artifact.",
+      "figures": [
+        {
+          "term": "Surfaces",
+          "value": "6"
+        },
+        {
+          "term": "Formats",
+          "value": "1"
+        },
+        {
+          "term": "Requests",
+          "value": "0"
+        },
+        {
+          "term": "Repairs",
+          "value": "≤2"
+        }
+      ],
+      "note": "Statement and figures are synthetic acceptance data.",
+      "bleed": 32
+    }
+  }
+}

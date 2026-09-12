@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "S",
+  "move": "Matrix",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Structure review",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "matrix",
+    "data": {
+      "label": "Option assessment",
+      "columns": [
+        "Reach",
+        "Effort"
+      ],
+      "rows": [
+        {
+          "label": "Alpha",
+          "values": [
+            "High",
+            "Low"
+          ]
+        },
+        {
+          "label": "Beta",
+          "values": [
+            "Medium",
+            "High"
+          ]
+        }
+      ],
+      "emphasis": [
+        0,
+        0
+      ],
+      "note": "Assessment at discovery close."
+    }
+  }
+}

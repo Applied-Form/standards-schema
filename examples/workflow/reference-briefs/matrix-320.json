@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "S",
+  "move": "Matrix",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Structure narrow acceptance",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "matrix",
+    "data": {
+      "label": "Platform option assessment",
+      "columns": [
+        "Reach",
+        "Effort",
+        "Risk",
+        "Time"
+      ],
+      "rows": [
+        {
+          "label": "Focused",
+          "values": [
+            "High",
+            "Low",
+            "Low",
+            "4 weeks"
+          ]
+        },
+        {
+          "label": "Broad",
+          "values": [
+            "High",
+            "High",
+            "Medium",
+            "12 weeks"
+          ]
+        },
+        {
+          "label": "Custom",
+          "values": [
+            "Medium",
+            "High",
+            "High",
+            "8 weeks"
+          ]
+        }
+      ],
+      "emphasis": [
+        0,
+        0
+      ],
+      "note": "All four dimensions remain associated with each option."
+    }
+  }
+}

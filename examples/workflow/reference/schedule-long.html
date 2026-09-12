@@ -44,14 +44,26 @@
 }
 [data-standards-pack="instrument"] .instrument-matrix th,
 [data-standards-pack="instrument"] .instrument-matrix td{
-  overflow-wrap:anywhere
+  overflow-wrap:normal;
+  word-break:normal
 }
 
 /* Preserve readable table facts when a Schedule reaches a narrow handset. */
 @media (max-width:639px){
-  [data-standards-pack="instrument"] .instrument-matrix thead th:first-child{width:64px!important}
+  [data-standards-pack="instrument"] .instrument-matrix{display:block;table-layout:auto}
+  [data-standards-pack="instrument"] .instrument-matrix thead,
+  [data-standards-pack="instrument"] .instrument-matrix tbody{display:block}
+  [data-standards-pack="instrument"] .instrument-matrix tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  [data-standards-pack="instrument"] .instrument-matrix thead th:first-child{
+    grid-column:1/-1;height:0;padding:0!important;border:0
+  }
+  [data-standards-pack="instrument"] .instrument-matrix tbody th{grid-column:1/-1;padding-top:16px!important}
   [data-standards-pack="instrument"] .instrument-matrix th,
-  [data-standards-pack="instrument"] .instrument-matrix td{padding-left:8px!important;padding-right:8px!important}
+  [data-standards-pack="instrument"] .instrument-matrix td{min-width:0;padding-left:8px!important;padding-right:8px!important}
+  [data-standards-pack="instrument"] .instrument-series-values{gap:8px!important}
+  [data-standards-pack="instrument"] .instrument-series-current{
+    padding-left:4px!important;font-size:10px!important;white-space:nowrap
+  }
   [data-standards-pack="instrument"] .instrument-schedule,
   [data-standards-pack="instrument"] .instrument-schedule caption,
   [data-standards-pack="instrument"] .instrument-schedule thead,

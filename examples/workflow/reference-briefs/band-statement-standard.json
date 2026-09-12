@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "N",
+  "move": "Band statement",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Narrative review",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "bandStatement",
+    "data": {
+      "label": "Decision",
+      "statement": "Ship the smallest complete system.",
+      "figures": [
+        {
+          "term": "Moves",
+          "value": "6"
+        }
+      ],
+      "note": "Subject to design review.",
+      "bleed": 32
+    }
+  }
+}

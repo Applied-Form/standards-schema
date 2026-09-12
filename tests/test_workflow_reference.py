@@ -18,7 +18,22 @@ from workflow.reference import (REFERENCE_MANIFEST, validate_reference_manifest,
 class WorkflowReferenceTests(unittest.TestCase):
     def test_checked_in_reference_manifest_is_internally_consistent(self):
         manifest = validate_reference_manifest()
-        self.assertGreaterEqual(len(manifest["cases"]), 1)
+        self.assertEqual(len(manifest["cases"]), 12)
+        plans = [json.loads((REFERENCE_MANIFEST.parent / case["records"]["plan"]["file"])
+                            .read_text(encoding="utf-8")) for case in manifest["cases"]]
+        by_move = {}
+        for plan in plans:
+            by_move.setdefault(plan["move"], []).append(plan["artifact"]["viewports"])
+        self.assertEqual(set(by_move), {
+            "Datum", "Matrix", "Band statement", "Series", "Schedule", "Running index",
+        })
+        for move, viewports in by_move.items():
+            with self.subTest(move=move):
+                self.assertEqual(len(viewports), 2)
+                self.assertTrue(any(any(viewport["width"] >= 390 for viewport in case)
+                                    for case in viewports))
+                self.assertTrue(any(case == [{"width": 320, "height": 844}]
+                                    for case in viewports))
 
     def test_renderer_paths_hashes_dimensions_and_derived_records_are_enforced(self):
         original = json.loads(REFERENCE_MANIFEST.read_text(encoding="utf-8"))

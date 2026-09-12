@@ -1,15 +1,15 @@
 {
   "schemaVersion": "0.2.0",
   "recordedDate": "2026-09-12",
-  "purpose": "Synthetic retained review records for workflow 0.2; they prove deterministic six-move-capable plan/render/check mechanics for two Schedule cases, not designer approval or comparative model performance.",
+  "purpose": "Synthetic retained review records for all six workflow 0.2 moves at standard and 320px widths; they prove deterministic plan/render/check mechanics, not designer approval or comparative model performance.",
   "renderer": {
     "name": "standards-ui-workflow-render",
     "version": "0.2.0",
     "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
     "sourceSha256": "51b0f200b69064ff5ca1f0bfa80929a38f4e4323a9ffad8223effcd5dc2624a8",
     "packageVersion": "2.0.0",
-    "packageEntrySha256": "e954536b320d0cf795077af1b6dc29ef33c464e731f5f9c3fac29484b6e6f0b7",
-    "tokensSha256": "0e5e12a35ab276446dc2158bb79c44e2d1eb20161a4b204b2ba6b19e93f909e5",
+    "packageEntrySha256": "d4759c898ac2e4c407827cfd24b411331b18ad4694eca3a89fa245f43fd2638b",
+    "tokensSha256": "988884d837fed375bed377219f93ba9078fc6211abee218ca3ef5a4546ec247b",
     "fontAssetsSha256": "9abaec92be36ac7220c17a086a1b0f5fe4ce4eaf8eef41381ee0dd7986472746",
     "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
     "lockfileSha256": "6af6db9351d85ee3ffd79c55facfe96fe9693a20dc5c627d0cb89774870dec46",
@@ -25,30 +25,30 @@
     {
       "name": "reference",
       "brief": "../schedule-brief.json",
-      "planSha256": "a1d3806766b90e61646d4579a36344badead7ab4de84ba11fce239ec92a7ded6",
+      "planSha256": "211f2c59246d6d0cb944a2cdedee5d4d1e0f17f0a5b784afc3df167ea7d892b4",
       "contextSha256": "532cab86636f6df9f598c23da48941ec63e8503054ec4aaa1cff653759b0d46d",
-      "artifactSha256": "fe01bb0b3c63ab4704390874e890566ad7d78f2d8c7ecd201b1906d9d6ffbdba",
+      "artifactSha256": "fe2d2a0de77ea318cf0eafb74ae5ba6683592685f3fba906d43cb3159335029e",
       "baselineStatus": "pass",
       "records": {
         "plan": {
           "file": "schedule-plan.json",
-          "sha256": "c2f52f7c78eea1afd5dac61b4cd9446a57cb39d75d474f6a4d550c826cf2b13c"
+          "sha256": "14e80596a9e1d517b0687331b74fb851e4884668e15a5d2d8ef026d31ed7b0b6"
         },
         "context": {
           "file": "schedule-context.json",
-          "sha256": "cb6bb5ec6a4460561b405041d19a8e46602b6e6260e1018617d9f975dc404e7c"
+          "sha256": "dad45e4a275493e0e75c93f3a1d0c3d96748d77d0950af08fe1095f876ff81c3"
         },
         "artifact": {
           "file": "schedule.html",
-          "sha256": "fe01bb0b3c63ab4704390874e890566ad7d78f2d8c7ecd201b1906d9d6ffbdba"
+          "sha256": "fe2d2a0de77ea318cf0eafb74ae5ba6683592685f3fba906d43cb3159335029e"
         },
         "evidence": {
           "file": "schedule-render-evidence.json",
-          "sha256": "16d92b53892c37a2f22bcf77d0e7f04127a4b4fc764467c305b0f03c9978b2d2"
+          "sha256": "7411465b01f20f0fea6522cea0b500eab587bf7b60f3a6ddffe241673b09ca8c"
         },
         "report": {
           "file": "schedule-report.json",
-          "sha256": "ff945cd554d73821e9d3f7179ee8579d2e496ebb38e83b3b31a82b01377351a8"
+          "sha256": "0f3a95da0aea296c5bb92997c06a7c27db18ce0a8afdb8c4f5fe286c208f2831"
         }
       },
       "screenshots": [
@@ -81,30 +81,30 @@
     {
       "name": "long-content",
       "brief": "../schedule-long-brief.json",
-      "planSha256": "a800e804e0169720c307408db38e63d602e6ae040ef2ae46702d40addfe586f0",
+      "planSha256": "42422f255d3fdc2a96fc0e0a30ea5a6a0e7f51bfeb342b51f7baa81f47b57c12",
       "contextSha256": "626268c7ded23dce270b537ddf4bb59c4ec32769b977fb88662d83500ec822fd",
-      "artifactSha256": "3221df9c1c129ffcc5f6a8e15886b4092077d7952893094765d555c55e219d46",
+      "artifactSha256": "c2525e5e9a9fa1c572b6cefa446b86038e47396f559f67bd07b1a76beacfa4a3",
       "baselineStatus": "pass",
       "records": {
         "plan": {
           "file": "schedule-long-plan.json",
-          "sha256": "e3fa55f26be4f89d24107a78d7463370121da24df21809de47b77bec1f952523"
+          "sha256": "bc6a3aff403ad6b859c3393be02be37ffe204e8b88bae91f8f0044724774677a"
         },
         "context": {
           "file": "schedule-long-context.json",
-          "sha256": "1045921243a441ea38926016c541c02fb9d830475635d59bfc4397800dc750b3"
+          "sha256": "7ebccf6a19cdf3c5ea5b1d1ba6fed221bf80a3d7ab14143c7b435423f3e86b71"
         },
         "artifact": {
           "file": "schedule-long.html",
-          "sha256": "3221df9c1c129ffcc5f6a8e15886b4092077d7952893094765d555c55e219d46"
+          "sha256": "c2525e5e9a9fa1c572b6cefa446b86038e47396f559f67bd07b1a76beacfa4a3"
         },
         "evidence": {
           "file": "schedule-long-render-evidence.json",
-          "sha256": "18f33de2f061a2858a12a34cfe8b4e2e46f140f35cc92b8b2a236ccd419f731d"
+          "sha256": "b3a97aa0a73baac1cb7959ff18945d7b00685dcb0245a2e28feec5e2823069dc"
         },
         "report": {
           "file": "schedule-long-report.json",
-          "sha256": "4a87051799d1bb628e23a57fc13c90cdea672703b405acc8b93385ddc0c6babd"
+          "sha256": "e2d684b37d06e3bc595be26f6cf6dfd49357635202f29d60e690cd5ba54547d4"
         }
       },
       "screenshots": [
@@ -119,6 +119,506 @@
             "height": 1117
           },
           "sha256": "ef129146d1baf3678ab510d747d158255a86e79008b8746b5738d715e1cd449d"
+        }
+      ]
+    },
+    {
+      "name": "datum-standard",
+      "brief": "../reference-briefs/datum-standard.json",
+      "planSha256": "f864dff8ca6f55cd09e35ff2727d58394dfd027483f71d23454d18b7558c709b",
+      "contextSha256": "d3fef055982ea830b9ee07efbf1a4b7d9bc8ff90d549103188278500c9a8ab34",
+      "artifactSha256": "16e32285f4a54075e44bd58c378e8fff594572c34998ef956f2ebe99831b2964",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "datum-standard-plan.json",
+          "sha256": "1b548602b98b5c70a41e534b1469e2829df90df6f4700297c1f7a09003b3c37c"
+        },
+        "context": {
+          "file": "datum-standard-context.json",
+          "sha256": "394d29947789f6eb545201afd07beb69dc0fbd6d688c0fc82d6470ed7642cee7"
+        },
+        "artifact": {
+          "file": "datum-standard.html",
+          "sha256": "16e32285f4a54075e44bd58c378e8fff594572c34998ef956f2ebe99831b2964"
+        },
+        "evidence": {
+          "file": "datum-standard-render-evidence.json",
+          "sha256": "469330053518c4a595ebacbb731b658b099b2a6b1da288061a131524ed32d4b8"
+        },
+        "report": {
+          "file": "datum-standard-report.json",
+          "sha256": "e4dc51dab1a0b23d5c6abf8191cf402f474a120b552daa61991ce2c95ef206c2"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "datum-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "219d5b37fe621c3e0b6b162ce45b441a387a0863290413582b9738650a46dd3a"
+        },
+        {
+          "file": "datum-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "55863e79e97e050e840993c9f325309cbd63accacee74545880bd09923cf3b70"
+        }
+      ]
+    },
+    {
+      "name": "datum-320",
+      "brief": "../reference-briefs/datum-320.json",
+      "planSha256": "aa9eca4092fd93f6f103da3c3720c9b08af6c08831fb9bb97f7a251d9c2dc40b",
+      "contextSha256": "19c4d53739b195ac67105bb28cdb328111945b137fa50b2cfe5e652e1e19dbc3",
+      "artifactSha256": "97acb8ec2fbe217c5b9987a197b97d9f63a479532a580928668b3f7b5f4d0e71",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "datum-320-plan.json",
+          "sha256": "a70ff370d8a75b1d7072c410718a74215fee2999d7d2e1ae095b00cf2722c80f"
+        },
+        "context": {
+          "file": "datum-320-context.json",
+          "sha256": "f00913639b80d92f622b2154a52e618d2e118b42cc1bd6b159b3281cf9935b60"
+        },
+        "artifact": {
+          "file": "datum-320.html",
+          "sha256": "97acb8ec2fbe217c5b9987a197b97d9f63a479532a580928668b3f7b5f4d0e71"
+        },
+        "evidence": {
+          "file": "datum-320-render-evidence.json",
+          "sha256": "5c90727c4bc05176a0d19e7f26c211051f44e010b6e659d26737cccf96af9bc9"
+        },
+        "report": {
+          "file": "datum-320-report.json",
+          "sha256": "60e789a81b27ae1aae554c94ce6719f302b522bb16379ed87e0a981b101953d4"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "datum-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "31c74b89cfd87e7081521b4cd7f3cded636541083462d7d4f993ea03cbf0e236"
+        }
+      ]
+    },
+    {
+      "name": "matrix-standard",
+      "brief": "../reference-briefs/matrix-standard.json",
+      "planSha256": "2382380855dc3a582a21a1c1f08835650900615deaeea0679d315d4de156b1e8",
+      "contextSha256": "53d541731c0a346325d528ec87713d3413e70472607b6035c79b9da50b683fc2",
+      "artifactSha256": "a5b3c50c50deb12652b41094d9849d782da7254ad3d8ee8edc3424ed4e512961",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "matrix-standard-plan.json",
+          "sha256": "a62c46040d4592d36a7b2f1934f10afeea053dc327edc8eb07426be8fd303c9f"
+        },
+        "context": {
+          "file": "matrix-standard-context.json",
+          "sha256": "f8e1be4ce03007f55d27d94700e08583fe6ba76224b01c88c3e52efa0446c7a5"
+        },
+        "artifact": {
+          "file": "matrix-standard.html",
+          "sha256": "a5b3c50c50deb12652b41094d9849d782da7254ad3d8ee8edc3424ed4e512961"
+        },
+        "evidence": {
+          "file": "matrix-standard-render-evidence.json",
+          "sha256": "11b7ccece9f7e31aba26ff97bacf9f62eb27115d0d01a8c7f56905603b618962"
+        },
+        "report": {
+          "file": "matrix-standard-report.json",
+          "sha256": "30b3103fea30b28c7967d21acde8fbb4cc1d96b5be1b79a3bd5010a551f1034f"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "matrix-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "ce334e9e48cb9ae757c17cdede455b531e45aa2a079a0cea33295f96ce4ef99f"
+        },
+        {
+          "file": "matrix-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "b01b67208fb7ce346890ffc91515795a0705438dd3627cb909929c05a58ef846"
+        }
+      ]
+    },
+    {
+      "name": "matrix-320",
+      "brief": "../reference-briefs/matrix-320.json",
+      "planSha256": "8cb7b3615e5fc5a51d8e779b184f89696c33a4a68958677da01707fa9ce96dd2",
+      "contextSha256": "343cd54d7c37a93a83662f30cf3e72f67f6a1fad24210899a94418c2a1844062",
+      "artifactSha256": "071154e0778b0d5b38f56996d173260b1feca523ff82bb0faa2248fd9b8bd04c",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "matrix-320-plan.json",
+          "sha256": "b5f5cccdeece25c2b277807ebb2a6e8b76d5979a7548a1c3cb1f61dc6408bbca"
+        },
+        "context": {
+          "file": "matrix-320-context.json",
+          "sha256": "289b6ee9234a094aa62c07849a875348a9ed18fd8d53f9e94a5467104cbbce1c"
+        },
+        "artifact": {
+          "file": "matrix-320.html",
+          "sha256": "071154e0778b0d5b38f56996d173260b1feca523ff82bb0faa2248fd9b8bd04c"
+        },
+        "evidence": {
+          "file": "matrix-320-render-evidence.json",
+          "sha256": "92075e8f437f45dd61eb5efe9ce793b7d3f67cc13dcbda39b7a511fcfafd37e1"
+        },
+        "report": {
+          "file": "matrix-320-report.json",
+          "sha256": "740052086c2e913bd93847614d828a4ec93619720e7580a1efe2514f6ee0a5c1"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "matrix-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "a69acb7b1b17502886c4b64e32febcdbae978e7baf46d535c7c52a121774a3f3"
+        }
+      ]
+    },
+    {
+      "name": "band-statement-standard",
+      "brief": "../reference-briefs/band-statement-standard.json",
+      "planSha256": "7e2b99a1bfaa18653adca104330dfb72807ea3d3782dc610b94e475e244ba452",
+      "contextSha256": "9c0cc8726bd22ec700bf169746e76dd27258417723d5e50bea43ee082532f8ff",
+      "artifactSha256": "c7be43f112286852be139e2b028f8b961347fd2017cb3aa57010d9bc99c5c787",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "band-statement-standard-plan.json",
+          "sha256": "a603c0769cede3ee63891d3d4b44f9aafb98a6c7269e6db8a5a645449305e4ff"
+        },
+        "context": {
+          "file": "band-statement-standard-context.json",
+          "sha256": "7d5180e708a1777d12f20bd0f8c1e310610c19dfe975e0eaca6765b34bca8f29"
+        },
+        "artifact": {
+          "file": "band-statement-standard.html",
+          "sha256": "c7be43f112286852be139e2b028f8b961347fd2017cb3aa57010d9bc99c5c787"
+        },
+        "evidence": {
+          "file": "band-statement-standard-render-evidence.json",
+          "sha256": "751369542cfb8981830662bd03780c739d65afcf8bf67390017cc3b1ca64e2ec"
+        },
+        "report": {
+          "file": "band-statement-standard-report.json",
+          "sha256": "f20649e08fca6b7a30489110d5e0f98e2f93b8a31dc6ff5dc24bfd855b58fa16"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "band-statement-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "069799cfd88621256af77e174bf3a7d8c48e798086ce2b67ded0726415962c80"
+        },
+        {
+          "file": "band-statement-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "693035639d988d11e428406c21fd035f947b510b64b8987edbee505cafb5d000"
+        }
+      ]
+    },
+    {
+      "name": "band-statement-320",
+      "brief": "../reference-briefs/band-statement-320.json",
+      "planSha256": "6077de88841d8ff0daf541430dac462d71c28bf380fa65e9e282eda9e2f4b62d",
+      "contextSha256": "c18210e5b36e117b9486703c439e6216eb3c77e6330554286d3e67295de06140",
+      "artifactSha256": "dadcf82a71b7951bdda22f32c98240018370c7afe23dfd17543767ef362bd171",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "band-statement-320-plan.json",
+          "sha256": "23eef20467830e356bef805f69df049182f95fb0c37bad53d8addc5c81f12afc"
+        },
+        "context": {
+          "file": "band-statement-320-context.json",
+          "sha256": "98b0a1a2354c70dc0fee74adf467aecf6ce0da31f9244daac23c851be060d5af"
+        },
+        "artifact": {
+          "file": "band-statement-320.html",
+          "sha256": "dadcf82a71b7951bdda22f32c98240018370c7afe23dfd17543767ef362bd171"
+        },
+        "evidence": {
+          "file": "band-statement-320-render-evidence.json",
+          "sha256": "18bf5eefbb2f1f189ca89b145dc1d338103b65cb2b0ca2d8f5937f91a5bc0ca2"
+        },
+        "report": {
+          "file": "band-statement-320-report.json",
+          "sha256": "291b3efa3082f119bf313f2f9b8213dc0b06f8cfe50ea71950c7b8944cb986e3"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "band-statement-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "487b696e36b3600e77228512596b8e443077e026c41e8a9d3869c3a2f60c8ea5"
+        }
+      ]
+    },
+    {
+      "name": "series-standard",
+      "brief": "../reference-briefs/series-standard.json",
+      "planSha256": "6ce9b3211236e1cf88067a75ef4861a92f2bb8e454fed6fef8d67c78edb9fe99",
+      "contextSha256": "541e3d2ad4c8ffff178c5d6be066bf0f7719712c1d91bf84a02d6f54a13f5e23",
+      "artifactSha256": "978863567a1b96c49a7cd579da854f6f31d7e7898a6e4e5aea1d8ce93e42b721",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "series-standard-plan.json",
+          "sha256": "445facc6627bed0799abd875c03e4f7d82acdf8a0c91b704d1d462adaba2de0b"
+        },
+        "context": {
+          "file": "series-standard-context.json",
+          "sha256": "fdfef00b60f67d3e830b03700ef36169c1b0866450ae2bc75e9677fe41a13468"
+        },
+        "artifact": {
+          "file": "series-standard.html",
+          "sha256": "978863567a1b96c49a7cd579da854f6f31d7e7898a6e4e5aea1d8ce93e42b721"
+        },
+        "evidence": {
+          "file": "series-standard-render-evidence.json",
+          "sha256": "a6c47bc9e032c7fd33858c6033e5576ab573a6e7e11b8b333466c9e80f36c6dc"
+        },
+        "report": {
+          "file": "series-standard-report.json",
+          "sha256": "95c509b66ae0e9d96425e04f050459693d3fd0b7e1310a1e16056e1b495adbd7"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "series-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "4ce141e044fb28252dab3e8b642c180eca51f6c3d1e8f97a27a81619f4451c5b"
+        },
+        {
+          "file": "series-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "78a425ec6c973e1f905cd23340cbfb4ac00042df4f93572d807e389019a66d01"
+        }
+      ]
+    },
+    {
+      "name": "series-320",
+      "brief": "../reference-briefs/series-320.json",
+      "planSha256": "4acfe9a5a5702f03ec8b87f9ffc63cee5a85863bf7150db1f85bf70c65b896ae",
+      "contextSha256": "2a4612ef25d7ec25ff03d1a18156106409fc7aeff0f77e2a05ee3ef46e110068",
+      "artifactSha256": "ddafdf6cdfcec575aa549a69eb83c7ce61236c53108e1d894656170fd67bb470",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "series-320-plan.json",
+          "sha256": "4867709d4be92fdf9d4e138714fdbe019a7fd61a11be4c25683b8da421f85546"
+        },
+        "context": {
+          "file": "series-320-context.json",
+          "sha256": "b632f8608a04c9fa92c341f42b6b19661001f11d8eae3ccbcb424a35a36721fb"
+        },
+        "artifact": {
+          "file": "series-320.html",
+          "sha256": "ddafdf6cdfcec575aa549a69eb83c7ce61236c53108e1d894656170fd67bb470"
+        },
+        "evidence": {
+          "file": "series-320-render-evidence.json",
+          "sha256": "7f1cf50ead913af5a6eb0ff3ae004e2edee65aa709f62e8ab2e1120a2a22abeb"
+        },
+        "report": {
+          "file": "series-320-report.json",
+          "sha256": "afd4f46bfba30ea185b77f68427c1ad5520308b2f66fe9248a30dbd4c2cec272"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "series-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "51f0ea1af1667ed205b297fd15de60781775d82111760f2fa967781fa64cc478"
+        }
+      ]
+    },
+    {
+      "name": "running-index-standard",
+      "brief": "../reference-briefs/running-index-standard.json",
+      "planSha256": "bdbb7bab1d2e2f5ee06d825bebc5f3c78f1bbfa6ad4ae53d36f36ea424f86be9",
+      "contextSha256": "2b0b009ccdca9b36585f729ea36ed8a26f7c2cf7952107e5fc990bcd9f436a7c",
+      "artifactSha256": "bc5ac5e9fcb686ed42f8859c2432334c9fb33ffdbc6b6c9499395c11a64448da",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "running-index-standard-plan.json",
+          "sha256": "a1b0485c9b24c4ec0484604545f20f086522abce4d450f4db68af04a024c1556"
+        },
+        "context": {
+          "file": "running-index-standard-context.json",
+          "sha256": "606f280eb5e3b982030fb0e1d52f0e5968a773dec9253484351daeea8895d784"
+        },
+        "artifact": {
+          "file": "running-index-standard.html",
+          "sha256": "bc5ac5e9fcb686ed42f8859c2432334c9fb33ffdbc6b6c9499395c11a64448da"
+        },
+        "evidence": {
+          "file": "running-index-standard-render-evidence.json",
+          "sha256": "abede26140043723897679ab358d849ea6ae3f6140e57a5a615950e01eab398a"
+        },
+        "report": {
+          "file": "running-index-standard-report.json",
+          "sha256": "4ba5bf0ba88507daef4eb20ff2e2d458a2ad8e8dcacf1d295a7212f029229558"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "running-index-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "1fb795e9a1cf05d74f5c7ffee97b2207103881a84b6f251c1b0ddbc3558ac1f6"
+        },
+        {
+          "file": "running-index-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "8d876f669fd7c892adf1b93ac246b4015b9dadb5ccd71a6cd0db4508403069f0"
+        }
+      ]
+    },
+    {
+      "name": "running-index-320",
+      "brief": "../reference-briefs/running-index-320.json",
+      "planSha256": "757f0eef431d78927ce2b69fc9545ed7dbfa7a75d27d9c82ab060dd77af5f8ff",
+      "contextSha256": "a4c8babe4a4f030c9b1ae119b93e5b7910fc76991427afd34095add83e577304",
+      "artifactSha256": "752c8b88ebe2b330e4c5749e024ec6005fc1242afd8c86887a31c0389255cd52",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "running-index-320-plan.json",
+          "sha256": "7dd43db9827d0e9431327172a6d69a37fd7fb8f508879f4f766e1fe3610da68c"
+        },
+        "context": {
+          "file": "running-index-320-context.json",
+          "sha256": "df7ef0d296957d0fc09952c0a97a1d9c7956b386407044695b7e7f0eeeceba49"
+        },
+        "artifact": {
+          "file": "running-index-320.html",
+          "sha256": "752c8b88ebe2b330e4c5749e024ec6005fc1242afd8c86887a31c0389255cd52"
+        },
+        "evidence": {
+          "file": "running-index-320-render-evidence.json",
+          "sha256": "8243eeda99991aafefa1f2f293486cea394fa275cd601800379da1dba05a9c25"
+        },
+        "report": {
+          "file": "running-index-320-report.json",
+          "sha256": "ef884787e295ac1924c48aeded008c7407021a8453e76da8d3a5a1051cc3b529"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "running-index-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "fd8b5f08aabac6409a7d4e7a7bcba44c9ceb0b38fd69c4cb91cdf6e9b9626490"
         }
       ]
     }

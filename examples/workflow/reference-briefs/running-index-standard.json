@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "W",
+  "move": "Running index",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Wayfinding review",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "runningIndex",
+    "data": {
+      "document": "System handbook",
+      "folio": "04 / 12",
+      "sections": [
+        "Principles",
+        "Components",
+        "Examples"
+      ],
+      "current": 2,
+      "note": "Current approved issue."
+    }
+  }
+}
