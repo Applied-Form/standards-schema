@@ -284,7 +284,7 @@ def validate_route_qualification(value: Any, route: dict[str, Any] | None = None
     observations = _exact(qualification["observations"], {
         "calls", "timeBlocks", "successes", "successRate", "acceptedIdentities",
         "acceptedIdentityRate", "textOutput", "providerPinned", "parametersAccepted",
-        "reservationIds",
+        "textOutputs", "providerPinMatches", "parameterAcceptances", "reservationIds",
     }, "route qualification.observations")
     if observations["calls"] != 10 or observations["timeBlocks"] != 2:
         raise StudyError("route qualification requires exactly ten calls in two time blocks")
@@ -294,8 +294,17 @@ def validate_route_qualification(value: Any, route: dict[str, Any] | None = None
         raise StudyError("route qualification success must be at least 90% with an exact rate")
     if observations["acceptedIdentities"] != 10 or observations["acceptedIdentityRate"] != 1:
         raise StudyError("route qualification requires 100% accepted model identity")
-    if any(observations[key] is not True for key in
-           ("textOutput", "providerPinned", "parametersAccepted")):
+    text_outputs = _integer(observations["textOutputs"],
+                            "route qualification.textOutputs", 0, 10)
+    pin_matches = _integer(observations["providerPinMatches"],
+                           "route qualification.providerPinMatches", 0, 10)
+    parameter_acceptances = _integer(observations["parameterAcceptances"],
+                                     "route qualification.parameterAcceptances", 0, 10)
+    if (observations["textOutput"] is not (text_outputs >= 9)
+            or observations["providerPinned"] is not (pin_matches == 10)
+            or observations["parametersAccepted"] is not (parameter_acceptances == 10)
+            or any(observations[key] is not True for key in
+                   ("textOutput", "providerPinned", "parametersAccepted"))):
         raise StudyError("route qualification output, pin and parameter checks must pass")
     reservation_ids = _unique_strings(observations["reservationIds"],
                                       "route qualification.reservationIds", 10)
@@ -520,6 +529,9 @@ def confirmatory_blockers(declaration: Any, receipt: Any | None, *,
         else:
             if spend_ledger["capGbp"] != declaration["budget"]["maximum"]:
                 blockers.append("spend ledger cap differs from the declared GBP budget")
+            if any(entry["status"] == "actual-exceeded-reservation"
+                   for entry in spend_ledger["entries"]):
+                blockers.append("spend ledger contains a provider cost above its frozen reservation")
             if digest(spend_ledger) != receipt["spendLedgerPreRunSha256"]:
                 blockers.append("spend ledger differs from the externally frozen pre-run digest")
             qualification_reservations = {

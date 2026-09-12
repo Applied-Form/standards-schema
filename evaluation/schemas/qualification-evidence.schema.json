@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/qualification-evidence.schema.json",
+  "title": "Standards protocol 0.5 retained route qualification evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "routeId", "modelId", "modelFamily", "provider", "providerEndpoint", "modelSnapshotSha256", "precommitSha256", "journalSha256", "blocks", "observations"],
+  "properties": {
+    "schemaVersion": {"const": "0.5.0"},
+    "routeId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+    "modelId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "modelFamily": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+    "provider": {"const": "openrouter"},
+    "providerEndpoint": {"type": "string", "minLength": 1, "maxLength": 240},
+    "modelSnapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "precommitSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "journalSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "blocks": {"$ref": "qualification-journal.schema.json#/properties/blocks"},
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["calls", "timeBlocks", "successes", "successRate", "acceptedIdentities", "acceptedIdentityRate", "textOutputs", "textOutput", "providerPinMatches", "providerPinned", "parameterAcceptances", "parametersAccepted", "reservationIds"],
+      "properties": {
+        "calls": {"const": 10},
+        "timeBlocks": {"const": 2},
+        "successes": {"type": "integer", "minimum": 0, "maximum": 10},
+        "successRate": {"type": "number", "minimum": 0, "maximum": 1},
+        "acceptedIdentities": {"type": "integer", "minimum": 0, "maximum": 10},
+        "acceptedIdentityRate": {"type": "number", "minimum": 0, "maximum": 1},
+        "textOutputs": {"type": "integer", "minimum": 0, "maximum": 10},
+        "textOutput": {"type": "boolean"},
+        "providerPinMatches": {"type": "integer", "minimum": 0, "maximum": 10},
+        "providerPinned": {"type": "boolean"},
+        "parameterAcceptances": {"type": "integer", "minimum": 0, "maximum": 10},
+        "parametersAccepted": {"type": "boolean"},
+        "reservationIds": {
+          "type": "array", "minItems": 10, "maxItems": 10, "uniqueItems": true,
+          "items": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"}
+        }
+      }
+    }
+  }
+}

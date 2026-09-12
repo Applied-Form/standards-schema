@@ -14,6 +14,7 @@ from .harness import (CONDITIONS, EVALUATION_ROOT, EvaluationError, UIRenderer,
                       summarize_designer_review, write_json)
 from .openrouter import (OpenRouterError, OpenRouterProvider, credential_status,
                          discover_free_models, validate_frozen_models)
+from .qualification import run_route_qualification
 from .study import (SpendLedger, StudyError, analyze_confirmatory, confirmatory_blockers,
                     create_publication_bundle, digest, plan_paired_power,
                     read_json as read_study_json, seal_review_set,
@@ -141,6 +142,24 @@ def parser() -> argparse.ArgumentParser:
     ledger_status = commands.add_parser("ledger-status", help="validate and summarize a spend ledger")
     ledger_status.add_argument("--ledger", type=Path, required=True)
 
+    qualify = commands.add_parser(
+        "route-qualify", help="run one resumable five-call pinned-route qualification block")
+    qualify.add_argument("--route-id", required=True)
+    qualify.add_argument("--model", required=True)
+    qualify.add_argument("--model-family", required=True)
+    qualify.add_argument("--provider-endpoint", required=True)
+    qualify.add_argument("--snapshot", type=Path, required=True)
+    qualify.add_argument("--spend-ledger", type=Path, required=True)
+    qualify.add_argument("--out", type=Path, required=True)
+    qualify.add_argument("--block", type=int, choices=(1, 2), required=True)
+    qualify.add_argument("--expires-at", required=True)
+    qualify.add_argument("--resume", action="store_true")
+    qualify.add_argument("--max-tokens", type=int, default=64)
+    qualify.add_argument("--temperature", type=float, default=0)
+    qualify.add_argument("--worst-case-call-cost-gbp", type=float, required=True)
+    qualify.add_argument("--usd-to-gbp-rate", type=float, required=True)
+    qualify.add_argument("--require-zero-price", action="store_true")
+
     seal = commands.add_parser("review-seal", help="seal declared reviewer files and compute agreement")
     seal.add_argument("--run", type=Path, required=True)
     seal.add_argument("--declaration", type=Path, required=True)
@@ -190,6 +209,25 @@ def main(argv=None) -> int:
                 "chargedGbp": ledger.charged_gbp, "remainingGbp": ledger.remaining_gbp,
                 "entries": len(ledger.value["entries"]), "automaticTopUp": False})
         return 0
+    if args.command == "route-qualify":
+        snapshot = read_study_json(args.snapshot.resolve())
+        validate_frozen_models(
+            snapshot, [args.model], require_zero_price=args.require_zero_price)
+        ledger = SpendLedger.load(args.spend_ledger.resolve())
+        provider = OpenRouterProvider(
+            snapshot, reasoning_effort="none",
+            provider_pins={args.model: args.provider_endpoint},
+            require_zero_price=args.require_zero_price)
+        result = run_route_qualification(
+            output=args.out.resolve(), provider=provider, model_snapshot=snapshot,
+            spend_ledger=ledger, route_id=args.route_id, model_id=args.model,
+            model_family=args.model_family, provider_endpoint=args.provider_endpoint,
+            block_index=args.block, expires_at=args.expires_at,
+            max_tokens=args.max_tokens, temperature=args.temperature,
+            worst_case_call_cost_gbp=args.worst_case_call_cost_gbp,
+            usd_to_gbp_rate=args.usd_to_gbp_rate, resume=args.resume)
+        _print(result)
+        return 2 if result.get("status") == "not-qualified" else 0
     if args.command in {"validate-declaration", "validate-freeze"}:
         declaration = validate_declaration(read_study_json(args.declaration.resolve()))
         receipt = (validate_freeze_receipt(read_study_json(args.freeze_receipt.resolve()))

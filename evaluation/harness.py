@@ -1428,6 +1428,7 @@ def write_confirmatory_reviewer_sets(run_directory: Path, run_id: str,
 def _protocol_identity(fixtures: list[dict[str, Any]]) -> dict[str, str]:
     paths = [Path(__file__), EVALUATION_ROOT / "cli.py", EVALUATION_ROOT / "provider.py",
              EVALUATION_ROOT / "openrouter.py", EVALUATION_ROOT / "study.py",
+             EVALUATION_ROOT / "qualification.py",
              EVALUATION_ROOT / "PROTOCOL.md",
              EVALUATION_ROOT / "conditions" / "brand-bible.md",
              EVALUATION_ROOT / "conditions" / "scaffolded-html.md"]

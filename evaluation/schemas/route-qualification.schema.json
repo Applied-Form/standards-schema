@@ -42,8 +42,11 @@
         "successRate",
         "acceptedIdentities",
         "acceptedIdentityRate",
+        "textOutputs",
         "textOutput",
+        "providerPinMatches",
         "providerPinned",
+        "parameterAcceptances",
         "parametersAccepted",
         "reservationIds"
       ],
@@ -70,11 +73,22 @@
         "acceptedIdentityRate": {
           "const": 1
         },
+        "textOutputs": {
+          "type": "integer",
+          "minimum": 9,
+          "maximum": 10
+        },
         "textOutput": {
           "const": true
         },
+        "providerPinMatches": {
+          "const": 10
+        },
         "providerPinned": {
           "const": true
+        },
+        "parameterAcceptances": {
+          "const": 10
         },
         "parametersAccepted": {
           "const": true

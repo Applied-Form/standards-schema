@@ -53,8 +53,9 @@ def declaration_and_receipt():
                               "observations": {"calls": 10, "timeBlocks": 2,
                                   "successes": 10, "successRate": 1,
                                   "acceptedIdentities": 10, "acceptedIdentityRate": 1,
-                                  "textOutput": True, "providerPinned": True,
-                                  "parametersAccepted": True,
+                                  "textOutputs": 10, "textOutput": True,
+                                  "providerPinMatches": 10, "providerPinned": True,
+                                  "parameterAcceptances": 10, "parametersAccepted": True,
                                   "reservationIds": reservation_ids}},
         })
     ledger = {"schemaVersion": "0.5.0", "ledgerId": "evaluation-ledger",
@@ -170,6 +171,15 @@ class StudyProtocolTests(unittest.TestCase):
         changed["count"] = 2
         self.assertTrue(any("snapshot differs" in item
                             for item in confirmatory_blockers(declaration, receipt, snapshot=changed, spend_ledger=ledger)))
+        overrun = copy.deepcopy(ledger)
+        overrun["entries"][0].update(
+            status="actual-exceeded-reservation", providerReportedCostUsd=.02,
+            chargedGbp=.016)
+        overrun_receipt = copy.deepcopy(receipt)
+        overrun_receipt["spendLedgerPreRunSha256"] = digest(overrun)
+        self.assertTrue(any("above its frozen reservation" in item for item in
+                            confirmatory_blockers(declaration, overrun_receipt,
+                                                 snapshot=snapshot, spend_ledger=overrun)))
 
     def test_route_pin_is_sent_and_wrong_endpoint_fails_integrity(self):
         declaration, _, snapshot, _ = declaration_and_receipt()

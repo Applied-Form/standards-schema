@@ -62,7 +62,8 @@ Run commands from the `standards` repository root. The renderer expects a built 
 checkout at `../standards-ui`, including its Playwright Chromium runtime.
 
 ```bash
-python3 -m unittest evaluation.tests.test_evaluation evaluation.tests.test_study -v
+python3 -m unittest evaluation.tests.test_evaluation evaluation.tests.test_study \
+  evaluation.tests.test_qualification -v
 python3 -m evaluation.cli credentials
 python3 -m evaluation.cli models --ids-only
 python3 -m evaluation.cli ledger-init --out /path/to/spend-ledger.json --id evaluation-ledger
@@ -277,6 +278,42 @@ custodian, retained declaration digest, timestamp evidence, locally verified sig
 spend-ledger digest, and explicit execution authorization. Each route qualification binds
 exactly ten reserved calls across two time blocks, at least 90% success, 100% accepted
 identity, text output, accepted parameters, and the provider pin.
+
+Qualify one route in two explicit invocations. Each invocation makes exactly five calls;
+block 2 must resume the byte-identical block-1 precommit. Replace these illustrative values
+with the route's frozen provider, reservation, expiry, and paths. Add
+`--require-zero-price` for a route declared free; omit it for an eligible paid route inside
+the fixed GBP cap:
+
+These two qualification invocations make provider calls and charge their reservations to
+the shared ledger.
+
+```bash
+python3 -m evaluation.cli route-qualify \
+  --route-id route-a --model maker/model-a --model-family family-a \
+  --provider-endpoint "Pinned Provider" --snapshot snapshot.json \
+  --spend-ledger spend-ledger.json --out /path/to/route-a-qualification \
+  --block 1 --expires-at 2026-10-01T00:00:00Z \
+  --worst-case-call-cost-gbp .05 --usd-to-gbp-rate .80
+
+python3 -m evaluation.cli route-qualify \
+  --route-id route-a --model maker/model-a --model-family family-a \
+  --provider-endpoint "Pinned Provider" --snapshot snapshot.json \
+  --spend-ledger spend-ledger.json --out /path/to/route-a-qualification \
+  --block 2 --resume --expires-at 2026-10-01T00:00:00Z \
+  --worst-case-call-cost-gbp .05 --usd-to-gbp-rate .80
+```
+
+The qualifier journals each call before reserving spend, then reserves before provider
+access. A stopped in-flight call becomes an indeterminate retained failure and is not
+retried. `route-qualification.json` appears only after both five-call blocks finish and all
+receipt gates pass. Resume verifies the frozen model snapshot, cumulative-ledger identity,
+deterministic call IDs, every finalized reservation, provider-result bytes, result digests,
+and recomputed checks before making another call. Otherwise the evidence and failure
+records remain without a receipt. A qualification directory contains
+`qualification-precommit.json`, `model-snapshot.json`, `qualification-journal.json`, ten
+provider results, `qualification-evidence.json`, and either a conforming receipt or
+`qualification-failure.json`.
 
 These commands are offline and spend no provider budget:
 

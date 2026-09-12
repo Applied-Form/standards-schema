@@ -111,6 +111,21 @@ if that would exceed the remaining £500-or-lower cap. Settlement uses retained
 provider-reported USD cost and the frozen exchange rate. Missing usage leaves the full
 reservation charged. Automatic top-up is false.
 
+Route qualification is itself a frozen two-block run. Block 1 schedules exactly five calls;
+block 2 is a separate resume invocation against the same route ID, model, family, snapshot,
+provider pin, generation settings, expiry, and budget assumptions. Every call is journaled,
+reserved, retained, and checked for the expected text response, accepted exact/canonical
+model identity, returned provider pin, and required parameter envelope. An interrupted
+in-flight call is retained as indeterminate and never retried in place. Only ten completed
+observations across the two five-call blocks can produce a receipt. The receipt requires at
+least nine full successes, ten accepted identities, ten pin matches, ten parameter
+acceptances, and at least nine expected text outputs. Failed qualification evidence remains
+available without `route-qualification.json`. The precommit binds the immutable identity of
+the shared cumulative ledger. Resume recomputes every retained result check and verifies its
+path, digest, deterministic reservation ID, settlement, snapshot and ledger identity. A
+changed record, changed ledger, open reservation, or cost above its worst-case reservation
+blocks qualification.
+
 Run development first. Exploratory inspection may use either public split. Confirmatory
 mode accepts only the eight held-out fixtures and derives its matrix from a strict protocol
 0.5 declaration. It remains blocked until an externally timestamped receipt binds the clean

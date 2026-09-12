@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/qualification-precommit.schema.json",
+  "title": "Standards protocol 0.5 route qualification precommit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "routeId", "modelId", "modelFamily", "provider", "providerEndpoint", "modelSnapshotSha256", "expiresAt", "settings", "budget", "design"],
+  "properties": {
+    "schemaVersion": {"const": "0.5.0"},
+    "routeId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+    "modelId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "modelFamily": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+    "provider": {"const": "openrouter"},
+    "providerEndpoint": {"type": "string", "minLength": 1, "maxLength": 240},
+    "modelSnapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "expiresAt": {"type": "string", "format": "date-time"},
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxTokens", "temperature", "reasoningEffort", "expectedText", "providerOnly", "allowFallbacks", "requireParameters", "requireZeroPrice", "acceptedResolvedModels"],
+      "properties": {
+        "maxTokens": {"type": "integer", "minimum": 1, "maximum": 32000},
+        "temperature": {"type": "number", "minimum": 0, "maximum": 2},
+        "reasoningEffort": {"const": "none"},
+        "expectedText": {"const": "ROUTE_OK"},
+        "providerOnly": {"type": "array", "minItems": 1, "maxItems": 1, "items": {"type": "string", "minLength": 1}},
+        "allowFallbacks": {"const": false},
+        "requireParameters": {"const": true},
+        "requireZeroPrice": {"type": "boolean"},
+        "acceptedResolvedModels": {"type": "array", "minItems": 1, "maxItems": 2, "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["worstCaseCallCostGbp", "usdToGbpRate", "automaticTopUp", "ledgerId", "ledgerCapGbp", "ledgerIdentitySha256"],
+      "properties": {
+        "worstCaseCallCostGbp": {"type": "number", "minimum": 0, "maximum": 500},
+        "usdToGbpRate": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+        "automaticTopUp": {"const": false},
+        "ledgerId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+        "ledgerCapGbp": {"type": "number", "minimum": 0, "maximum": 500},
+        "ledgerIdentitySha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "design": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["blocks", "callsPerBlock", "successRateMinimum", "acceptedIdentityRate"],
+      "properties": {
+        "blocks": {"const": 2},
+        "callsPerBlock": {"const": 5},
+        "successRateMinimum": {"const": 0.9},
+        "acceptedIdentityRate": {"const": 1}
+      }
+    }
+  }
+}

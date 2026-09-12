@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/qualification-journal.schema.json",
+  "title": "Standards protocol 0.5 route qualification journal",
+  "type": "object",
+  "additionalProperties": false,
+  "$defs": {
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["providerOk", "acceptedIdentity", "textOutput", "providerPinned", "parametersAccepted", "success"],
+      "properties": {
+        "providerOk": {"type": "boolean"},
+        "acceptedIdentity": {"type": "boolean"},
+        "textOutput": {"type": "boolean"},
+        "providerPinned": {"type": "boolean"},
+        "parametersAccepted": {"type": "boolean"},
+        "success": {"type": "boolean"}
+      }
+    }
+  },
+  "required": ["schemaVersion", "routeId", "precommitSha256", "createdAt", "blocks"],
+  "properties": {
+    "schemaVersion": {"const": "0.5.0"},
+    "routeId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+    "precommitSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "blocks": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["blockIndex", "status", "startedAt", "completedAt", "calls"],
+        "properties": {
+          "blockIndex": {"type": "integer", "minimum": 1, "maximum": 2},
+          "status": {"enum": ["pending", "in-flight", "complete"]},
+          "startedAt": {"type": ["string", "null"], "format": "date-time"},
+          "completedAt": {"type": ["string", "null"], "format": "date-time"},
+          "calls": {
+            "type": "array", "maxItems": 5,
+            "items": {
+              "type": "object", "additionalProperties": false,
+              "required": ["callIndex", "status", "reservationId", "startedAt", "completedAt", "resultFile", "resultSha256", "checks"],
+              "properties": {
+                "callIndex": {"type": "integer", "minimum": 0, "maximum": 4},
+                "status": {"enum": ["in-flight", "complete", "indeterminate"]},
+                "reservationId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+                "startedAt": {"type": "string", "format": "date-time"},
+                "completedAt": {"type": ["string", "null"], "format": "date-time"},
+                "resultFile": {"type": "string", "pattern": "^block-[12]/call-[0-4]/provider-result\\.json$"},
+                "resultSha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"},
+                "checks": {
+                  "oneOf": [
+                    {"type": "null"},
+                    {"$ref": "#/$defs/checks"}
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
