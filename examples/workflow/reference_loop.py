@@ -190,8 +190,8 @@ def run_reference_loop(brief_path: Path, ui: Path, output: Path, build_ui: bool 
 
     first = prepare_repair(plan, defective_html, render_evidence=defective_evidence,
                            read_pack=_pack_reader)
-    if first["action"] != "repair" or first["record"]["turn"] != 0:
-        raise AssertionError("first failed artifact did not produce repair turn zero")
+    if first["action"] != "repair" or first["record"]["attempt"] != 0:
+        raise AssertionError("first failed artifact did not produce attempt zero")
     _write_json(output / "01-repair-decision.json", first)
     success_history = [first["record"]]
     _write_json(output / "success-history.json", success_history)
@@ -214,27 +214,20 @@ def run_reference_loop(brief_path: Path, ui: Path, output: Path, build_ui: bool 
         raise AssertionError("repaired artifact did not complete the workflow")
     _write_json(output / "02-complete-decision.json", completed)
 
-    persistent_one_html, persistent_one_evidence = _render(
+    persistent_html, persistent_evidence = _render(
         ui, plan_path, output / "03-persistent-turn-1", defective_source)
-    second = prepare_repair(plan, persistent_one_html, history=[first["record"]],
-                            render_evidence=persistent_one_evidence, read_pack=_pack_reader)
-    if second["action"] != "repair" or second["record"]["turn"] != 1:
-        raise AssertionError("persistent defect did not consume the second repair decision")
-    persistent_history = [first["record"], second["record"]]
+    stopped = prepare_repair(plan, persistent_html, history=[first["record"]],
+                             render_evidence=persistent_evidence, read_pack=_pack_reader)
+    if (stopped["action"] != "stop" or stopped["disposition"] != "rejected-oscillation"
+            or stopped["report"]["status"] != "fail"
+            or stopped["rollbackArtifactSha256"] != first["record"]["artifactSha256"]):
+        raise AssertionError("repeated defective bytes did not stop and retain the accepted baseline")
+    persistent_history = [first["record"], stopped["record"]]
     _write_json(output / "persistent-history.json", persistent_history)
-    _write_json(output / "03-persistent-decision.json", second)
-
-    persistent_two_html, persistent_two_evidence = _render(
-        ui, plan_path, output / "04-persistent-turn-2", defective_source)
-    stopped = prepare_repair(plan, persistent_two_html, history=persistent_history,
-                             render_evidence=persistent_two_evidence, read_pack=_pack_reader)
-    if (stopped["action"] != "stop" or stopped["remainingRepairs"] != 0
-            or stopped["report"]["status"] != "fail"):
-        raise AssertionError("persistent defect did not stop with an unresolved failure")
-    _write_json(output / "04-stop-decision.json", stopped)
+    _write_json(output / "03-stop-decision.json", stopped)
 
     summary = {
-        "schemaVersion": "0.1.0",
+        "schemaVersion": "0.2.0",
         "planSha256": digest(plan),
         "contextSha256": context["manifest"]["sha256"],
         "renderer": renderer,
@@ -245,9 +238,11 @@ def run_reference_loop(brief_path: Path, ui: Path, output: Path, build_ui: bool 
                          "nextAction": first["action"]},
         "repaired": {"status": repaired_report["status"], "nextAction": completed["action"],
                      "artifactSha256": repaired_report["artifactSha256"]},
-        "persistentFailure": {"actions": [first["action"], second["action"], stopped["action"]],
+        "persistentFailure": {"actions": [first["action"], stopped["action"]],
+                              "disposition": stopped["disposition"],
                               "status": stopped["report"]["status"],
                               "remainingRepairs": stopped["remainingRepairs"],
+                              "bestArtifactSha256": stopped["bestArtifactSha256"],
                               "failedRules": _failed_rules(stopped["report"])},
     }
     _write_json(output / "summary.json", summary)

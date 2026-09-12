@@ -1,10 +1,10 @@
 # Standards MCP server
 
-The local server exposes installed design systems, structured contracts and a scoped
+The local server exposes installed design systems, structured contracts and an agent-native
 artifact workflow over stdio. It uses Python's standard library and makes no model calls.
-The client supplies a brief and generated HTML; the server plans, assembles context,
-checks supplied evidence and prepares repair instructions. It does not generate, execute
-or automatically edit HTML.
+The client discovers the exact supported surface, supplies a brief and generated HTML,
+then receives a plan, selected context, checks and bounded repair instructions. The server
+does not generate, execute or automatically edit HTML.
 
 ```bash
 python3 mcp/server.py --selftest
@@ -53,13 +53,15 @@ does not serve arbitrary host paths.
 
 | Tool | Arguments | Result |
 |---|---|---|
+| `get_workflow_capabilities` | none | Canonical workflow/MCP versions, six exact pairs, bindings, runtimes, tested-client receipts and unsupported surfaces |
 | `plan_artifact` | `brief`, `renderer` identity objects | A validated artifact plan with selected move and source/runtime provenance |
 | `assemble_context` | `plan` object | Selected source context and a manifest of what was supplied |
 | `check_artifact` | `plan`, `html`; optional `render_evidence` object | Rule-linked findings, failures and explicit unknowns |
 | `prepare_repair` | `plan`, `html`; optional `history` array and `render_evidence` object | A repair packet, history record and stop condition |
 
-The initial workflow is deliberately narrower than the retrieval catalogue. See the
-[workflow guide](../workflow/README.md) for supported briefs and the runnable example.
+Workflow 0.2 admits six exact Instrument job/move pairs and static HTML only. See the
+[canonical support manifest](../workflow/support-manifest.json),
+[workflow guide](../workflow/README.md) and runnable example.
 The [brief schema](../workflow/schemas/brief.schema.json),
 [renderer identity schema](../workflow/schemas/renderer-identity.schema.json) and
 [plan schema](../workflow/schemas/plan.schema.json) are the same contracts advertised in
@@ -69,20 +71,25 @@ tool results, and the server can process the next valid request.
 
 Use the tools in this order:
 
-1. Discover the installed system. Ask the UI renderer for its local identity, then submit
+1. Call `get_workflow_capabilities`. Select only an exact declared job, move, content kind,
+   format and binding. Treat an empty `testedClients` list as untested client compatibility.
+2. Discover the installed system. Ask the UI renderer for its local identity, then submit
    that identity with a supported fixed-content brief to `plan_artifact`. Preserve the
    returned host-pinned plan.
-2. Pass that plan to `assemble_context` and give the returned context to the generating
+3. Pass that plan to `assemble_context` and give the returned context to the generating
    agent. Preserve the context manifest alongside the output.
-3. Pass the generated HTML and the same plan to `check_artifact`. Add externally produced
+4. Pass the generated HTML and the same plan to `check_artifact`. Add externally produced
    render evidence only when it follows the documented contract.
-4. Pass the HTML, plan and prior repair records to `prepare_repair`. Follow its stop
-   condition; if it allows another attempt, the client or agent applies the proposed
-   correction and submits the new HTML for checking. Retain previous artifacts and records.
+5. Pass the HTML, plan and complete prior history to `prepare_repair`. Append the returned
+   record even when the attempt is rejected. Follow its stop condition; if it allows another
+   attempt, start from the returned best artifact, apply only cited safe corrections and
+   submit fresh evidence. Retain every artifact and record.
 
 Repair preparation is deterministic and makes no inference call. It cannot guarantee that
-an agent will follow a repair instruction. Carry the returned history forward rather than
-resetting it to evade the workflow's repair budget.
+an agent will follow a repair instruction. Stale evidence, repeated artifacts or finding
+sets, ties, regressions and findings requiring configuration or human judgement stop the
+loop. Carry the complete returned history forward rather than resetting it to evade the
+workflow's repair budget or making a rejected attempt the next repair base.
 
 ## What the results establish
 

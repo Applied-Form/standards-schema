@@ -5,8 +5,8 @@ an artefact and check and repair it against explicit rules. The foundation here 
 includes authored rules, compiled instruction builds, token and archetype contracts,
 an MCP retrieval and move-selection interface, and Instrument assets and templates. A
 versioned preview now implements plan, selected context, rule-linked checking and bounded
-repair for one Instrument Transaction/Schedule HTML surface. It is a scoped implementation,
-not a demonstrated quality advantage; coverage of other jobs and formats remains proposed.
+repair for six exact Instrument job/move pairs on static HTML. It is a scoped implementation,
+not a demonstrated quality advantage; reviewed examples and other formats remain proposed.
 
 This roadmap is ordered by dependency, without promised dates. Discuss substantial work
 through the [decision process](GOVERNANCE.md) before implementing it. Active contributor
@@ -28,11 +28,11 @@ report a failure with enough information for another person to investigate it.
 
 ## Next: an inspectable agent workflow
 
-The Schedule preview is the first completed slice of this stage. Its
-[cross-repository reference loop](examples/workflow/README.md) records a passing artifact,
-seeded fact failure, fresh targeted repair and bounded stop path. Those contracts establish
-the interface for the remaining moves; they do not establish that the interface improves
-model performance.
+Workflow 0.2 completes the six-move contract slice of this stage. Its
+[cross-repository reference loop](examples/workflow/README.md) records a passing Schedule,
+seeded fact failure, fresh targeted repair and stop-on-repeat path. Cross-repository checks
+exercise all six bindings and relationships. Those checks establish interface mechanics;
+they do not establish that the interface improves model performance or design quality.
 
 - **Select and plan:** build on MCP `select_move` with an inspectable plan that records the
   rhetorical job, selected move, content needs, source version and applicable rules.

@@ -1,4 +1,4 @@
-"""Offline checks for the first supported workflow: Instrument Schedule HTML.
+"""Offline checks for the six supported Instrument HTML workflows.
 
 This is a content/structure/render-evidence check, not a design-quality scorer.
 It performs no filesystem reads, network requests or browser execution.
@@ -14,17 +14,17 @@ import unicodedata
 import zlib
 
 
-SCHEMA_VERSION = "0.1.0"
+SCHEMA_VERSION = "0.2.0"
 MAX_HTML_BYTES = 2_000_000
 MAX_PLAN_BYTES = 500_000
 MAX_EVIDENCE_BYTES = 3_500_000
 MAX_NODES = 20_000
 MAX_DEPTH = 128
-MAX_FACTS = 1_000
+MAX_FACTS = 300
 MAX_FINDINGS = 1_000
 TOLERANCE_PX = 1
 LIMITATIONS = [
-    "Supports Instrument Schedule HTML only; checks a bounded static HTML subset.",
+    "Supports the six Instrument HTML workflows declared by the exact support-manifest bytes.",
     "Visual quality, rhetorical effectiveness and full accessibility compliance are unassessed.",
     "Source visibility is conservative; CSS layout and clipping require current browser evidence.",
     "Render evidence is caller supplied and hash-bound, not an attestation of browser execution.",
@@ -54,77 +54,20 @@ def _string(value, name):
 def _expected_facts(plan):
     if not isinstance(plan, dict):
         raise ValueError("plan must be an object")
-    for key, expected in (("schemaVersion", SCHEMA_VERSION), ("system", "instrument"),
-                          ("job", "T"), ("move", "Schedule")):
-        if plan.get(key) != expected:
-            raise ValueError(f"unsupported plan {key}")
-    artifact, binding, source = plan.get("artifact"), plan.get("binding"), plan.get("source")
-    if not isinstance(artifact, dict) or artifact.get("format") != "html":
-        raise ValueError("artifact must declare HTML")
-    if not isinstance(source, dict) or not isinstance(source.get("files"), dict) or not source["files"]:
-        raise ValueError("source.files must contain source hashes")
-    if (not isinstance(binding, dict) or binding.get("package") != "@standards/instrument"
-            or binding.get("packageVersion") != source.get("systemVersion")
-            or binding.get("component") != "Schedule"):
-        raise ValueError("unsupported component binding")
-    props = binding.get("props")
-    if not isinstance(props, dict) or props.get("factPrefix") != "schedule":
-        raise ValueError("Schedule props must declare factPrefix schedule")
-    for path, digest in source["files"].items():
-        if (not isinstance(path, str) or not path or path.startswith(("/", "\\"))
-                or ".." in path.split("/") or not isinstance(digest, str)
-                or not re.fullmatch(r"[a-f0-9]{64}", digest)):
-            raise ValueError("invalid source file/hash")
-    viewports = artifact.get("viewports")
-    if not isinstance(viewports, list) or not 1 <= len(viewports) <= 8:
-        raise ValueError("artifact.viewports must contain one to eight viewports")
-    seen = set()
-    for viewport in viewports:
-        if not isinstance(viewport, dict):
-            raise ValueError("viewport must be an object")
-        size = tuple(viewport.get(key) for key in ("width", "height"))
-        if any(type(value) is not int or not 1 <= value <= 8192 for value in size) or size in seen:
-            raise ValueError("viewport dimensions must be unique bounded positive integers")
-        seen.add(size)
-    expected = {"title": _string(artifact.get("title"), "artifact.title"),
-                "schedule.label": _string(props.get("label"), "Schedule label")}
-    columns = props.get("columns")
-    if not isinstance(columns, dict):
-        raise ValueError("Schedule columns must be explicit")
-    for name in ("ref", "description", "duration", "amount"):
-        expected[f"schedule.columns.{name}"] = _string(columns.get(name), f"column {name}")
-    lines = props.get("lines")
-    if not isinstance(lines, list) or len(lines) > 100:
-        raise ValueError("Schedule lines must be an array of at most 100 rows")
-    for index, line in enumerate(lines):
-        if not isinstance(line, dict):
-            raise ValueError("Schedule line must be an object")
-        for name in ("ref", "description", "duration", "amount"):
-            expected[f"schedule.lines.{index}.{name}"] = _string(line.get(name), f"line {index} {name}")
-        if "standard" in line:
-            expected[f"schedule.lines.{index}.standard"] = _string(line["standard"], "line standard")
-    if "total" in props:
-        if not isinstance(props["total"], dict):
-            raise ValueError("Schedule total must be an object")
-        for name in ("label", "duration", "amount"):
-            expected[f"schedule.total.{name}"] = _string(props["total"].get(name), f"total {name}")
-    if "note" in props:
-        expected["schedule.note"] = _string(props["note"], "Schedule note")
+    if plan.get("schemaVersion") != SCHEMA_VERSION:
+        raise ValueError("unsupported plan schemaVersion")
     facts = plan.get("facts")
-    if not isinstance(facts, list) or len(facts) > MAX_FACTS:
-        raise ValueError("facts must be a bounded array")
-    supplied = {}
+    if not isinstance(facts, list) or not 1 <= len(facts) <= MAX_FACTS:
+        raise ValueError("facts must be a bounded nonempty array")
+    expected = {}
     for fact in facts:
         if not isinstance(fact, dict):
             raise ValueError("fact must be an object")
         identifier = _string(fact.get("id"), "fact id")
-        if identifier in supplied:
-            raise ValueError("duplicate plan fact id")
-        supplied[identifier] = _string(fact.get("text"), "fact text")
-    if supplied != expected:
-        raise ValueError("plan facts must exactly match the title and bound Schedule props")
+        if not re.fullmatch(r"[a-zA-Z0-9.]{1,120}", identifier) or identifier in expected:
+            raise ValueError("duplicate or invalid plan fact id")
+        expected[identifier] = _string(fact.get("text"), "fact text")
     return expected
-
 
 class _Node:
     def __init__(self, tag, attrs=None, parent=None, position=None):
@@ -272,98 +215,235 @@ def _css_problems(document):
     return problems
 
 
-def _semantics(document, markers, expected, add):
-    tables = [node for node in document.nodes if node.tag == "table" and _body_visible(node)]
-    problems = []
-    if len(tables) != 1:
-        problems.append("expected exactly one visible table")
-    else:
-        table = tables[0]
-        ids = {}
-        for node in document.nodes:
-            if node.attrs.get("id"):
-                ids.setdefault(node.attrs["id"], []).append(node)
+def _semantics(document, markers, expected, plan, add):
+    """Check source-level relationships declared for the selected move."""
+    order = {id(node): index for index, node in enumerate(document.nodes)}
 
-        def named(node):
-            if normalize_text(_text(node)) or normalize_text(node.attrs.get("aria-label", "")):
-                return True
-            return any(len(ids.get(identifier, [])) == 1 and normalize_text(_text(ids[identifier][0]))
-                       for identifier in node.attrs.get("aria-labelledby", "").split())
+    def one(identifier):
+        nodes = markers.get(identifier, [])
+        return nodes[0] if len(nodes) == 1 else None
 
-        captions = [node for node in document.nodes if node.tag == "caption" and node.parent is table and named(node)]
-        if len(captions) != 1 or captions[0].attrs.get("data-std-fact") != "schedule.label":
-            problems.append("table needs one direct caption carrying the Schedule label fact")
-        if table.attrs.get("aria-label") or table.attrs.get("aria-labelledby"):
-            problems.append("Schedule table naming must use its checked caption")
-        headers = [node for node in document.nodes if node.tag == "th" and _ancestor(node, "thead") is not None
-                   and _ancestor(node, "table") is table and _body_visible(node)]
-        if len(headers) != 4 or any(node.attrs.get("scope") != "col" or not named(node)
-                                    or not _unit_span(node, "colspan") or not _unit_span(node, "rowspan")
-                                    for node in headers):
-            problems.append("four unspanned named column headers with scope=col are required")
-        for index, field in enumerate(("ref", "description", "duration", "amount")):
-            nodes = markers.get(f"schedule.columns.{field}", [])
-            if len(nodes) != 1 or index >= len(headers) or _ancestor(nodes[0], "th") is not headers[index]:
-                problems.append(f"column fact {field} is not in its expected header")
-        rows = [node for node in document.nodes if node.tag == "tr" and _ancestor(node, "tbody") is not None
-                and _ancestor(node, "table") is table and _body_visible(node)]
-        indices = sorted({int(identifier.split(".")[2]) for identifier in expected if identifier.startswith("schedule.lines.")})
-        if len(rows) != len(indices):
-            problems.append("body row count differs from the planned Schedule")
-        for index in indices:
-            if index >= len(rows):
-                continue
-            row = rows[index]
-            cells = [child for child in row.children if isinstance(child, _Node) and child.tag in ("th", "td")]
-            if (len(cells) != 4 or cells[0].tag != "th" or cells[0].attrs.get("scope") != "row"
-                    or any(not _unit_span(cell, "colspan") or not _unit_span(cell, "rowspan") for cell in cells)):
-                problems.append(f"row {index} needs four unspanned cells and a row header")
-                continue
-            for field, column in (("ref", 0), ("description", 1), ("standard", 1), ("duration", 2), ("amount", 3)):
+    def record(identifier, passed, expected_value, observed):
+        add("move.semantics", "info" if passed else "error", "pass" if passed else "fail",
+            identifier, expected_value, observed, not passed)
+
+    title = one("title")
+    record("title", bool(title and _ancestor(title, "h1") is not None),
+           "the unique title fact in a level-one heading",
+           "present" if title else "missing or duplicated")
+    kind = plan["content"]["kind"]
+    data = plan["content"]["data"]
+
+    if kind == "datum":
+        label, value = one("datum.label"), one("datum.value")
+        sections = [node for node in document.nodes if node.tag == "section" and _body_visible(node)]
+        passed = bool(len(sections) == 1 and label and value
+                      and _ancestor(label, "section") is sections[0]
+                      and _ancestor(value, "section") is sections[0]
+                      and order[id(label)] < order[id(value)])
+        record("datum.label-value", passed, "label and primary value in one Datum section",
+               {"sectionCount": len(sections), "label": bool(label), "value": bool(value),
+                "sameOrderedSection": passed})
+    elif kind == "matrix":
+        tables = [node for node in document.nodes if node.tag == "table" and _body_visible(node)]
+        table = tables[0] if len(tables) == 1 else None
+        columns = [one(f"matrix.columns.{index}") for index in range(len(data["columns"]))]
+        headers = ([node for node in document.nodes if node.tag == "th"
+                    and _ancestor(node, "thead") is not None
+                    and _ancestor(node, "table") is table and _body_visible(node)] if table else [])
+        column_ok = bool(table and len(headers) == len(columns) + 1 and all(columns)
+                         and columns == headers[1:]
+                         and all(node.attrs.get("scope") == "col"
+                                 and _unit_span(node, "colspan") and _unit_span(node, "rowspan")
+                                 for node in columns))
+        record("matrix.column-headers", column_ok,
+               "one visible Matrix table with ordered scope=col fact headers",
+               {"tableCount": len(tables), "headerCount": len(headers)})
+        rows = ([node for node in document.nodes if node.tag == "tr"
+                 and _ancestor(node, "tbody") is not None
+                 and _ancestor(node, "table") is table and _body_visible(node)] if table else [])
+        row_headers, grid_ok = [], bool(table and len(rows) == len(data["rows"]))
+        for row_index, row in enumerate(data["rows"]):
+            header = one(f"matrix.rows.{row_index}.label")
+            row_node = rows[row_index] if row_index < len(rows) else None
+            cells = ([child for child in row_node.children
+                      if isinstance(child, _Node) and child.tag in ("th", "td")]
+                     if row_node else [])
+            row_headers.append(header)
+            row_ok = bool(len(cells) == len(data["columns"]) + 1 and header is cells[0]
+                          and header.tag == "th" and header.attrs.get("scope") == "row"
+                          and all(_unit_span(cell, "colspan") and _unit_span(cell, "rowspan")
+                                  for cell in cells))
+            grid_ok = grid_ok and row_ok
+            for column_index in range(len(row["values"])):
+                cell = one(f"matrix.rows.{row_index}.values.{column_index}")
+                grid_ok = grid_ok and bool(row_ok and cell is cells[column_index + 1]
+                                           and cell.tag == "td")
+        headers_ok = bool(table and len(rows) == len(data["rows"]) and all(row_headers)
+                          and all(node.attrs.get("scope") == "row" for node in row_headers))
+        emphasized = [node for node in document.nodes
+                      if node.attrs.get("data-matrix-emphasis") == "true"]
+        if "emphasis" in data:
+            row_index, column_index = data["emphasis"]
+            planned = one(f"matrix.rows.{row_index}.values.{column_index}")
+            grid_ok = grid_ok and emphasized == [planned]
+        else:
+            grid_ok = grid_ok and not emphasized
+        record("matrix.row-headers", headers_ok, "one scope=row fact header per Matrix row",
+               {"expected": len(data["rows"]), "observed": sum(node is not None for node in row_headers)})
+        record("matrix.grid", bool(grid_ok), "every Matrix value in its declared row and column grid",
+               {"rows": len(data["rows"]), "columns": len(data["columns"])})
+    elif kind == "bandStatement":
+        statement = one("bandStatement.statement")
+        sections = [node for node in document.nodes if node.tag == "section" and _body_visible(node)]
+        passed = bool(len(sections) == 1 and statement and statement.tag == "p"
+                      and statement.parent and statement.parent.tag == "div"
+                      and statement.parent.parent is sections[0])
+        record("bandStatement.statement", passed,
+               "the statement fact in paragraph semantics inside one Band statement section",
+               {"sectionCount": len(sections), "present": bool(statement),
+                "tag": statement.tag if statement else None})
+    elif kind == "series":
+        lists = [node for node in document.nodes if node.tag == "ol" and _body_visible(node)]
+        period_nodes, display_nodes = [], []
+        association_ok = len(lists) == 1
+        for index in range(len(data["periods"])):
+            period = one(f"series.periods.{index}.period")
+            display = one(f"series.periods.{index}.display")
+            period_nodes.append(period); display_nodes.append(display)
+            association_ok = association_ok and bool(period and display
+                                                       and _ancestor(period, "li") is _ancestor(display, "li")
+                                                       and _ancestor(period, "ol") is lists[0])
+        items = ([child for child in lists[0].children
+                  if isinstance(child, _Node) and child.tag == "li"] if len(lists) == 1 else [])
+        period_items = [_ancestor(node, "li") if node else None for node in period_nodes]
+        positions = [order[id(item)] for item in period_items if item is not None]
+        label = one("series.label")
+        labelled = bool(label and label.attrs.get("id")
+                        and len(lists) == 1
+                        and lists[0].attrs.get("aria-labelledby") == label.attrs["id"])
+        order_ok = bool(len(items) == len(data["periods"]) and all(period_nodes)
+                        and period_items == items and labelled
+                        and len(set(positions)) == len(positions) and positions == sorted(positions))
+        record("series.period-order", order_ok,
+               "period facts in one ordered list and in plan order",
+               {"expected": len(data["periods"]), "observed": len(positions)})
+        if data["emphasiseLast"]:
+            current = one("series.current")
+            association_ok = association_ok and bool(items and current
+                                                       and _ancestor(current, "li") is items[-1])
+        record("series.value-association", bool(association_ok),
+               "each visible period and display value in the same list item, with current on the last",
+               bool(association_ok))
+    elif kind == "schedule":
+        tables = [node for node in document.nodes if node.tag == "table" and _body_visible(node)]
+        table = tables[0] if len(tables) == 1 else None
+        label = one("schedule.label")
+        named = bool(table and label and label.tag == "caption" and label.parent is table
+                     and not table.attrs.get("aria-label") and not table.attrs.get("aria-labelledby"))
+        record("schedule.named-table", named, "one table named by its checked Schedule caption",
+               {"tableCount": len(tables), "caption": bool(label)})
+        headers = ([node for node in document.nodes
+                    if node.tag == "th" and _ancestor(node, "thead") is not None
+                    and _ancestor(node, "table") is table and _body_visible(node)]
+                   if table else [])
+        column_nodes = [one(f"schedule.columns.{field}")
+                        for field in ("ref", "description", "duration", "amount")]
+        columns_ok = bool(table and len(headers) == 4 and all(column_nodes)
+                          and all(node.attrs.get("scope") == "col"
+                                  and _unit_span(node, "colspan") and _unit_span(node, "rowspan")
+                                  for node in headers)
+                          and column_nodes == headers)
+        record("schedule.column-headers", columns_ok,
+               "four ordered unspanned scope=col fact headers", bool(columns_ok))
+        rows = ([node for node in document.nodes
+                 if node.tag == "tr" and _ancestor(node, "tbody") is not None
+                 and _ancestor(node, "table") is table and _body_visible(node)]
+                if table else [])
+        rows_ok = bool(table and len(rows) == len(data["lines"]))
+        numeric_ok = rows_ok
+        for index, line in enumerate(data["lines"]):
+            row = rows[index] if index < len(rows) else None
+            cells = ([child for child in row.children
+                      if isinstance(child, _Node) and child.tag in ("th", "td")]
+                     if row else [])
+            structure_ok = bool(len(cells) == 4 and cells[0].tag == "th"
+                                and cells[0].attrs.get("scope") == "row"
+                                and all(_unit_span(cell, "colspan") and _unit_span(cell, "rowspan")
+                                        for cell in cells))
+            rows_ok = rows_ok and structure_ok
+            ref = one(f"schedule.lines.{index}.ref")
+            duration = one(f"schedule.lines.{index}.duration")
+            amount = one(f"schedule.lines.{index}.amount")
+            rows_ok = rows_ok and bool(structure_ok and ref is cells[0])
+            numeric_ok = numeric_ok and bool(structure_ok and duration is cells[2]
+                                             and amount is cells[3])
+            for field, column in (("description", 1), ("standard", 1)):
                 identifier = f"schedule.lines.{index}.{field}"
-                if identifier not in expected:
-                    continue
-                nodes = markers.get(identifier, [])
-                if len(nodes) != 1 or not any(_ancestor(nodes[0], tag) is cells[column] for tag in ("th", "td")):
-                    problems.append(f"{identifier} is not in its expected row/cell")
-        total_ids = [identifier for identifier in expected if identifier.startswith("schedule.total.")]
+                if identifier in expected:
+                    node = one(identifier)
+                    rows_ok = rows_ok and bool(structure_ok and node
+                                               and _ancestor(node, cells[column].tag) is cells[column])
+        record("schedule.row-headers", bool(rows_ok),
+               "one four-cell row with a scope=row fact header and associated text per line",
+               {"expectedRows": len(data["lines"]), "observedRows": len(rows),
+                "passed": bool(rows_ok)})
+        record("schedule.numeric-order", bool(numeric_ok),
+               "duration and amount facts occupy columns three and four in every line",
+               bool(numeric_ok))
         footers = [node for node in document.nodes if node.tag == "tfoot" and node.parent is table]
-        footer_cells = []
-        if total_ids:
-            footer_rows = ([child for child in footers[0].children if isinstance(child, _Node) and child.tag == "tr"]
-                           if len(footers) == 1 else [])
+        if "total" in data:
+            total = [one(f"schedule.total.{field}") for field in ("label", "duration", "amount")]
+            footer_rows = ([child for child in footers[0].children
+                            if isinstance(child, _Node) and child.tag == "tr"]
+                           if len(footers) == 1 and _body_visible(footers[0]) else [])
             footer_cells = ([child for child in footer_rows[0].children
                              if isinstance(child, _Node) and child.tag in ("th", "td")]
                             if len(footer_rows) == 1 else [])
-            footer_ok = (len(footers) == 1 and _body_visible(footers[0])
-                         and len(footer_cells) == 3 and footer_cells[0].tag == "th"
-                         and footer_cells[0].attrs.get("scope") == "row"
-                         and footer_cells[0].attrs.get("colspan") == "2"
-                         and _unit_span(footer_cells[0], "rowspan")
-                         and all(cell.tag == "td" and _unit_span(cell, "colspan")
-                                 and _unit_span(cell, "rowspan") for cell in footer_cells[1:]))
-            if not footer_ok:
-                problems.append("footer needs one row: row header spanning two columns, duration and amount")
-        for identifier, column in (("schedule.total.label", 0),
-                                   ("schedule.total.duration", 1),
-                                   ("schedule.total.amount", 2)):
-            if identifier not in expected:
-                continue
-            nodes = markers.get(identifier, [])
-            if (len(nodes) != 1 or column >= len(footer_cells)
-                    or not any(_ancestor(nodes[0], tag) is footer_cells[column]
-                               for tag in ("th", "td"))):
-                problems.append(f"{identifier} must appear in its expected table-footer cell")
-        if not total_ids and footers:
-            problems.append("a Schedule without a planned total must not contain a table footer")
-        labels = markers.get("schedule.label", [])
-        if len(labels) != 1 or labels[0].tag != "caption" or labels[0].parent is not table:
-            problems.append("Schedule label must be the table's direct caption")
-    titles = markers.get("title", [])
-    if len(titles) != 1 or _ancestor(titles[0], "h1") is None:
-        problems.append("title fact must be in a level-one heading")
-    add("schedule.semantics", "error" if problems else "info", "fail" if problems else "pass",
-        "table", "named Schedule table with associated headers, rows and total", problems, bool(problems))
+            footer_ok = bool(len(footer_cells) == 3 and footer_cells[0].tag == "th"
+                             and footer_cells[0].attrs.get("scope") == "row"
+                             and footer_cells[0].attrs.get("colspan") == "2"
+                             and _unit_span(footer_cells[0], "rowspan")
+                             and all(cell.tag == "td" and _unit_span(cell, "colspan")
+                                     and _unit_span(cell, "rowspan") for cell in footer_cells[1:])
+                             and all(total)
+                             and total == footer_cells)
+        else:
+            footer_ok = not footers
+        record("schedule.footer", footer_ok,
+               "one exact associated footer row for a declared total, otherwise no footer",
+               {"declared": "total" in data, "footerCount": len(footers)})
+    elif kind == "runningIndex":
+        navs = [node for node in document.nodes if node.tag == "nav" and _body_visible(node)]
+        lists = [node for node in document.nodes if node.tag == "ol" and _body_visible(node)]
+        sections = [one(f"runningIndex.sections.{index}") for index in range(len(data["sections"]))]
+        numbers = [one(f"runningIndex.numbers.{index}") for index in range(len(data["sections"]))]
+        items = ([child for child in lists[0].children
+                  if isinstance(child, _Node) and child.tag == "li"] if len(lists) == 1 else [])
+        section_items = [_ancestor(node, "li") if node else None for node in sections]
+        positions = [order[id(item)] for item in section_items if item]
+        document_label = one("runningIndex.document")
+        labelled = bool(len(navs) == 1 and document_label and document_label.attrs.get("id")
+                        and navs[0].attrs.get("aria-labelledby") == document_label.attrs["id"]
+                        and not navs[0].attrs.get("aria-label"))
+        order_ok = bool(labelled and len(lists) == 1 and _ancestor(lists[0], "nav") is navs[0]
+                        and len(items) == len(data["sections"]) and section_items == items
+                        and all(sections) and all(numbers)
+                        and all(_ancestor(numbers[index], "li") is items[index]
+                                and order[id(numbers[index])] < order[id(sections[index])]
+                                for index in range(len(items)))
+                        and len(set(positions)) == len(positions) and positions == sorted(positions))
+        record("runningIndex.section-order", order_ok,
+               "section facts in one labelled navigation ordered list and in plan order",
+               {"expected": len(data["sections"]), "observed": len(positions)})
+        current = data["current"] - 1
+        current_nodes = [node for node in document.nodes if node.attrs.get("aria-current") == "step"
+                         and _body_visible(node)]
+        expected_li = _ancestor(sections[current], "li") if sections[current] else None
+        current_ok = len(current_nodes) == 1 and current_nodes[0] is expected_li
+        record("runningIndex.current-section", current_ok,
+               "exactly the planned current section marked aria-current=step",
+               {"plannedIndex": data["current"], "currentCount": len(current_nodes)})
 
 
 def _finite(value):
@@ -542,14 +622,28 @@ def _render_checks(plan, expected, evidence, plan_hash, artifact_hash, add):
         invented_text = [normalize_text(value) for value in viewport["unmarkedText"] if normalize_text(value)]
         add("facts.approved_text", "critical" if invented_text else "info", "fail" if invented_text else "pass",
             location, "no unapproved visible text", invented_text, bool(invented_text))
-        required = {"oneVisibleH1": True, "tableCount": 1,
-                    "namedTable": True, "captionOrLabel": True,
-                    "columnHeaders": True, "rowHeaders": True, "bodyGrid": True,
-                    "numericColumnOrder": True, "footerStructure": True}
         semantics = viewport["semanticChecks"]
-        wrong = [key for key, value in required.items() if semantics[key] != value]
+        relationships = semantics["relationships"]
+        observed_ids = [item["id"] for item in relationships]
+        required_ids = plan["requiredRelationships"]
+        wrong = []
+        if semantics["move"] != plan["move"]:
+            wrong.append("semantic move differs from the plan")
+        if not semantics["oneVisibleH1"]:
+            wrong.append("expected exactly one visible level-one heading")
+        if len(observed_ids) != len(set(observed_ids)):
+            wrong.append("relationship identifiers are duplicated")
+        missing = sorted(set(required_ids) - set(observed_ids))
+        unexpected = sorted(set(observed_ids) - set(required_ids))
+        failed = sorted(item["id"] for item in relationships if not item["passed"])
+        if missing: wrong.append({"missingRelationships": missing})
+        if unexpected: wrong.append({"unexpectedRelationships": unexpected})
+        if failed: wrong.append({"failedRelationships": failed})
+        expected_semantics = {"move": plan["move"], "oneVisibleH1": True,
+                              "relationships": [{"id": item, "passed": True}
+                                                for item in required_ids]}
         add("render.semantics", "error" if wrong else "info", "fail" if wrong else "pass",
-            location, required, {key: semantics[key] for key in required}, bool(wrong))
+            location, expected_semantics, wrong or semantics, bool(wrong))
         band = viewport["invariantBand"]
         band_bounds = band["bounds"]
         band_problems = []
@@ -632,7 +726,17 @@ def check_artifact(plan: dict, html: str, render_evidence: dict | None = None) -
             return result
         return value
 
-    def add(rule, severity, status, location, expected, observed, repairable):
+    def classification(rule, status, safe_model_repair):
+        if (rule in ("render.binding", "render.screenshot")
+                or status == "unknown" and rule.startswith(("render.", "instrument."))):
+            return "renderer-or-configuration"
+        if status == "fail" and safe_model_repair:
+            return "safe-model-repair"
+        if rule.startswith("human."):
+            return "human-decision"
+        return "non-repairable"
+
+    def add(rule, severity, status, location, expected, observed, safe_model_repair):
         nonlocal dropped_findings
         if len(report["findings"]) >= MAX_FINDINGS - 1:
             dropped_findings += 1
@@ -641,7 +745,8 @@ def check_artifact(plan: dict, html: str, render_evidence: dict | None = None) -
         report["findings"].append({"ruleId": rule, "severity": severity, "status": status,
                                    "location": clean_location, "expected": bounded(expected),
                                    "observed": bounded(observed),
-                                   "repairable": repairable})
+                                   "classification": classification(
+                                       rule, status, safe_model_repair)})
 
     def finish():
         if dropped_findings:
@@ -649,7 +754,7 @@ def check_artifact(plan: dict, html: str, render_evidence: dict | None = None) -
                                        "status": "fail", "location": "report",
                                        "expected": f"fewer than {MAX_FINDINGS} findings",
                                        "observed": {"omittedFindings": dropped_findings},
-                                       "repairable": False})
+                                       "classification": "non-repairable"})
         statuses = [finding["status"] for finding in report["findings"]]
         report["status"] = "fail" if "fail" in statuses else "unknown" if "unknown" in statuses else "pass"
         report["summary"] = {"total": len(statuses),
@@ -668,9 +773,10 @@ def check_artifact(plan: dict, html: str, render_evidence: dict | None = None) -
         report["planSha256"] = _digest_plan(plan)
         expected = _expected_facts(plan)
     except (TypeError, ValueError, RecursionError, UnicodeError) as error:
-        add("plan.valid", "critical", "fail", "plan", "supported valid Schedule plan", str(error), False)
+        add("plan.valid", "critical", "fail", "plan", "supported valid workflow 0.2 plan", str(error), False)
         return finish()
-    add("plan.valid", "info", "pass", "plan", "facts agree with the bound Schedule", True, False)
+    add("plan.valid", "info", "pass", "plan",
+        "content, facts and binding agree with the support manifest", True, False)
     if not isinstance(html, str) or len(html) > MAX_HTML_BYTES:
         add("html.structure", "critical", "fail", "artifact", "bounded HTML string", "invalid type or size limit exceeded", False)
         return finish()
@@ -703,7 +809,7 @@ def check_artifact(plan: dict, html: str, render_evidence: dict | None = None) -
         "complete, balanced HTML document", structure, bool(structure))
     unsafe = sorted(set(document.unsafe + _css_problems(document)))
     add("html.self_contained", "error" if unsafe else "info", "fail" if unsafe else "pass", "artifact",
-        "static self-contained Schedule HTML", unsafe, bool(unsafe))
+        "static self-contained HTML", unsafe, bool(unsafe))
     marker_nodes = [node for node in document.nodes if "data-std-fact" in node.attrs]
     if len(marker_nodes) > MAX_FACTS:
         add("facts.unique", "critical", "fail", "artifact", f"at most {MAX_FACTS} fact markers",
@@ -765,6 +871,6 @@ def check_artifact(plan: dict, html: str, render_evidence: dict | None = None) -
                             if isinstance(child, str) and normalize_text(child))
     add("facts.approved_text", "critical" if unmarked else "info", "fail" if unmarked else "pass",
         "body", "all visible source text belongs to approved facts", unmarked, bool(unmarked))
-    _semantics(document, markers, expected, add)
+    _semantics(document, markers, expected, plan, add)
     _render_checks(plan, expected, render_evidence, report["planSha256"], report["artifactSha256"], add)
     return finish()

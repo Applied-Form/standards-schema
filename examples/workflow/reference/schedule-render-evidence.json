@@ -1,24 +1,25 @@
 {
-  "schemaVersion": "0.1.0",
-  "planSha256": "426cf16d2d7ea7ca26e21eeabe3de0e0ebe87eb42595d07cbb6c714823f472b8",
-  "artifactSha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca",
+  "schemaVersion": "0.2.0",
+  "planSha256": "a1d3806766b90e61646d4579a36344badead7ab4de84ba11fce239ec92a7ded6",
+  "artifactSha256": "fe01bb0b3c63ab4704390874e890566ad7d78f2d8c7ecd201b1906d9d6ffbdba",
   "renderer": {
     "name": "standards-ui-workflow-render",
-    "version": "0.1.0",
-    "sourceSha256": "d1b95c8b3228ee7a5b456cbd5d78f13404681eacefe3d711615c9ae1b2119b7c",
-    "packageVersion": "1.0.0",
-    "packageEntrySha256": "4836c4b3c1d80dea6539cd5658d5425e9d61c54d5c5deb8a210188530d15aca4",
-    "tokensSha256": "c87adb48c1b9664e2b357c7bd88a8d615323fe82809bd4901eed21df137f5256",
-    "fontAssetsSha256": "6fdde2f31d97c7546fddc4d35ebd9cc25a01e4ced0857e64ba43538fdf0a1667",
+    "version": "0.2.0",
+    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+    "sourceSha256": "51b0f200b69064ff5ca1f0bfa80929a38f4e4323a9ffad8223effcd5dc2624a8",
+    "packageVersion": "2.0.0",
+    "packageEntrySha256": "e954536b320d0cf795077af1b6dc29ef33c464e731f5f9c3fac29484b6e6f0b7",
+    "tokensSha256": "0e5e12a35ab276446dc2158bb79c44e2d1eb20161a4b204b2ba6b19e93f909e5",
+    "fontAssetsSha256": "9abaec92be36ac7220c17a086a1b0f5fe4ce4eaf8eef41381ee0dd7986472746",
     "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
-    "lockfileSha256": "553b3c93c7e364a40e54dd6676566e81588affb6ce28a5cd5d09959bfa8a5213",
+    "lockfileSha256": "6af6db9351d85ee3ffd79c55facfe96fe9693a20dc5c627d0cb89774870dec46",
     "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
     "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
-    "nodeExecutableSha256": "9bd9754f5300bd7910f280d8e413f13bb1460b30457243aa366d253677e893f3",
+    "nodeExecutableSha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
     "browserRevision": "1243",
     "browser": "153.0.8010.12",
     "platform": "darwin-arm64",
-    "nodeVersion": "v25.8.0"
+    "nodeVersion": "v24.19.0"
   },
   "viewports": [
     {
@@ -429,15 +430,30 @@
         }
       },
       "semanticChecks": {
-        "tableCount": 1,
+        "move": "Schedule",
         "oneVisibleH1": true,
-        "numericColumnOrder": true,
-        "namedTable": true,
-        "captionOrLabel": true,
-        "columnHeaders": true,
-        "rowHeaders": true,
-        "bodyGrid": true,
-        "footerStructure": true
+        "relationships": [
+          {
+            "id": "schedule.named-table",
+            "passed": true
+          },
+          {
+            "id": "schedule.column-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.row-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.numeric-order",
+            "passed": true
+          },
+          {
+            "id": "schedule.footer",
+            "passed": true
+          }
+        ]
       },
       "pageErrors": [],
       "blockedRequests": [],
@@ -855,15 +871,30 @@
         }
       },
       "semanticChecks": {
-        "tableCount": 1,
+        "move": "Schedule",
         "oneVisibleH1": true,
-        "numericColumnOrder": true,
-        "namedTable": true,
-        "captionOrLabel": true,
-        "columnHeaders": true,
-        "rowHeaders": true,
-        "bodyGrid": true,
-        "footerStructure": true
+        "relationships": [
+          {
+            "id": "schedule.named-table",
+            "passed": true
+          },
+          {
+            "id": "schedule.column-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.row-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.numeric-order",
+            "passed": true
+          },
+          {
+            "id": "schedule.footer",
+            "passed": true
+          }
+        ]
       },
       "pageErrors": [],
       "blockedRequests": [],

@@ -1,10 +1,10 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Standards report preview 0.1.0",
+  "title": "Standards artifact report 0.2.0",
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "const": "0.1.0"
+      "const": "0.2.0"
     },
     "planSha256": {
       "anyOf": [
@@ -42,15 +42,51 @@
     "summary": {
       "type": "object",
       "properties": {
-        "total": { "type": "integer", "minimum": 1, "maximum": 1000 },
-        "pass": { "type": "integer", "minimum": 0, "maximum": 1000 },
-        "fail": { "type": "integer", "minimum": 0, "maximum": 1000 },
-        "unknown": { "type": "integer", "minimum": 0, "maximum": 1000 },
-        "critical": { "type": "integer", "minimum": 0, "maximum": 1000 },
-        "error": { "type": "integer", "minimum": 0, "maximum": 1000 },
-        "warning": { "type": "integer", "minimum": 0, "maximum": 1000 }
+        "total": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+        },
+        "pass": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "fail": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "unknown": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "critical": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "error": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "warning": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1000
+        }
       },
-      "required": ["total", "pass", "fail", "unknown", "critical", "error", "warning"],
+      "required": [
+        "total",
+        "pass",
+        "fail",
+        "unknown",
+        "critical",
+        "error",
+        "warning"
+      ],
       "additionalProperties": false
     },
     "findings": {
@@ -87,8 +123,13 @@
           },
           "expected": {},
           "observed": {},
-          "repairable": {
-            "type": "boolean"
+          "classification": {
+            "enum": [
+              "safe-model-repair",
+              "renderer-or-configuration",
+              "human-decision",
+              "non-repairable"
+            ]
           }
         },
         "required": [
@@ -98,7 +139,7 @@
           "location",
           "expected",
           "observed",
-          "repairable"
+          "classification"
         ],
         "additionalProperties": false
       },

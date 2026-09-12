@@ -13,7 +13,7 @@ agents, and **Instrument** — an open reference system, available under CC BY 4
 | Use a system today | [Instrument](packs/instrument/README.md) — CC BY 4.0 |
 | Understand how systems are written | [Schema v0.4](schema/schema-v0.4.md) |
 | Serve the system to an agent | [MCP setup and tools](mcp/README.md) |
-| Run the first plan/check/repair workflow | [Instrument Schedule workflow](workflow/README.md) |
+| Run the agent-native plan/check/repair workflow | [Six-move Instrument workflow](workflow/README.md) |
 | Prepare a design contribution | [Design and rule challenges](CONTRIBUTING.md#choose-a-contribution-path) — no code required |
 | Prepare a developer contribution | [Developer quickstart](CONTRIBUTING.md#developer-quickstart) |
 | Write your own system | [Schema v0.4](schema/schema-v0.4.md), then [Contributing](CONTRIBUTING.md) |

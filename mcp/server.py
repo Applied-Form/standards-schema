@@ -162,6 +162,7 @@ def tool_definitions():
     context_output = load_schema("context")
     report_output = load_schema("report")
     repair_output = load_schema("repair")
+    support_output = load_schema("support-manifest")
     html = {"type": "string", "minLength": 1,
             "maxLength": 2000000,
             "description": "HTML source to inspect; the server does not execute it."}
@@ -171,6 +172,12 @@ def tool_definitions():
                 "additionalProperties": False}
 
     return TOOLS + [
+        {"name": "get_workflow_capabilities",
+         "description": "Return the canonical versioned support manifest before planning. "
+                        "It declares exact job/move/format tuples, package bindings, runtime "
+                        "requirements, tested clients and unsupported surfaces.",
+         "inputSchema": arguments({}, []),
+         "outputSchema": support_output},
         {"name": "plan_artifact",
          "description": "Validate a supported fixed-content brief and create a versioned "
                         "artifact plan with selected move and source provenance. Unsupported "
@@ -255,6 +262,10 @@ def tool_select_move(system, job):
                        "note": "One move is active per artefact."}, indent=2)
 
 
+def tool_get_workflow_capabilities():
+    return workflow_module("support").load_support_manifest()
+
+
 def workflow_text(value):
     return json.dumps(value, ensure_ascii=False, allow_nan=False, indent=2)
 
@@ -278,7 +289,9 @@ def tool_prepare_repair(plan, html, history=None, render_evidence=None):
 
 DISPATCH = {"list_systems": tool_list_systems, "get_system": tool_get_system,
             "get_tokens": tool_get_tokens, "get_archetypes": tool_get_archetypes,
-            "select_move": tool_select_move, "plan_artifact": tool_plan_artifact,
+            "select_move": tool_select_move,
+            "get_workflow_capabilities": tool_get_workflow_capabilities,
+            "plan_artifact": tool_plan_artifact,
             "assemble_context": tool_assemble_context,
             "check_artifact": tool_check_artifact, "prepare_repair": tool_prepare_repair}
 
@@ -353,10 +366,10 @@ def handle(msg):
         return result(rid, {
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}, "resources": {}},
-            "serverInfo": {"name": "standards", "version": "1.0.0"},
+            "serverInfo": {"name": "standards", "version": "0.2.0"},
             "instructions": "Open design rules, contracts and a scoped local artifact "
                             "workflow. Call list_systems to discover installed packs. "
-                            "Use plan_artifact for supported workflows; check and repair "
+                            "Call get_workflow_capabilities before plan_artifact. Check and repair "
                             "tools report findings without generating or executing HTML."})
     if method in ("notifications/initialized", "notifications/cancelled"):
         return None

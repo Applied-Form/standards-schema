@@ -2,12 +2,17 @@
 
 ## Unreleased
 
-- Add the first scoped agent workflow for an Instrument Transaction/Schedule HTML surface:
-  validated planning, selected context with a supplied-input manifest, exact fact and
-  semantic checks, hash-bound browser evidence, two-turn repair limits and MCP/CLI access.
+- Expand the agent-native workflow to six exact Instrument HTML pairs: Evidence/Datum,
+  Structure/Matrix, Narrative/Band statement, Change/Series, Transaction/Schedule and
+  Wayfinding/Running index. Add discriminated brief/plan content, complete visible-fact
+  ledgers, declared relationships, a byte-bound capability manifest and MCP discovery.
+- Replace last-attempt repair with a shared best-so-far policy. It retains accepted and
+  rejected attempts, compares a frozen metric order, rolls back ties and regressions,
+  stops on stale evidence or repeated artifacts/findings, and separates safe model work
+  from renderer/configuration, human-decision and non-repairable findings.
 - Add a reproducible cross-repository reference loop with desktop/mobile artifacts, a seeded
-  fact defect, a targeted repair, and an asserted repair/repair/stop path for persistent
-  failure.
+  fact defect, a targeted repair, and an asserted stop-on-repeat path that keeps the
+  accepted best artifact.
 - Add the public multi-condition evaluation harness, synthetic development and held-out
   fixtures, OpenRouter zero-price route safeguards, complete run records and blinded review
   workflow. No comparative result is claimed by the harness itself.

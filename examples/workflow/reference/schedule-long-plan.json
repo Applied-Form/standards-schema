@@ -1,8 +1,42 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "system": "instrument",
   "job": "T",
   "move": "Schedule",
+  "content": {
+    "kind": "schedule",
+    "data": {
+      "label": "Scope, delivery stages and professional fees · proposal AF-2026-041",
+      "columns": {
+        "ref": "PROJECT REFERENCE",
+        "description": "DELIVERABLE AND STANDARD",
+        "duration": "ESTIMATED DELIVERY TIME",
+        "amount": "PROFESSIONAL FEE"
+      },
+      "lines": [
+        {
+          "ref": "AF-2026-01",
+          "description": "Collection discovery, rights review and digitisation roadmap",
+          "standard": "Includes a stakeholder workshop, item-level inventory and an approved representative sample.",
+          "duration": "12 working days",
+          "amount": "£18,750.00"
+        },
+        {
+          "ref": "AF-2026-02",
+          "description": "Accessible template system and component implementation",
+          "standard": "Conforms to WCAG 2.2 AA, current browser support and the approved component acceptance checklist.",
+          "duration": "6 working weeks",
+          "amount": "£42,500.00"
+        }
+      ],
+      "total": {
+        "label": "Total professional fees · excluding VAT and third-party licensing",
+        "duration": "8 working weeks",
+        "amount": "£61,250.00"
+      },
+      "note": "Programme dates assume approved source files, rights decisions and consolidated stakeholder feedback arrive by each agreed review milestone."
+    }
+  },
   "artifact": {
     "format": "html",
     "title": "Museum archive digitisation and public access programme",
@@ -24,7 +58,7 @@
   },
   "binding": {
     "package": "@standards/instrument",
-    "packageVersion": "1.0.0",
+    "packageVersion": "2.0.0",
     "component": "Schedule",
     "props": {
       "label": "Scope, delivery stages and professional fees · proposal AF-2026-041",
@@ -61,21 +95,22 @@
   },
   "renderer": {
     "name": "standards-ui-workflow-render",
-    "version": "0.1.0",
-    "sourceSha256": "d1b95c8b3228ee7a5b456cbd5d78f13404681eacefe3d711615c9ae1b2119b7c",
-    "packageVersion": "1.0.0",
-    "packageEntrySha256": "4836c4b3c1d80dea6539cd5658d5425e9d61c54d5c5deb8a210188530d15aca4",
-    "tokensSha256": "c87adb48c1b9664e2b357c7bd88a8d615323fe82809bd4901eed21df137f5256",
-    "fontAssetsSha256": "6fdde2f31d97c7546fddc4d35ebd9cc25a01e4ced0857e64ba43538fdf0a1667",
+    "version": "0.2.0",
+    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+    "sourceSha256": "51b0f200b69064ff5ca1f0bfa80929a38f4e4323a9ffad8223effcd5dc2624a8",
+    "packageVersion": "2.0.0",
+    "packageEntrySha256": "e954536b320d0cf795077af1b6dc29ef33c464e731f5f9c3fac29484b6e6f0b7",
+    "tokensSha256": "0e5e12a35ab276446dc2158bb79c44e2d1eb20161a4b204b2ba6b19e93f909e5",
+    "fontAssetsSha256": "9abaec92be36ac7220c17a086a1b0f5fe4ce4eaf8eef41381ee0dd7986472746",
     "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
-    "lockfileSha256": "553b3c93c7e364a40e54dd6676566e81588affb6ce28a5cd5d09959bfa8a5213",
+    "lockfileSha256": "6af6db9351d85ee3ffd79c55facfe96fe9693a20dc5c627d0cb89774870dec46",
     "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
     "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
-    "nodeExecutableSha256": "9bd9754f5300bd7910f280d8e413f13bb1460b30457243aa366d253677e893f3",
+    "nodeExecutableSha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
     "browserRevision": "1243",
     "browser": "153.0.8010.12",
     "platform": "darwin-arm64",
-    "nodeVersion": "v25.8.0"
+    "nodeVersion": "v24.19.0"
   },
   "facts": [
     {
@@ -159,6 +194,13 @@
       "text": "Programme dates assume approved source files, rights decisions and consolidated stakeholder feedback arrive by each agreed review milestone."
     }
   ],
+  "requiredRelationships": [
+    "schedule.named-table",
+    "schedule.column-headers",
+    "schedule.row-headers",
+    "schedule.numeric-order",
+    "schedule.footer"
+  ],
   "rules": [
     "plan.valid",
     "html.structure",
@@ -166,7 +208,7 @@
     "facts.unique",
     "facts.exact",
     "facts.approved_text",
-    "schedule.semantics",
+    "move.semantics",
     "render.binding",
     "render.viewport_fit",
     "render.facts",
@@ -178,6 +220,7 @@
   "source": {
     "systemVersion": "1.0.0",
     "schemaVersion": "v0.4",
+    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
     "files": {
       "SOURCE.md": "6a2b794596f17bcc411164f6209812408b4b2e54c2cf0749e08a9f11b52a04d2",
       "manifest.json": "67f82ee40cb3755c4d06206ad46d9725a32b0d1023c6f66deba46332d003721b",
@@ -188,26 +231,30 @@
       "assets/tokens.css": "1d683bf49d6e92e165a51a3524c699cfd854ed082d8619ccfd392bd440eb7124"
     },
     "implementation": {
-      "workflow/engine.py": "b779ffaec60a9d2cb3152374fe2bf99d8c53a4e11f32046f376293ecc6900a3f",
-      "workflow/schema.py": "340a3265dced3c66c1bfa5d8ba9e873f4b831606f50bd39104825963f100e9be",
-      "workflow/checker.py": "a7767823fb34e30bfa8e45c8243d2a69abd4af65156eff224a3bc8bd97012616",
-      "workflow/schemas/brief.schema.json": "07810335d331a924ef4895f0e3a675137d73faa34124b0f2752c9eab3607b6ca",
-      "workflow/schemas/plan.schema.json": "2fbafb8952e9b950cd4277dc3b1bb70f64f500e98c0d7b6b8885f9e7b8bbb548",
-      "workflow/schemas/report.schema.json": "9b744e289b37cf74c7ffca7754578c8f3edb0330cc69bc61c9147d255eff89e9",
-      "workflow/schemas/history.schema.json": "281f9793ca317862ad297fe5b4e645431c338a8a223ce454a156429e529753c7",
-      "workflow/schemas/render-evidence.schema.json": "aed0931e30314172ff067adf741d6d2d34036b0d70656302b434bd7ef408a367",
-      "workflow/schemas/renderer-identity.schema.json": "6dc13eb9e8a0b5b976a293c6f04267d3bdf842370c28986d3ddbce4cbdaca1e2",
-      "workflow/schemas/context.schema.json": "8e4d9bf5fb696d95cc6044b5d922b63f05feed55fd08e672448243b25d3f2f68",
-      "workflow/schemas/repair.schema.json": "4af2c034bf1015d75fee9f61d56378ae738a2c26c13cef1b27504ac95b27c092",
+      "workflow/engine.py": "c6b06bec29d7db912714c0f798d5d6c6aeab4e109ef7716ccb03dc704d108649",
+      "workflow/schema.py": "3df73a7bf219104bb732b8c5c0ea5a5cf35154ed5d1e27ea020f1a4ac1aafe91",
+      "workflow/support.py": "aa31d446ba5e6054b3cfd4d0fb4c46424b96419e14db5657aa2163d84ca87f32",
+      "workflow/repair_policy.py": "e7faf9d1461a9fbb1b2af3b4f122cedc7416bcda26ca43d7854f60d552d5b2a2",
+      "workflow/checker.py": "50334a5237b73e60204205f39bf49faecda5d412edb4dea2c270bfc8a26d73c5",
+      "workflow/support-manifest.json": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+      "workflow/schemas/support-manifest.schema.json": "94aff761f3207e79efb2e4cc8d1cb04c067187297040e59a5fab04a114e38658",
+      "workflow/schemas/brief.schema.json": "c6856291dc742a3713436af3693c1be18f1fa5bee120562e6e48cfab577ff038",
+      "workflow/schemas/plan.schema.json": "69a74e3883e99913d36ef173bb55851cb53c6c8150150ae5677f3a20419692ba",
+      "workflow/schemas/report.schema.json": "88bab331929742dc91396342f5033bb74c00b06bb5ecdc2188935e3a05a399b2",
+      "workflow/schemas/history.schema.json": "36295bbda7a8cb789762a54443393fda6f361d652556b7ddaf14f2ca2a0b10bd",
+      "workflow/schemas/render-evidence.schema.json": "3714f02ee9f7911dc5d2968423ebed5c3723ca0e2168055aea3764b598bf46c2",
+      "workflow/schemas/renderer-identity.schema.json": "f6c73138340e1c11dc942ac2240b16a41ee4f987daedc252005847e58667cf61",
+      "workflow/schemas/context.schema.json": "2f8089b68068244a5bb4e6efd05ec05e7a772e1cadaeaa942424182a0e3f5c7e",
+      "workflow/schemas/repair.schema.json": "0948ada301f52262ce27f5c414015000a4c042de89a6696a40c3bc48318bb266",
       "schema/compile.py": "a4e4838f05c05921a39c6631b31849f71c341ac4fc333ce7cdc51b097f347308",
       "schema/schema-v0.4.md": "6fd9263fdfe41e3d2b168705cc4794508be81ba2f0dbbeb92942dd280ea36e55"
     }
   },
   "limitations": [
-    "Preview supports one Instrument Schedule HTML surface; other moves and native formats are unsupported.",
-    "Selection uses the supplied Transaction job and its single matching move; it does not infer the reader's task.",
-    "The instruction build is explicitly selected by the brief; this preview assumes no model-class advantage.",
+    "Workflow 0.2 supports only the six Instrument job/move pairs and HTML declared by its support manifest.",
+    "Move selection is explicit in the brief; this workflow does not infer the reader's rhetorical job.",
+    "The instruction build is explicitly selected by the brief; comparative benefit remains an evaluation question.",
     "Authoritative text is preserved after Unicode composition and whitespace normalization; arithmetic and real-world truth are not verified.",
-    "Mechanical conformance does not establish visual quality, full accessibility or comparative model performance."
+    "Mechanical conformance does not establish visual quality, full accessibility, model superiority or a beneficial repair effect."
   ]
 }

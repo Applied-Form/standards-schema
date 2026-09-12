@@ -22,6 +22,7 @@ from tests.test_workflow_engine import brief, html_for, renderer_identity
 
 RETRIEVAL = {"list_systems", "get_system", "get_tokens", "get_archetypes", "select_move"}
 WORKFLOW = {"plan_artifact", "assemble_context", "check_artifact", "prepare_repair"}
+CAPABILITIES = {"get_workflow_capabilities"}
 
 
 class MCPWorkflowTests(unittest.TestCase):
@@ -52,7 +53,7 @@ class MCPWorkflowTests(unittest.TestCase):
     def test_tool_surface_advertises_canonical_nested_schemas(self):
         tools = self.request("tools/list")["result"]["tools"]
         by_name = {tool["name"]: tool for tool in tools}
-        self.assertEqual(set(by_name), RETRIEVAL | WORKFLOW)
+        self.assertEqual(set(by_name), RETRIEVAL | WORKFLOW | CAPABILITIES)
         self.assertEqual(len(tools), len(by_name))
         schema = server.workflow_module("schema")
         self.assertEqual(by_name["plan_artifact"]["inputSchema"]["properties"]["brief"],
@@ -72,6 +73,13 @@ class MCPWorkflowTests(unittest.TestCase):
         self.assertEqual(by_name["assemble_context"]["outputSchema"], schema.load_schema("context"))
         self.assertEqual(by_name["check_artifact"]["outputSchema"], schema.load_schema("report"))
         self.assertEqual(by_name["prepare_repair"]["outputSchema"], schema.load_schema("repair"))
+        self.assertEqual(by_name["get_workflow_capabilities"]["outputSchema"],
+                         schema.load_schema("support-manifest"))
+        capabilities = self.decoded(self.call("get_workflow_capabilities", {}))
+        self.assertEqual(capabilities, server.workflow_module("support").load_support_manifest())
+        self.assertEqual(capabilities["workflow"]["version"], "0.2.0")
+        self.assertEqual(len(capabilities["supported"]), 6)
+        self.assert_tool_error(self.call("get_workflow_capabilities", {"unexpected": True}))
 
     def test_existing_retrieval_tools_keep_their_result_shapes(self):
         systems = self.decoded(self.call("list_systems", {}))
@@ -127,7 +135,7 @@ class MCPWorkflowTests(unittest.TestCase):
                                     text=True, capture_output=True, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         tools = json.loads(result.stdout)["result"]["tools"]
-        self.assertEqual({tool["name"] for tool in tools}, RETRIEVAL | WORKFLOW)
+        self.assertEqual({tool["name"] for tool in tools}, RETRIEVAL | WORKFLOW | CAPABILITIES)
 
     def test_complete_workflow_uses_the_selected_pack_catalogue(self):
         with tempfile.TemporaryDirectory() as directory:

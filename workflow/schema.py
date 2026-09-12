@@ -11,7 +11,7 @@ from pathlib import Path
 
 def load_schema(name):
     if name not in {"brief", "plan", "report", "history", "render-evidence", "renderer-identity",
-                    "context", "repair"}:
+                    "context", "repair", "support-manifest"}:
         raise ValueError("unknown workflow schema")
     return json.loads((Path(__file__).parent / "schemas" / f"{name}.schema.json").read_text())
 

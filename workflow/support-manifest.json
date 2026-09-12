@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "0.2.0",
+  "workflow": {
+    "version": "0.2.0",
+    "formats": ["html"],
+    "maxRepairTurns": 2
+  },
+  "mcp": {
+    "version": "0.2.0",
+    "protocolVersion": "2025-06-18"
+  },
+  "system": {
+    "slug": "instrument",
+    "contentVersion": "1.0.0",
+    "contentSchemaVersion": "v0.4"
+  },
+  "packages": {
+    "core": {
+      "name": "@standards/core",
+      "version": "0.2.0"
+    },
+    "instrument": {
+      "name": "@standards/instrument",
+      "version": "2.0.0"
+    }
+  },
+  "renderer": {
+    "name": "standards-ui-workflow-render",
+    "version": "0.2.0",
+    "evidenceVersion": "0.2.0"
+  },
+  "supported": [
+    {
+      "job": "E",
+      "jobName": "Evidence",
+      "move": "Datum",
+      "format": "html",
+      "contentKind": "datum",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Datum",
+        "factPrefix": "datum"
+      },
+      "requiredRelationships": ["datum.label-value"]
+    },
+    {
+      "job": "S",
+      "jobName": "Structure",
+      "move": "Matrix",
+      "format": "html",
+      "contentKind": "matrix",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Matrix",
+        "factPrefix": "matrix"
+      },
+      "requiredRelationships": ["matrix.column-headers", "matrix.row-headers", "matrix.grid"]
+    },
+    {
+      "job": "N",
+      "jobName": "Narrative",
+      "move": "Band statement",
+      "format": "html",
+      "contentKind": "bandStatement",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "BandStatement",
+        "factPrefix": "bandStatement"
+      },
+      "requiredRelationships": ["bandStatement.statement"]
+    },
+    {
+      "job": "C",
+      "jobName": "Change",
+      "move": "Series",
+      "format": "html",
+      "contentKind": "series",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Series",
+        "factPrefix": "series"
+      },
+      "requiredRelationships": ["series.period-order", "series.value-association"]
+    },
+    {
+      "job": "T",
+      "jobName": "Transaction",
+      "move": "Schedule",
+      "format": "html",
+      "contentKind": "schedule",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Schedule",
+        "factPrefix": "schedule"
+      },
+      "requiredRelationships": ["schedule.named-table", "schedule.column-headers", "schedule.row-headers", "schedule.numeric-order", "schedule.footer"]
+    },
+    {
+      "job": "W",
+      "jobName": "Wayfinding",
+      "move": "Running index",
+      "format": "html",
+      "contentKind": "runningIndex",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "RunningIndex",
+        "factPrefix": "runningIndex"
+      },
+      "requiredRelationships": ["runningIndex.section-order", "runningIndex.current-section"]
+    }
+  ],
+  "testedClients": [],
+  "clientTestingStatus": "No clean-profile Codex, Claude Code or Claude Desktop compatibility trace is included in this release candidate.",
+  "runtimeRequirements": {
+    "python": ">=3.10",
+    "node": "22.x or 24.x LTS for the renderer",
+    "browser": "Pinned Chromium supplied by the renderer's Playwright lock",
+    "network": "The workflow core is offline; rendered artifacts must make zero external requests"
+  },
+  "unsupportedSurfaces": [
+    "Systems other than Instrument",
+    "Moves outside the six declared job/move pairs",
+    "Formats other than static self-contained HTML",
+    "Native DOCX or PPTX planning, rendering and repair",
+    "Model invocation or generated-code execution inside the MCP server",
+    "Claims of visual quality, full accessibility, model superiority or repair benefit from mechanical checks alone"
+  ]
+}

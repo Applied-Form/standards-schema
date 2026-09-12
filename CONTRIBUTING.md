@@ -81,7 +81,7 @@ python3 tests/check.py
 
 The checks use Python's standard library. They cover parsing, licences, distribution
 completeness, reproducible builds, constraint budgets, chart semantics, MCP boundaries and
-the scoped Schedule workflow's plan, content, evidence and repair contracts.
+the scoped six-move workflow's plan, content, evidence and repair contracts.
 Proof checks are conditional: this repository does not currently ship a `proof/` directory.
 A green check is not a visual-quality judgement or a complete accessibility audit.
 Inspect the resulting diff and report any skipped checks in the pull request.

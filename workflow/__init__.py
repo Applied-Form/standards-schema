@@ -1,1 +1,1 @@
-"""Experimental local Standards plan, context, check and repair interfaces."""
+"""Versioned local Standards planning, context, checking and repair interfaces."""

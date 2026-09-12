@@ -1,9 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Standards workflow reference manifest 0.1.0",
+  "title": "Standards workflow reference manifest 0.2.0",
   "type": "object",
   "properties": {
-    "schemaVersion": { "const": "0.1.0" },
+    "schemaVersion": { "const": "0.2.0" },
     "recordedDate": {
       "type": "string",
       "minLength": 10,

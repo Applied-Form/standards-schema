@@ -3,6 +3,7 @@
 import copy
 import base64
 import hashlib
+from html import escape
 import json
 from pathlib import Path
 import sys
@@ -15,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from workflow.checker import check_artifact, normalize_text
 from workflow.engine import create_plan, digest, sha256
 from workflow.schema import load_schema, validate
-from tests.test_workflow_engine import brief, html_for, read_pack, renderer_identity
+from tests.test_workflow_engine import brief, html_for, read_pack, renderer_identity, six_briefs
 
 
 def _png(width, height):
@@ -44,11 +45,9 @@ def evidence_for(plan, html):
                          "scrollWidth": viewport["width"], "scrollHeight": viewport["height"] + 100},
             "bodyTextLength": 100, "overflowingElements": [], "pageErrors": [], "blockedRequests": [],
             "facts": copy.deepcopy(facts), "unmarkedText": [],
-            "semanticChecks": {"oneVisibleH1": True, "tableCount": 1,
-                               "namedTable": True, "captionOrLabel": True,
-                               "columnHeaders": True, "rowHeaders": True, "bodyGrid": True,
-                               "numericColumnOrder": True,
-                               "footerStructure": True},
+            "semanticChecks": {"move": plan["move"], "oneVisibleH1": True,
+                               "relationships": [{"id": identifier, "passed": True}
+                                                 for identifier in plan["requiredRelationships"]]},
             "invariantBand": {"count": 1, "containsTitle": True,
                               "bounds": {"x": 0, "y": 0, "width": viewport["width"], "height": 32},
                               "backgroundColor": "rgb(17, 17, 17)",
@@ -57,7 +56,7 @@ def evidence_for(plan, html):
             "screenshot": {"file": f'schedule-{viewport["width"]}x{viewport["height"]}.png',
                            "sha256": hashlib.sha256(png).hexdigest(),
                            "dataBase64": base64.b64encode(png).decode("ascii")}})
-    return {"schemaVersion": "0.1.0", "planSha256": digest(plan), "artifactSha256": sha256(html),
+    return {"schemaVersion": "0.2.0", "planSha256": digest(plan), "artifactSha256": sha256(html),
             "renderer": copy.deepcopy(plan["renderer"]), "viewports": viewports}
 
 
@@ -75,20 +74,21 @@ class WorkflowCheckerTests(unittest.TestCase):
 
     def test_valid_schedule_without_total_accepts_matching_no_footer_evidence(self):
         plan = copy.deepcopy(self.plan)
+        del plan["content"]["data"]["total"]
         del plan["binding"]["props"]["total"]
         plan["facts"] = [fact for fact in plan["facts"]
                          if not fact["id"].startswith("schedule.total.")]
         html = html_for(plan)
         self.assertNotIn("<tfoot>", html)
         evidence = evidence_for(plan, html)
-        self.assertTrue(all(viewport["semanticChecks"]["footerStructure"]
+        self.assertTrue(all(all(item["passed"] for item in viewport["semanticChecks"]["relationships"])
                             for viewport in evidence["viewports"]))
         report = check_artifact(plan, html, evidence)
         self.assertEqual(report["status"], "pass")
         with_empty_footer = html.replace("</table>", "<tfoot></tfoot></table>")
         report = check_artifact(plan, with_empty_footer, evidence_for(plan, with_empty_footer))
         self.assertEqual(report["status"], "fail")
-        self.assertTrue(any(finding["ruleId"] == "schedule.semantics"
+        self.assertTrue(any(finding["ruleId"] == "move.semantics"
                             and finding["status"] == "fail" for finding in report["findings"]))
         with_hidden_footer = html.replace("</table>", "<tfoot hidden></tfoot></table>")
         self.assertEqual(check_artifact(
@@ -149,8 +149,27 @@ class WorkflowCheckerTests(unittest.TestCase):
         for bad_table in (self.html.replace('scope="col"', '', 1),
                           self.html.replace('scope="col"', 'scope="col" colspan="2"', 1),
                           self.html.replace('<th scope="row" colspan="2" data-std-fact="schedule.total.label"',
-                                            '<td colspan="2" data-std-fact="schedule.total.label"')):
+                                            '<td colspan="2" data-std-fact="schedule.total.label"')
+                                   .replace('</th><td data-std-fact="schedule.total.duration"',
+                                            '</td><td data-std-fact="schedule.total.duration"')):
             self.assertEqual(check_artifact(self.plan, bad_table)["status"], "fail")
+
+    def test_misplaced_series_period_markers_are_bounded_semantic_failures(self):
+        supplied = next(item for item in six_briefs() if item["move"] == "Series")
+        plan = create_plan(supplied, read_pack, renderer_identity())
+        markers = []
+        for fact in plan["facts"]:
+            if fact["id"] == "title":
+                markers.append(f'<h1 data-std-fact="title">{escape(fact["text"])}</h1>')
+            else:
+                markers.append(
+                    f'<p data-std-fact="{fact["id"]}">{escape(fact["text"])}</p>')
+        html = ("<!doctype html><html><head><title>x</title></head><body><section>"
+                + "".join(markers) + "<ol></ol></section></body></html>")
+        report = check_artifact(plan, html)
+        self.assertEqual(report["status"], "fail")
+        self.assertTrue(any(finding["ruleId"] == "move.semantics"
+                            and finding["status"] == "fail" for finding in report["findings"]))
 
     def test_total_facts_must_remain_in_their_declared_footer_columns(self):
         swapped = (self.html
@@ -162,13 +181,13 @@ class WorkflowCheckerTests(unittest.TestCase):
                             'data-std-fact="schedule.total.amount"', 1))
         report = check_artifact(self.plan, swapped, evidence_for(self.plan, swapped))
         self.assertEqual(report["status"], "fail")
-        self.assertTrue(any(finding["ruleId"] == "schedule.semantics"
+        self.assertTrue(any(finding["ruleId"] == "move.semantics"
                             and finding["status"] == "fail" for finding in report["findings"]))
         extra_hidden_footer = self.html.replace("</table>", "<tfoot hidden></tfoot></table>")
         report = check_artifact(
             self.plan, extra_hidden_footer, evidence_for(self.plan, extra_hidden_footer))
         self.assertEqual(report["status"], "fail")
-        self.assertTrue(any(finding["ruleId"] == "schedule.semantics"
+        self.assertTrue(any(finding["ruleId"] == "move.semantics"
                             and finding["status"] == "fail" for finding in report["findings"]))
 
     def test_render_overflow_and_clipped_fact_fail(self):
@@ -182,7 +201,8 @@ class WorkflowCheckerTests(unittest.TestCase):
         self.assertTrue(any(f["ruleId"] == "render.facts" and f["status"] == "fail"
                             for f in report["findings"]))
         wrong_order = evidence_for(self.plan, self.html)
-        wrong_order["viewports"][0]["semanticChecks"]["numericColumnOrder"] = False
+        next(item for item in wrong_order["viewports"][0]["semanticChecks"]["relationships"]
+             if item["id"] == "schedule.numeric-order")["passed"] = False
         report = check_artifact(self.plan, self.html, wrong_order)
         self.assertEqual(report["status"], "fail")
         self.assertTrue(any(f["ruleId"] == "render.semantics" and f["status"] == "fail"

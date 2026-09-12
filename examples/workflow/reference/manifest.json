@@ -1,53 +1,54 @@
 {
-  "schemaVersion": "0.1.0",
+  "schemaVersion": "0.2.0",
   "recordedDate": "2026-09-12",
-  "purpose": "Synthetic, retained, offline-verifiable review records produced by examples/workflow/reference_loop.py; they prove the deterministic plan/render/check/repair path, not designer approval or comparative model performance.",
+  "purpose": "Synthetic retained review records for workflow 0.2; they prove deterministic six-move-capable plan/render/check mechanics for two Schedule cases, not designer approval or comparative model performance.",
   "renderer": {
     "name": "standards-ui-workflow-render",
-    "version": "0.1.0",
-    "sourceSha256": "d1b95c8b3228ee7a5b456cbd5d78f13404681eacefe3d711615c9ae1b2119b7c",
-    "packageVersion": "1.0.0",
-    "packageEntrySha256": "4836c4b3c1d80dea6539cd5658d5425e9d61c54d5c5deb8a210188530d15aca4",
-    "tokensSha256": "c87adb48c1b9664e2b357c7bd88a8d615323fe82809bd4901eed21df137f5256",
-    "fontAssetsSha256": "6fdde2f31d97c7546fddc4d35ebd9cc25a01e4ced0857e64ba43538fdf0a1667",
+    "version": "0.2.0",
+    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+    "sourceSha256": "51b0f200b69064ff5ca1f0bfa80929a38f4e4323a9ffad8223effcd5dc2624a8",
+    "packageVersion": "2.0.0",
+    "packageEntrySha256": "e954536b320d0cf795077af1b6dc29ef33c464e731f5f9c3fac29484b6e6f0b7",
+    "tokensSha256": "0e5e12a35ab276446dc2158bb79c44e2d1eb20161a4b204b2ba6b19e93f909e5",
+    "fontAssetsSha256": "9abaec92be36ac7220c17a086a1b0f5fe4ce4eaf8eef41381ee0dd7986472746",
     "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
-    "lockfileSha256": "553b3c93c7e364a40e54dd6676566e81588affb6ce28a5cd5d09959bfa8a5213",
+    "lockfileSha256": "6af6db9351d85ee3ffd79c55facfe96fe9693a20dc5c627d0cb89774870dec46",
     "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
     "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
-    "nodeExecutableSha256": "9bd9754f5300bd7910f280d8e413f13bb1460b30457243aa366d253677e893f3",
+    "nodeExecutableSha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
     "browserRevision": "1243",
     "browser": "153.0.8010.12",
     "platform": "darwin-arm64",
-    "nodeVersion": "v25.8.0"
+    "nodeVersion": "v24.19.0"
   },
   "cases": [
     {
       "name": "reference",
       "brief": "../schedule-brief.json",
-      "planSha256": "426cf16d2d7ea7ca26e21eeabe3de0e0ebe87eb42595d07cbb6c714823f472b8",
-      "contextSha256": "99f3c0cfaa08c4f630b5c720cf2aa91eef8f29aa2d0f39cbd079867532d76035",
-      "artifactSha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca",
+      "planSha256": "a1d3806766b90e61646d4579a36344badead7ab4de84ba11fce239ec92a7ded6",
+      "contextSha256": "532cab86636f6df9f598c23da48941ec63e8503054ec4aaa1cff653759b0d46d",
+      "artifactSha256": "fe01bb0b3c63ab4704390874e890566ad7d78f2d8c7ecd201b1906d9d6ffbdba",
       "baselineStatus": "pass",
       "records": {
         "plan": {
           "file": "schedule-plan.json",
-          "sha256": "4669c1448ba68895c9e992a232efcd62625fb4c28b0e488bf542ffeb91d3d7eb"
+          "sha256": "c2f52f7c78eea1afd5dac61b4cd9446a57cb39d75d474f6a4d550c826cf2b13c"
         },
         "context": {
           "file": "schedule-context.json",
-          "sha256": "eed3861853e52ef07c908dbde10f3ae09c85b55c969637fd0ed3a96fd2dccd6b"
+          "sha256": "cb6bb5ec6a4460561b405041d19a8e46602b6e6260e1018617d9f975dc404e7c"
         },
         "artifact": {
           "file": "schedule.html",
-          "sha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca"
+          "sha256": "fe01bb0b3c63ab4704390874e890566ad7d78f2d8c7ecd201b1906d9d6ffbdba"
         },
         "evidence": {
           "file": "schedule-render-evidence.json",
-          "sha256": "62fbcd2b9f0f9f0604520b6e9e8f16d0635d62a0c7f8f1ff9326b96c19fe6ed6"
+          "sha256": "16d92b53892c37a2f22bcf77d0e7f04127a4b4fc764467c305b0f03c9978b2d2"
         },
         "report": {
           "file": "schedule-report.json",
-          "sha256": "1a00b67740dabb15504cd613cf02990ab43999a427160bbbec79422f0464e545"
+          "sha256": "ff945cd554d73821e9d3f7179ee8579d2e496ebb38e83b3b31a82b01377351a8"
         }
       },
       "screenshots": [
@@ -80,30 +81,30 @@
     {
       "name": "long-content",
       "brief": "../schedule-long-brief.json",
-      "planSha256": "d26d6b8d3be084d015382038a71419ebec40875c640e36e10cac576062b4fe50",
-      "contextSha256": "8fe0e110f7d09414ea23b0895e46136b3128f9961d824937f8cc81cf808e519d",
-      "artifactSha256": "ec7e51bd387fcef33c70f8901b6f527718c714cf3639946cd92c4f47cad84ae4",
+      "planSha256": "a800e804e0169720c307408db38e63d602e6ae040ef2ae46702d40addfe586f0",
+      "contextSha256": "626268c7ded23dce270b537ddf4bb59c4ec32769b977fb88662d83500ec822fd",
+      "artifactSha256": "3221df9c1c129ffcc5f6a8e15886b4092077d7952893094765d555c55e219d46",
       "baselineStatus": "pass",
       "records": {
         "plan": {
           "file": "schedule-long-plan.json",
-          "sha256": "e9d8c828dd814c563681ef9e1a69bfae8be34e4aa4d2eceb7ebe95f7398b8c30"
+          "sha256": "e3fa55f26be4f89d24107a78d7463370121da24df21809de47b77bec1f952523"
         },
         "context": {
           "file": "schedule-long-context.json",
-          "sha256": "5e072d53a90177431dc951fd7e54b74435012abbbee153e8d00cbe4724983071"
+          "sha256": "1045921243a441ea38926016c541c02fb9d830475635d59bfc4397800dc750b3"
         },
         "artifact": {
           "file": "schedule-long.html",
-          "sha256": "ec7e51bd387fcef33c70f8901b6f527718c714cf3639946cd92c4f47cad84ae4"
+          "sha256": "3221df9c1c129ffcc5f6a8e15886b4092077d7952893094765d555c55e219d46"
         },
         "evidence": {
           "file": "schedule-long-render-evidence.json",
-          "sha256": "5b261a0ce14ed9393a2d12934c6ec8fadaf69fdc692a753ab08360551ed25843"
+          "sha256": "18f33de2f061a2858a12a34cfe8b4e2e46f140f35cc92b8b2a236ccd419f731d"
         },
         "report": {
           "file": "schedule-long-report.json",
-          "sha256": "16bda808e25efe622637c9b9f9477676028ec6e2807846069efd4b67356bb93b"
+          "sha256": "4a87051799d1bb628e23a57fc13c90cdea672703b405acc8b93385ddc0c6babd"
         }
       },
       "screenshots": [
