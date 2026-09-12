@@ -479,12 +479,40 @@ class EvaluationTests(unittest.TestCase):
             trial = json.loads((next((output / "trials").iterdir()) / "trial.json").read_text())
             self.assertEqual(len(trial["attempts"]), 3)
             self.assertEqual(trial["metrics"]["selectedAttemptIndex"], 1)
-            self.assertEqual(trial["metrics"]["repairRegressionsRejected"], 1)
+            self.assertEqual(trial["metrics"]["repairCandidatesRejected"], 1)
+            self.assertEqual(trial["metrics"]["repairStrictRegressionsRejected"], 1)
+            self.assertEqual(trial["metrics"]["repairTiesRejected"], 0)
             self.assertTrue(trial["metrics"]["finalBriefFulfilment"])
             self.assertFalse(trial["metrics"]["lastAttemptBriefFulfilment"])
             self.assertEqual(trial["metrics"]["finalSourceFactCoverage"]["rate"], 1.0)
             self.assertLess(trial["metrics"]["lastAttemptSourceFactCoverage"]["rate"], 1.0)
-            self.assertEqual(result["summary"][0]["repair"]["regressionsRejected"], 1)
+            self.assertEqual(result["summary"][0]["repair"]["candidatesRejected"], 1)
+            self.assertEqual(result["summary"][0]["repair"]["strictRegressionsRejected"], 1)
+            self.assertEqual(result["summary"][0]["repair"]["tiesRejected"], 0)
+
+    def test_metric_tie_is_rejected_without_being_called_a_regression(self):
+        fixture = load_fixtures("dev", {"dev-archive-digitisation"})[0]
+        _, plan = plan_for(fixture, "full_rules", identity())
+        marked = html_for(plan)
+        first = re.sub(r' data-std-fact="[^"]+"', "", marked)
+        improved = marked.replace(' data-std-fact="schedule.note"', "")
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "run"
+            result = run_experiment(
+                output=output, provider=FakeProvider([first, improved, improved]),
+                models=["fixture/model"], renderer=FakeRenderer(),
+                conditions=["full_rules"], split="dev", case_ids={fixture["id"]},
+                repetitions=1, max_repairs=2, max_tokens=1000, temperature=0,
+                model_snapshot={"models": []}, label="repair-tie-test",
+            )
+            trial = json.loads((next((output / "trials").iterdir()) / "trial.json").read_text())
+            self.assertEqual(trial["metrics"]["selectedAttemptIndex"], 1)
+            self.assertEqual(trial["metrics"]["repairCandidatesRejected"], 1)
+            self.assertEqual(trial["metrics"]["repairStrictRegressionsRejected"], 0)
+            self.assertEqual(trial["metrics"]["repairTiesRejected"], 1)
+            self.assertEqual(result["summary"][0]["repair"]["candidatesRejected"], 1)
+            self.assertEqual(result["summary"][0]["repair"]["strictRegressionsRejected"], 0)
+            self.assertEqual(result["summary"][0]["repair"]["tiesRejected"], 1)
 
     def test_baselines_receive_no_repair_assistance(self):
         fixture = load_fixtures("dev", {"dev-archive-digitisation"})[0]
@@ -680,6 +708,42 @@ class EvaluationTests(unittest.TestCase):
             review["status"] = "complete"
             review_path.write_text(json.dumps(review))
             with self.assertRaisesRegex(EvaluationError, "added, removed or duplicated"):
+                summarize_designer_review(output)
+
+    def test_review_summary_rejects_mixed_or_older_protocol_versions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "run"
+            run_experiment(
+                output=output, provider=None, models=[], renderer=FakeRenderer(),
+                conditions=[REFERENCE_CONDITION], split="dev",
+                case_ids={"dev-archive-digitisation"}, repetitions=1, max_repairs=0,
+                max_tokens=1000, temperature=0, model_snapshot=None,
+                label="review-version-test",
+            )
+            review_path = output / "designer-review.json"
+            review = json.loads(review_path.read_text())
+            review["status"] = "complete"
+            for card in review["cards"]:
+                card["scores"] = {field: 3 for field in (
+                    "visualHierarchy", "systemFidelity", "legibility",
+                    "rhetoricalFit", "overall")}
+            review_path.write_text(json.dumps(review))
+
+            key_path = output / "designer-review-key.json"
+            key = json.loads(key_path.read_text())
+            key["schemaVersion"] = "0.4.1"
+            key_path.write_text(json.dumps(key))
+            with self.assertRaisesRegex(EvaluationError, "protocol versions do not match"):
+                summarize_designer_review(output)
+
+            for name in ("designer-review.json", "designer-review-key.json",
+                         "precommit.json", "results.json"):
+                path = output / name
+                record = json.loads(path.read_text())
+                record["schemaVersion"] = "0.4.1"
+                path.write_text(json.dumps(record))
+            with self.assertRaisesRegex(EvaluationError,
+                                        "requires evaluator version 0.4.1"):
                 summarize_designer_review(output)
 
     def test_confirmatory_mode_fails_before_provider_discovery(self):

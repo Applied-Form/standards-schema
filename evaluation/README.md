@@ -170,8 +170,9 @@ provider-reported cost, and observed latency remain inspectable.
 - **Final brief fulfilment:** the same neutral outcome for the deterministically selected
   best attempt. Selection prefers contract conformance, then brief fulfilment, source facts,
   contract facts, and fewer failed or unknown findings; an earlier attempt wins a tie.
-  Regressive repair outputs remain in the record and are counted, but they cannot replace a
-  stronger deliverable. Baselines receive no repair, so their final result equals first pass.
+  Non-improving repair outputs remain in the record and are counted, but they cannot replace
+  a stronger deliverable. Strict regressions and metric ties are reported separately.
+  Baselines receive no repair, so their final result equals first pass.
 - **Agent-contract conformance:** the full Instrument planner/checker contract before and
   after repair. Baseline values and denominators are null, including for `scaffolded_html`,
   because its generic prompt does not disclose the Instrument-specific parts of that
@@ -180,7 +181,8 @@ provider-reported cost, and observed latency remain inspectable.
 - **Repair success:** final agent-contract pass among agent-native trials that produced a
   checkable, repairable first-pass contract failure. Repeated findings are grouped by rule
   before prompting so high-volume fact diagnostics cannot hide later structural or visual
-  rules. The summary also reports repair candidates rejected by the selection policy.
+  rules. The summary reports every rejected non-improving candidate and separates strict
+  regressions from metric ties.
 - **Source-fact coverage:** normalized original-brief text in its marker-independent static
   semantic slot. Browser evidence separately requires every fact in a marker-ID-agnostic
   corpus of visible, unclipped, unobscured, contrast-passing text at every viewport. Both
@@ -212,6 +214,11 @@ scores from 1 to 5 and the file's status is `complete`, run:
 ```bash
 python3 -m evaluation.cli review-summary --run /path/to/run
 ```
+
+Review summarization fails closed unless the completed review, hidden key, precommit and
+run results all carry the current evaluator's exact protocol version, run ID and first-pass
+policy. Use the checkout that produced an older retained run; a newer evaluator will not
+relabel it.
 
 Keep individual reviewer files when more than one designer scores the artifacts. Agree
 in advance how multiple files will be combined; the current command validates and

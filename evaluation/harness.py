@@ -29,7 +29,7 @@ from .provider import CompletionResult, ModelProvider
 
 ROOT = Path(__file__).resolve().parents[1]
 EVALUATION_ROOT = Path(__file__).resolve().parent
-VERSION = "0.4.1"
+VERSION = "0.4.2"
 MINIMAL_BASELINE_CONDITIONS = ("raw_brief", "brand_bible")
 SCAFFOLDED_CONDITION = "scaffolded_html"
 BASELINE_CONDITIONS = MINIMAL_BASELINE_CONDITIONS + (SCAFFOLDED_CONDITION,)
@@ -824,7 +824,7 @@ AUTHORITATIVE FACTS
 """ + canonical(plan["facts"]) + "\n\nGROUPED FINDINGS\n" + canonical(findings)
 
 
-def _attempt_selection_key(attempt: dict[str, Any], index: int) -> tuple[Any, ...]:
+def _attempt_selection_key(attempt: dict[str, Any]) -> tuple[Any, ...]:
     """Prefer a conforming result, then protect brief facts before cosmetic progress."""
     metrics = attempt["metrics"]
     brief = metrics["briefFulfilment"]
@@ -842,23 +842,29 @@ def _attempt_selection_key(attempt: dict[str, Any], index: int) -> tuple[Any, ..
         contract_rate if isinstance(contract_rate, (int, float)) else -1,
         -int(counts.get("fail", 0)),
         -int(counts.get("unknown", 0)),
-        -index,
     )
 
 
-def _select_final_attempt(attempts: list[dict[str, Any]]) -> tuple[int | None, int]:
+def _select_final_attempt(attempts: list[dict[str, Any]]) -> tuple[int | None, int, int, int]:
     if not attempts:
-        return None, 0
+        return None, 0, 0, 0
     best_index = 0
-    best_key = _attempt_selection_key(attempts[0], 0)
-    rejected_regressions = 0
+    best_key = _attempt_selection_key(attempts[0])
+    rejected_candidates = 0
+    rejected_strict_regressions = 0
+    rejected_ties = 0
     for index, attempt in enumerate(attempts[1:], start=1):
-        key = _attempt_selection_key(attempt, index)
+        key = _attempt_selection_key(attempt)
         if key > best_key:
             best_index, best_key = index, key
+        elif key < best_key:
+            rejected_candidates += 1
+            rejected_strict_regressions += 1
         else:
-            rejected_regressions += 1
-    return best_index, rejected_regressions
+            rejected_candidates += 1
+            rejected_ties += 1
+    return (best_index, rejected_candidates, rejected_strict_regressions,
+            rejected_ties)
 
 
 def _attempt(renderer: UIRenderer, brief: dict[str, Any], plan: dict[str, Any], html: str,
@@ -1008,7 +1014,8 @@ def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], cond
             messages = [*messages, {"role": "assistant", "content": result.text},
                         {"role": "user", "content": _compact_repair_prompt(plan, packet)}]
     first = base["attempts"][0]["metrics"] if base["attempts"] else None
-    selected_attempt_index, rejected_regressions = _select_final_attempt(base["attempts"])
+    (selected_attempt_index, rejected_candidates, rejected_strict_regressions,
+     rejected_ties) = _select_final_attempt(base["attempts"])
     final = (base["attempts"][selected_attempt_index]["metrics"]
              if selected_attempt_index is not None else None)
     last = base["attempts"][-1]["metrics"] if base["attempts"] else None
@@ -1029,7 +1036,9 @@ def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], cond
         "repairAttempts": repair_calls,
         "selectedAttemptIndex": selected_attempt_index,
         "selectionPolicy": "contract, brief, source facts, contract facts, findings; earliest tie",
-        "repairRegressionsRejected": rejected_regressions,
+        "repairCandidatesRejected": rejected_candidates,
+        "repairStrictRegressionsRejected": rejected_strict_regressions,
+        "repairTiesRejected": rejected_ties,
         "lastAttemptBriefFulfilment": (
             last is not None and last["briefFulfilment"]["passed"] is True),
         "lastAttemptSourceFactCoverage": (last["briefFulfilment"]["sourceFactCoverage"]
@@ -1082,8 +1091,13 @@ def aggregate(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
                               for trial in members) if contract_eligible else None)
         eligible = [trial for trial in members if trial["metrics"]["repairEligible"]]
         repaired = sum(trial["metrics"]["repairSuccess"] is True for trial in eligible)
-        rejected_regressions = sum(trial["metrics"].get("repairRegressionsRejected", 0)
-                                   for trial in members)
+        rejected_candidates = sum(trial["metrics"].get("repairCandidatesRejected", 0)
+                                  for trial in members)
+        rejected_strict_regressions = sum(
+            trial["metrics"].get("repairStrictRegressionsRejected", 0)
+            for trial in members)
+        rejected_ties = sum(trial["metrics"].get("repairTiesRejected", 0)
+                            for trial in members)
         provider_failures = sum(
             any(call.get("ok") is not True for call in trial["calls"])
             or (trial.get("failure") or {}).get("stage") == "provider"
@@ -1162,7 +1176,9 @@ def aggregate(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 "comparableAcross": "agent-native and deterministic-reference conditions only",
             },
             "repair": {"eligible": len(eligible), "succeeded": repaired,
-                       "regressionsRejected": rejected_regressions,
+                       "candidatesRejected": rejected_candidates,
+                       "strictRegressionsRejected": rejected_strict_regressions,
+                       "tiesRejected": rejected_ties,
                        "denominator": len(eligible),
                        "rate": repaired / len(eligible) if eligible else None},
             "firstPassSourceFactCoverage": {
@@ -1484,15 +1500,40 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
 def summarize_designer_review(run_directory: Path) -> dict[str, Any]:
     review = read_json(run_directory / "designer-review.json", 5_000_000)
     key = read_json(run_directory / "designer-review-key.json", 5_000_000)
+    precommit = read_json(run_directory / "precommit.json", 5_000_000)
+    run_results = read_json(run_directory / "results.json", 5_000_000)
+    records = {"review": review, "key": key, "precommit": precommit,
+               "results": run_results}
+    if any(not isinstance(record, dict) for record in records.values()):
+        raise EvaluationError("designer review run records must be JSON objects")
+    versions = [record.get("schemaVersion") for record in records.values()]
+    if (not all(isinstance(value, str) and value for value in versions)
+            or len(set(versions)) != 1):
+        raise EvaluationError("designer review run protocol versions do not match")
+    run_version = versions[0]
+    if run_version != VERSION:
+        raise EvaluationError(
+            f"designer review requires evaluator version {run_version}; current version is {VERSION}")
+    run_id = key.get("runId")
+    if (not isinstance(run_id, str) or not run_id
+            or precommit.get("runId") != run_id or run_results.get("runId") != run_id):
+        raise EvaluationError("designer review run identifiers do not match")
     if review.get("status") != "complete":
         raise EvaluationError("designer review status is not complete")
     mapping = key.get("mapping")
     cards = review.get("cards")
-    if (not isinstance(key.get("runId"), str) or not key["runId"]
-            or not isinstance(mapping, dict) or not isinstance(cards, list) or not cards):
+    if (not isinstance(mapping, dict) or not isinstance(cards, list) or not cards):
         raise EvaluationError("designer review and unblinding key are incomplete or do not match")
+    results_review = run_results.get("designerReview")
+    if (not isinstance(results_review, dict)
+            or results_review.get("file") != "designer-review.json"
+            or results_review.get("key") != "designer-review-key.json"
+            or results_review.get("eligibility") != key.get("eligibility")):
+        raise EvaluationError("designer review files differ from the completed run record")
     if (review.get("attemptPolicy") != REVIEW_ATTEMPT_POLICY
-            or key.get("reviewAttemptPolicy") != REVIEW_ATTEMPT_POLICY):
+            or key.get("reviewAttemptPolicy") != REVIEW_ATTEMPT_POLICY
+            or precommit.get("reviewAttemptPolicy") != REVIEW_ATTEMPT_POLICY
+            or results_review.get("attemptPolicy") != REVIEW_ATTEMPT_POLICY):
         raise EvaluationError("designer review attempt policy differs from the precommitted H1 policy")
     blind_ids = [card.get("blindId") for card in cards if isinstance(card, dict)]
     if (len(blind_ids) != len(cards) or len(blind_ids) != len(set(blind_ids))
@@ -1516,7 +1557,7 @@ def summarize_designer_review(run_directory: Path) -> dict[str, Any]:
     rows = [{"condition": condition, "requestedModel": model, "reviews": len(next(iter(scores.values()))),
              "meanScores": {field: _mean(values) for field, values in scores.items()}}
             for (condition, model), scores in sorted(groups.items())]
-    result = {"schemaVersion": VERSION, "runId": key["runId"], "status": "complete",
+    result = {"schemaVersion": run_version, "runId": run_id, "status": "complete",
               "attemptPolicy": REVIEW_ATTEMPT_POLICY,
               "summary": rows,
               "claim": "These are blinded human ratings for this run's first-pass artifacts, not a universal design-quality measure."}

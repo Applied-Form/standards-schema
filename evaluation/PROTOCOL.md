@@ -1,6 +1,6 @@
 # Schedule comparison protocol
 
-Protocol version: 0.4.1. This is an exploratory analysis protocol for the first public
+Protocol version: 0.4.2. This is an exploratory analysis protocol for the first public
 Schedule evaluation. The CLI refuses confirmatory execution until the entry gates below
 are implemented. Amend and externally freeze this protocol before a confirmatory run;
 start a new run rather than changing a completed run.
@@ -154,9 +154,10 @@ Group repeated findings by rule before generating a repair prompt so one high-vo
 cannot truncate later diagnostics. Retain every attempt, then select the deliverable by a
 fixed lexicographic policy: contract conformance, brief fulfilment, complete and proportional
 source-fact coverage, complete and proportional contract-fact preservation, fewer failed and
-unknown findings, and earliest attempt as the final tie-break. Count candidates that fail to
-improve this order as rejected regressions. A rejected candidate remains evidence and never
-replaces a stronger earlier artifact.
+unknown findings, and earliest attempt as the final tie-break. Count every candidate that
+fails to improve this order, distinguishing a strict regression from a metric tie. A rejected
+candidate remains evidence and never replaces a stronger earlier artifact. A tied later
+attempt is not evidence that the guard prevented a regression.
 
 Also report:
 
@@ -188,6 +189,10 @@ and first-pass artifacts in this H1 review.
 They score visual hierarchy, system fidelity, legibility, rhetorical fit, and overall
 quality from 1 to 5 using the supplied rubric. Keep `designer-review-key.json` hidden until
 all scores and notes are locked.
+
+The review summarizer binds the completed review, hidden key, precommit and run results to
+the same run ID, attempt policy and exact protocol version. It fails closed when invoked
+from a different protocol version so a newer checkout cannot relabel older evidence.
 
 Use these anchors; 2 and 4 are intermediate judgments:
 
