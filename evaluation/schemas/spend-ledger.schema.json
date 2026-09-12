@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/spend-ledger.schema.json",
+  "title": "Standards protocol 0.5 cumulative spend ledger",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "ledgerId",
+    "currency",
+    "capGbp",
+    "automaticTopUp",
+    "scope",
+    "createdAt",
+    "entries"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.5.0"
+    },
+    "ledgerId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+    },
+    "currency": {
+      "const": "GBP"
+    },
+    "capGbp": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "automaticTopUp": {
+      "const": false
+    },
+    "scope": {
+      "const": [
+        "qualification",
+        "development",
+        "confirmatory"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reservationId",
+          "stage",
+          "reservedGbp",
+          "chargedGbp",
+          "status",
+          "providerReportedCostUsd",
+          "usdToGbpRate",
+          "reservedAt",
+          "settledAt"
+        ],
+        "properties": {
+          "reservationId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+          },
+          "stage": {
+            "enum": [
+              "qualification",
+              "development",
+              "confirmatory"
+            ]
+          },
+          "reservedGbp": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 500
+          },
+          "chargedGbp": {
+            "type": "number",
+            "minimum": 0
+          },
+          "status": {
+            "enum": [
+              "reserved",
+              "settled",
+              "usage-missing-reservation-retained",
+              "actual-exceeded-reservation"
+            ]
+          },
+          "providerReportedCostUsd": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0
+          },
+          "usdToGbpRate": {
+            "type": "number",
+            "exclusiveMinimum": 0,
+            "maximum": 100
+          },
+          "reservedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "settledAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

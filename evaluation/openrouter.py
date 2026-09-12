@@ -24,7 +24,7 @@ from .provider import CompletionResult
 
 
 BASE_URL = "https://openrouter.ai/api/v1"
-ADAPTER_VERSION = "0.2.0"
+ADAPTER_VERSION = "0.3.0"
 MAX_RESPONSE_BYTES = 12_000_000
 ALLOWED_PATHS = {"/models", "/chat/completions"}
 PRIVATE_FIELDS = {
@@ -172,6 +172,16 @@ def _all_known_prices_are_zero(pricing: Any) -> bool:
     return all(value.is_finite() and value == 0 for value in values)
 
 
+def _known_prices_are_valid(pricing: Any) -> bool:
+    if not isinstance(pricing, dict) or not {"prompt", "completion"}.issubset(pricing):
+        return False
+    try:
+        values = [Decimal(str(value)) for value in pricing.values()]
+    except (InvalidOperation, ValueError):
+        return False
+    return bool(values) and all(value.is_finite() and value >= 0 for value in values)
+
+
 def _text_model(model: dict[str, Any]) -> bool:
     architecture = model.get("architecture") if isinstance(model.get("architecture"), dict) else {}
     inputs = architecture.get("input_modalities")
@@ -236,7 +246,7 @@ def snapshot_sha256(snapshot: dict[str, Any]) -> str:
     return hashlib.sha256(encoded).hexdigest()
 
 
-def _catalogue_index(snapshot: Any) -> dict[str, dict[str, Any]]:
+def _catalogue_index(snapshot: Any, *, require_zero_price: bool = True) -> dict[str, dict[str, Any]]:
     if not isinstance(snapshot, dict) or snapshot.get("provider") != "openrouter":
         raise OpenRouterError("a frozen OpenRouter model snapshot is required")
     rows = snapshot.get("models")
@@ -247,9 +257,11 @@ def _catalogue_index(snapshot: Any) -> dict[str, dict[str, Any]]:
         identifier = row.get("id") if isinstance(row, dict) else None
         if not isinstance(identifier, str) or not identifier or identifier in index:
             raise OpenRouterError("the frozen OpenRouter model snapshot has an invalid model ID")
-        if not _all_known_prices_are_zero(row.get("pricing")) or not _text_model(row):
+        pricing_valid = (_all_known_prices_are_zero(row.get("pricing"))
+                         if require_zero_price else _known_prices_are_valid(row.get("pricing")))
+        if not pricing_valid or not _text_model(row):
             raise OpenRouterError(
-                f"the frozen catalogue does not prove an exact zero-price text route: {identifier}"
+                f"the frozen catalogue does not prove an eligible priced text route: {identifier}"
             )
         canonical_slug = row.get("canonicalSlug")
         if canonical_slug is not None and (not isinstance(canonical_slug, str) or not canonical_slug):
@@ -258,16 +270,17 @@ def _catalogue_index(snapshot: Any) -> dict[str, dict[str, Any]]:
     return index
 
 
-def validate_frozen_models(snapshot: Any, models: list[str]) -> dict[str, dict[str, Any]]:
-    """Fail closed unless every exact requested route is free in this snapshot."""
-    index = _catalogue_index(snapshot)
+def validate_frozen_models(snapshot: Any, models: list[str], *,
+                           require_zero_price: bool = True) -> dict[str, dict[str, Any]]:
+    """Fail closed unless every exact requested route is eligible in this snapshot."""
+    index = _catalogue_index(snapshot, require_zero_price=require_zero_price)
     selected: dict[str, dict[str, Any]] = {}
     for model in models:
         if not isinstance(model, str) or not model or model in {"openrouter/auto", "openrouter/free"} \
                 or "," in model:
             raise OpenRouterError(f"automatic or invalid model route is not permitted: {model}")
         if model not in index:
-            raise OpenRouterError(f"model is absent from the frozen zero-price catalogue: {model}")
+            raise OpenRouterError(f"model is absent from the frozen eligible catalogue: {model}")
         selected[model] = index[model]
     return selected
 
@@ -348,21 +361,34 @@ class OpenRouterProvider:
     name = "openrouter"
 
     def __init__(self, model_snapshot: dict[str, Any], key: str | None = None,
-                 timeout: float = 120, reasoning_effort: str | None = None):
+                 timeout: float = 120, reasoning_effort: str | None = None,
+                 provider_pins: dict[str, str] | None = None,
+                 require_zero_price: bool = True):
         if reasoning_effort not in {None, "none"}:
             raise OpenRouterError("reasoning effort must be omitted or none")
-        self._catalogue = _catalogue_index(model_snapshot)
+        self.require_zero_price = require_zero_price
+        self._catalogue = _catalogue_index(
+            model_snapshot, require_zero_price=require_zero_price)
         self.model_snapshot_sha256 = snapshot_sha256(model_snapshot)
         self.reasoning_effort = reasoning_effort
+        provider_pins = dict(provider_pins or {})
+        if (any(model not in self._catalogue for model in provider_pins)
+                or any(not isinstance(endpoint, str) or not endpoint.strip()
+                       for endpoint in provider_pins.values())):
+            raise OpenRouterError("provider pins must map frozen model IDs to nonblank endpoints")
+        self.provider_pins = provider_pins
         self.experiment_metadata = {
             "adapter": f"evaluation.openrouter/{ADAPTER_VERSION}",
             "environment": environment_metadata(),
             "frozenModelSnapshotSha256": self.model_snapshot_sha256,
-            "zeroPriceCatalogueGuard": True,
+            "zeroPriceCatalogueGuard": require_zero_price,
             "automaticModelRouting": False,
             "providerFallbacks": False,
-            "underlyingProviderPinned": False,
-            "routingCaveat": "OpenRouter selects the initial eligible provider endpoint for each request; fallback is disabled, and the resolved provider is recorded when supplied.",
+            "underlyingProviderPinned": bool(provider_pins),
+            "underlyingProviderPins": provider_pins,
+            "routingCaveat": ("Each declared model request is restricted to its named provider endpoint."
+                              if provider_pins else
+                              "OpenRouter selects the initial eligible provider endpoint for each request; fallback is disabled, and the resolved provider is recorded when supplied."),
             "reasoningEffort": reasoning_effort if reasoning_effort is not None else "provider-default",
             "modelIdentityRule": "exact request ID or its frozen catalogue canonical_slug",
         }
@@ -381,7 +407,7 @@ class OpenRouterProvider:
             entry = validate_frozen_models(
                 {"provider": "openrouter", "count": len(self._catalogue),
                  "models": list(self._catalogue.values())},
-                [model],
+                [model], require_zero_price=self.require_zero_price,
             )[model]
         except OpenRouterError as error:
             detail = {"code": "frozen_catalogue_guard", "message": str(error)}
@@ -396,9 +422,13 @@ class OpenRouterProvider:
             "messages": messages,
             "max_tokens": max_tokens,
             "temperature": temperature,
-            "provider": {"allow_fallbacks": False,
-                         "max_price": {"prompt": 0, "completion": 0}},
+            "provider": {"allow_fallbacks": False, "require_parameters": True},
         }
+        pinned_endpoint = self.provider_pins.get(model)
+        if pinned_endpoint:
+            payload["provider"]["only"] = [pinned_endpoint]
+        if self.require_zero_price:
+            payload["provider"]["max_price"] = {"prompt": 0, "completion": 0}
         if self.reasoning_effort is not None:
             payload["reasoning"] = {"effort": self.reasoning_effort}
         if trace:
@@ -432,11 +462,15 @@ class OpenRouterProvider:
         text = _message_text(clean)
         resolved_model = clean.get("model") if isinstance(clean.get("model"), str) else None
         integrity = _model_integrity(model, resolved_model, entry)
+        selected_provider = _selected_provider(routing)
         reported_cost = _number(usage.get("cost"))
         if not integrity["accepted"]:
             error = {"httpStatus": status, "code": "model_integrity_failure",
                      "detail": "resolved model is absent or differs from the frozen exact model identity"}
-        elif reported_cost is not None and reported_cost != 0:
+        elif pinned_endpoint and selected_provider != pinned_endpoint:
+            error = {"httpStatus": status, "code": "provider_endpoint_integrity_failure",
+                     "detail": "resolved provider endpoint is absent or differs from the frozen pin"}
+        elif self.require_zero_price and reported_cost is not None and reported_cost != 0:
             error = {"httpStatus": status, "code": "zero_price_guard_failure",
                      "detail": "provider reported nonzero cost for a frozen zero-price route"}
         elif not text:
@@ -447,7 +481,7 @@ class OpenRouterProvider:
         return CompletionResult(
             ok=bool(text) and error is None, text=text, requested_model=model,
             resolved_model=resolved_model,
-            provider_name=_selected_provider(routing),
+            provider_name=selected_provider, provider_endpoint=selected_provider,
             response_id=clean.get("id") if isinstance(clean.get("id"), str) else None,
             finish_reason=first.get("finish_reason") if isinstance(first.get("finish_reason"), str) else None,
             service_tier=clean.get("service_tier") if isinstance(clean.get("service_tier"), str) else None,
@@ -459,6 +493,10 @@ class OpenRouterProvider:
             system_fingerprint=clean.get("system_fingerprint") if isinstance(clean.get("system_fingerprint"), str) else None,
             routing=routing, model_integrity=integrity, raw=clean, error=error,
             request_parameters=request_parameters,
+            effective_settings={"resolvedModel": resolved_model,
+                                "providerEndpoint": selected_provider,
+                                "serviceTier": clean.get("service_tier"),
+                                "systemFingerprint": clean.get("system_fingerprint")},
         )
 
 

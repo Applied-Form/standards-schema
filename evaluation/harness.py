@@ -23,13 +23,17 @@ from typing import Any
 
 from workflow.checker import check_artifact
 from workflow.engine import PACK_FILES, assemble_context, create_plan, prepare_repair
+from workflow.support import support_manifest_sha256
 
 from .provider import CompletionResult, ModelProvider
+from .study import (CellJournal, SpendLedger, StudyError, confirmatory_blockers,
+                    digest as study_digest, exploratory_h3_gate,
+                    validate_declaration, validate_freeze_receipt)
 
 
 ROOT = Path(__file__).resolve().parents[1]
 EVALUATION_ROOT = Path(__file__).resolve().parent
-VERSION = "0.4.2"
+VERSION = "0.5.0"
 MINIMAL_BASELINE_CONDITIONS = ("raw_brief", "brand_bible")
 SCAFFOLDED_CONDITION = "scaffolded_html"
 BASELINE_CONDITIONS = MINIMAL_BASELINE_CONDITIONS + (SCAFFOLDED_CONDITION,)
@@ -56,14 +60,14 @@ CONDITION_DESCRIPTIONS = {
 HYPOTHESES = [
     {
         "id": "H1",
-        "statement": "The agent-native prompt package may increase first-pass brief fulfilment over an original brief, prose brand bible, or strong generic scaffold for the same model and case.",
+        "statement": "Primary: selected context increases first-pass brief fulfilment over the strong generic scaffold for the same model, case and repetition. Raw brief and brand bible are Holm-adjusted secondary contrasts.",
         "primaryMetric": "firstPassBriefFulfilmentRate",
         "status": "unproven",
     },
     {
         "id": "H2",
-        "statement": "Move-selected context may retain agent-contract conformance and brief fulfilment while using fewer provider-reported input tokens than the full build.",
-        "primaryMetric": "promptTokensPerFinalAgentContractConformingArtifact",
+        "statement": "Move-selected context uses fewer first-call provider-reported prompt tokens than full rules while meeting frozen non-inferiority margins for brief, contract, source facts and design.",
+        "primaryMetric": "firstCallPromptTokens",
         "status": "unproven",
     },
     {
@@ -207,7 +211,18 @@ def _build_for(condition: str, brief: dict[str, Any]) -> str:
 def plan_for(fixture: dict[str, Any], condition: str, renderer_identity: dict[str, Any]):
     brief = copy.deepcopy(fixture["brief"])
     brief["instructionBuild"] = _build_for(condition, brief)
-    return brief, create_plan(brief, pack_reader, renderer_identity)
+    workflow_brief = {
+        "schemaVersion": "0.2.0", "system": brief["system"], "job": brief["job"],
+        "move": "Schedule", "format": brief["format"],
+        "instructionBuild": brief["instructionBuild"], "title": brief["title"],
+        "content": {"kind": "schedule", "data": copy.deepcopy(brief["schedule"])},
+        "viewports": copy.deepcopy(brief["viewports"]),
+    }
+    renderer_identity = copy.deepcopy(renderer_identity)
+    renderer_identity.setdefault("version", "0.2.0")
+    renderer_identity.setdefault("packageVersion", "2.0.0")
+    renderer_identity.setdefault("supportManifestSha256", support_manifest_sha256())
+    return brief, create_plan(workflow_brief, pack_reader, renderer_identity)
 
 
 def _baseline_task(brief: dict[str, Any]) -> str:
@@ -284,7 +299,8 @@ def condition_context(condition: str, plan: dict[str, Any]) -> str:
             raise EvaluationError("selected context has an unsupported task-data boundary")
         guidance, supplied_task = content.split(marker, 1)
         expected = canonical({"artifact": plan["artifact"], "binding": plan["binding"],
-                              "facts": plan["facts"]})
+                              "content": plan["content"], "facts": plan["facts"],
+                              "requiredRelationships": plan["requiredRelationships"]})
         if supplied_task.count(expected) != 1:
             raise EvaluationError("selected context task data differs from the common evaluation payload")
         return _with_generic_scaffold(guidance)
@@ -696,14 +712,24 @@ def _neutral_browser_evidence(report: dict[str, Any], evidence: dict[str, Any] |
     if isinstance(evidence, dict) and isinstance(evidence.get("viewports"), list):
         for viewport in evidence["viewports"]:
             semantics = viewport.get("semanticChecks", {}) if isinstance(viewport, dict) else {}
+            relationships = {
+                item.get("id"): item.get("passed") is True
+                for item in semantics.get("relationships", []) if isinstance(item, dict)
+            }
             checks = {
                 "oneVisibleH1": semantics.get("oneVisibleH1") is True,
-                "oneVisibleTable": semantics.get("tableCount") == 1,
-                "fourColumnHeaders": semantics.get("columnHeaders") is True,
-                "rowHeaders": semantics.get("rowHeaders") is True,
-                "bodyGrid": semantics.get("bodyGrid") is True,
-                "numericColumnOrder": semantics.get("numericColumnOrder") is True,
-                "footerStructure": semantics.get("footerStructure") is True,
+                "oneVisibleTable": (relationships.get("schedule.named-table") is True
+                                    if relationships else semantics.get("tableCount") == 1),
+                "fourColumnHeaders": (relationships.get("schedule.column-headers") is True
+                                      if relationships else semantics.get("columnHeaders") is True),
+                "rowHeaders": (relationships.get("schedule.row-headers") is True
+                               if relationships else semantics.get("rowHeaders") is True),
+                "bodyGrid": (relationships.get("schedule.row-headers") is True
+                             if relationships else semantics.get("bodyGrid") is True),
+                "numericColumnOrder": (relationships.get("schedule.numeric-order") is True
+                                       if relationships else semantics.get("numericColumnOrder") is True),
+                "footerStructure": (relationships.get("schedule.footer") is True
+                                    if relationships else semantics.get("footerStructure") is True),
             }
             visible_facts = _visible_source_fact_coverage(source_facts, viewport)
             viewport_checks.append({"width": viewport.get("width"), "height": viewport.get("height"),
@@ -771,6 +797,7 @@ def _completion_record(result: CompletionResult, raw_path: Path,
     return {
         "ok": result.ok, "requestedModel": result.requested_model,
         "resolvedModel": result.resolved_model, "providerName": result.provider_name,
+        "providerEndpoint": result.provider_endpoint,
         "responseId": result.response_id, "finishReason": result.finish_reason,
         "serviceTier": result.service_tier, "latencyMs": result.latency_ms,
         "usage": {"promptTokens": result.prompt_tokens,
@@ -780,6 +807,7 @@ def _completion_record(result: CompletionResult, raw_path: Path,
         "modelIntegrity": result.model_integrity,
         "error": result.error, "rawResponse": _run_relative(raw_path, run_directory),
         "requestParameters": result.request_parameters,
+        "effectiveSettings": result.effective_settings,
     }
 
 
@@ -911,7 +939,9 @@ def _sum_complete(values):
 def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], condition: str,
               repetition: int, model: str | None, provider: ModelProvider | None,
               renderer: UIRenderer, renderer_identity: dict[str, Any], max_tokens: int,
-              temperature: float, max_repairs: int) -> dict[str, Any]:
+              temperature: float, max_repairs: int, spend_ledger: SpendLedger | None,
+              spend_stage: str, worst_case_call_cost_gbp: float,
+              usd_to_gbp_rate: float) -> dict[str, Any]:
     trial_seed = canonical([run_id, fixture["id"], condition, repetition, model])
     trial_id = sha256(trial_seed)[:16]
     trial_dir = run_directory / "trials" / trial_id
@@ -954,8 +984,8 @@ def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], cond
                                            (getattr(renderer, "root", ROOT), "<standards-ui-repository>")]
                                )}
     else:
-        if provider is None or model is None:
-            raise EvaluationError("generative conditions require a provider and model")
+        if provider is None or model is None or spend_ledger is None:
+            raise EvaluationError("generative conditions require a provider, model, and spend ledger")
         messages = messages_for(condition, brief, plan)
         base["prompt"] = {"sha256": sha256(canonical(messages)),
                           "bytes": len(canonical(messages).encode("utf-8")),
@@ -970,12 +1000,30 @@ def run_trial(*, run_id: str, run_directory: Path, fixture: dict[str, Any], cond
             write_json(attempt_dir / "request.json", request_record)
             if attempt_index > 0:
                 repair_calls += 1
-            result = provider.complete(model, messages, max_tokens=max_tokens,
-                temperature=temperature, trace={"trace_id": run_id,
-                    "generation_name": f"{fixture['id']}:{condition}:{repetition}:{attempt_index}"})
+            reservation_id = "spend-" + sha256(canonical(
+                [run_id, trial_id, attempt_index, model]))[:24]
+            spend_ledger.reserve(
+                reservation_id, stage=spend_stage,
+                worst_case_gbp=worst_case_call_cost_gbp,
+                usd_to_gbp_rate=usd_to_gbp_rate)
+            result = None
+            try:
+                result = provider.complete(model, messages, max_tokens=max_tokens,
+                    temperature=temperature, trace={"trace_id": run_id,
+                        "generation_name": f"{fixture['id']}:{condition}:{repetition}:{attempt_index}"})
+            finally:
+                if result is None:
+                    spend_ledger.settle(reservation_id, None)
             raw_path = attempt_dir / "provider-response.json"
             write_json(raw_path, result.raw if result.raw is not None else {"error": result.error})
-            base["calls"].append(_completion_record(result, raw_path, run_directory))
+            settlement = spend_ledger.settle(reservation_id, result.cost)
+            completion = _completion_record(result, raw_path, run_directory)
+            completion["spendReservation"] = {
+                "reservationId": reservation_id, "status": settlement["status"],
+                "reservedGbp": settlement["reservedGbp"],
+                "chargedGbp": settlement["chargedGbp"],
+            }
+            base["calls"].append(completion)
             if not result.ok:
                 base["failure"] = {"stage": "provider", "attempt": attempt_index,
                                    "detail": result.error}
@@ -1108,7 +1156,8 @@ def aggregate(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
             or (trial.get("failure") or {}).get("stage") in {"renderer", "deterministic-render"}
             for trial in members
         )
-        harness_failures = sum((trial.get("failure") or {}).get("stage") == "harness"
+        harness_failures = sum((trial.get("failure") or {}).get("stage") in {
+            "harness", "execution-indeterminate"}
                                for trial in members)
         model_integrity_failures = sum(
             any((call.get("modelIntegrity") or {}).get("status") == "mismatch"
@@ -1224,7 +1273,8 @@ def aggregate(trials: list[dict[str, Any]]) -> list[dict[str, Any]]:
 
 
 def designer_review_files(run_directory: Path, run_id: str,
-                          trials: list[dict[str, Any]]) -> tuple[dict[str, Any], dict[str, Any]]:
+                          trials: list[dict[str, Any]], *,
+                          selected_repetition: int | None = None) -> tuple[dict[str, Any], dict[str, Any]]:
     cards = []
     key = {}
     reference_cases = set()
@@ -1237,8 +1287,13 @@ def designer_review_files(run_directory: Path, run_id: str,
             "condition": trial["condition"], "requestedModel": trial["requestedModel"],
             "scheduledTrials": 0, "reviewCards": 0, "missingFirstPassArtifacts": 0,
             "omittedDeterministicReferenceDuplicates": 0,
+            **({"excludedNonselectedRepetitions": 0}
+               if selected_repetition is not None else {}),
         })
         group["scheduledTrials"] += 1
+        if selected_repetition is not None and trial["repetition"] != selected_repetition:
+            group["excludedNonselectedRepetitions"] += 1
+            continue
         if trial["condition"] == REFERENCE_CONDITION:
             if trial["caseId"] in reference_cases:
                 omitted_reference_duplicates += 1
@@ -1282,7 +1337,7 @@ def designer_review_files(run_directory: Path, run_id: str,
                          "resolvedModels": sorted({call["resolvedModel"] for call in trial["calls"]
                                                    if call.get("resolvedModel")})}
     secrets.SystemRandom().shuffle(cards)
-    review = {"schemaVersion": VERSION, "status": "pending",
+    review = {"schemaVersion": VERSION, "reviewerId": None, "status": "pending",
               "attemptPolicy": REVIEW_ATTEMPT_POLICY,
               "instructions": "These are first-pass artifacts for H1. Review in listed order without opening designer-review-key.json. Score each field 1–5 against the anchors below (2 and 4 are intermediate), add optional notes, and change status to complete. A mechanical pass is not a design score.",
               "rubric": {
@@ -1325,11 +1380,58 @@ def designer_review_files(run_directory: Path, run_id: str,
     return review, secret_key
 
 
+def write_confirmatory_reviewer_sets(run_directory: Path, run_id: str,
+                                     review: dict[str, Any],
+                                     reviewer_ids: list[str]) -> list[str]:
+    """Create three separately shuffled, PNG-only blinded review packages."""
+    if len(reviewer_ids) != 3 or len(set(reviewer_ids)) != 3:
+        raise EvaluationError("confirmatory review requires exactly three unique reviewers")
+    cards = review.get("cards")
+    if not isinstance(cards, list) or len(cards) < 3:
+        raise EvaluationError("confirmatory review needs at least three artifact cards")
+    orders: set[tuple[str, ...]] = set()
+    written: list[str] = []
+    for reviewer_index, reviewer_id in enumerate(reviewer_ids):
+        reviewer_directory = run_directory / "designer-review-sets" / reviewer_id
+        reviewer_directory.mkdir(parents=True, exist_ok=False)
+        ordered = copy.deepcopy(cards)
+        rng = random.Random(int(sha256(canonical(
+            [run_id, reviewer_id, reviewer_index, "review-order-v1"]))[:16], 16))
+        rng.shuffle(ordered)
+        order = tuple(card["blindId"] for card in ordered)
+        rotations = 0
+        while order in orders and rotations < len(ordered):
+            ordered = ordered[1:] + ordered[:1]
+            order = tuple(card["blindId"] for card in ordered)
+            rotations += 1
+        if order in orders:
+            raise EvaluationError("could not create three separately shuffled reviewer orders")
+        orders.add(order)
+        for card in ordered:
+            copied = []
+            for screenshot in card["screenshots"]:
+                source = (run_directory / screenshot).resolve()
+                if source.suffix.lower() != ".png" or not source.is_relative_to(run_directory.resolve()):
+                    raise EvaluationError("review packages may contain PNG screenshots only")
+                destination = reviewer_directory / "assets" / card["blindId"] / source.name
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source, destination)
+                copied.append(_run_relative(destination, run_directory))
+            card["screenshots"] = copied
+        record = {**copy.deepcopy(review), "reviewerId": reviewer_id, "cards": ordered}
+        target = reviewer_directory / "review.json"
+        write_json(target, record, exclusive=True)
+        written.append(_run_relative(target, run_directory))
+    return written
+
+
 def _protocol_identity(fixtures: list[dict[str, Any]]) -> dict[str, str]:
     paths = [Path(__file__), EVALUATION_ROOT / "cli.py", EVALUATION_ROOT / "provider.py",
-             EVALUATION_ROOT / "openrouter.py", EVALUATION_ROOT / "PROTOCOL.md",
+             EVALUATION_ROOT / "openrouter.py", EVALUATION_ROOT / "study.py",
+             EVALUATION_ROOT / "PROTOCOL.md",
              EVALUATION_ROOT / "conditions" / "brand-bible.md",
              EVALUATION_ROOT / "conditions" / "scaffolded-html.md"]
+    paths.extend(sorted((EVALUATION_ROOT / "schemas").glob("*.json")))
     paths.extend(sorted((ROOT / "workflow").glob("*.py")))
     paths.extend(sorted((ROOT / "workflow" / "schemas").glob("*.json")))
     paths.extend(ROOT / "packs" / "instrument" / filename for filename in PACK_FILES)
@@ -1338,18 +1440,87 @@ def _protocol_identity(fixtures: list[dict[str, Any]]) -> dict[str, str]:
     return {str(path.relative_to(ROOT)): sha256(path.read_bytes()) for path in paths}
 
 
+def _release_commit() -> str:
+    try:
+        completed = subprocess.run(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True,
+            text=True, check=True, timeout=15)
+        dirty = subprocess.run(
+            ["git", "status", "--porcelain", "--untracked-files=all"], cwd=ROOT,
+            capture_output=True, text=True, check=True, timeout=15)
+    except (OSError, subprocess.SubprocessError) as error:
+        raise EvaluationError("cannot establish the release commit identity") from error
+    if dirty.stdout.strip():
+        raise EvaluationError("confirmatory execution requires a clean release checkout")
+    commit = completed.stdout.strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", commit):
+        raise EvaluationError("Git returned an invalid release commit identity")
+    return commit
+
+
+def current_confirmatory_identity(renderer: UIRenderer,
+                                  fixtures: list[dict[str, Any]]) -> dict[str, Any]:
+    renderer_identity = renderer.identity()
+    return {"releaseCommit": _release_commit(),
+            "rendererIdentitySha256": study_digest(renderer_identity),
+            "protocolFiles": _protocol_identity(fixtures)}
+
+
+def _failed_cell_trial(run_id: str, cell: dict[str, Any], provider: ModelProvider | None,
+                       stage: str, message: str) -> dict[str, Any]:
+    model = None if cell["condition"] == REFERENCE_CONDITION else cell["requestedModel"]
+    trial_id = sha256(canonical(
+        [run_id, cell["caseId"], cell["condition"], cell["repetition"], model]))[:16]
+    contract_eligible = (cell["condition"] in AGENT_NATIVE_CONDITIONS
+                         or cell["condition"] == REFERENCE_CONDITION)
+    return {**cell, "trialId": trial_id,
+            "provider": provider.name if provider else "reference", "calls": [], "attempts": [],
+            "failure": {"stage": stage, "message": message},
+            "metrics": {"firstPassBriefFulfilment": False,
+                        "finalBriefFulfilment": False,
+                        "firstPassAgentContractConformance": False if contract_eligible else None,
+                        "finalAgentContractConformance": False if contract_eligible else None,
+                        "repairEligible": False, "repairSuccess": None,
+                        "repairAttempts": 0, "selectedAttemptIndex": None,
+                        "repairCandidatesRejected": 0,
+                        "repairStrictRegressionsRejected": 0,
+                        "repairTiesRejected": 0,
+                        "firstPassSourceFactCoverage": None,
+                        "finalSourceFactCoverage": None,
+                        "firstPassAgentContractFactPreservation": None,
+                        "finalAgentContractFactPreservation": None,
+                        "providerLatencyMs": None, "promptTokens": None,
+                        "completionTokens": None, "totalTokens": None, "cost": None}}
+
+
+def _write_trials_jsonl(path: Path, trials: list[dict[str, Any]]) -> None:
+    temporary = path.with_name(path.name + ".tmp")
+    with temporary.open("w", encoding="utf-8") as stream:
+        for trial in trials:
+            stream.write(canonical(trial) + "\n")
+        stream.flush()
+        os.fsync(stream.fileno())
+    os.replace(temporary, path)
+
+
 def run_experiment(*, output: Path, provider: ModelProvider | None, models: list[str],
                    renderer: UIRenderer, conditions: list[str], split: str,
                    case_ids: set[str] | None, repetitions: int, max_repairs: int,
                    max_tokens: int, temperature: float, model_snapshot: dict[str, Any] | None,
-                   label: str = "evaluation", study_mode: str = "exploratory") -> dict[str, Any]:
-    if study_mode not in {"exploratory", "smoke"}:
-        raise EvaluationError(
-            "confirmatory execution is disabled until the paired estimator, interval method, "
-            "non-inferiority margin, multi-reviewer agreement, and held-out declaration are implemented"
-        )
-    if output.exists() and any(output.iterdir()):
+                   label: str = "evaluation", study_mode: str = "exploratory",
+                   declaration: dict[str, Any] | None = None,
+                   freeze_receipt: dict[str, Any] | None = None,
+                   spend_ledger: SpendLedger | None = None,
+                   worst_case_call_cost_gbp: float = 0,
+                   usd_to_gbp_rate: float = 1,
+                   resume: bool = False,
+                   randomization_seed: int | None = None) -> dict[str, Any]:
+    if study_mode not in {"exploratory", "smoke", "confirmatory"}:
+        raise EvaluationError("study mode must be exploratory, smoke, or confirmatory")
+    if output.exists() and any(output.iterdir()) and not resume:
         raise EvaluationError(f"output directory is not empty: {output}")
+    if resume and (not output.exists() or not any(output.iterdir())):
+        raise EvaluationError("resume requires an existing nonempty run directory")
     output.mkdir(parents=True, exist_ok=True)
     if type(repetitions) is not int or type(max_repairs) is not int \
             or not 1 <= repetitions <= 50 or not 0 <= max_repairs <= 2:
@@ -1371,80 +1542,233 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
         raise EvaluationError("model conditions require a provider and at least one model")
     if has_model_conditions and model_snapshot is None:
         raise EvaluationError("model conditions require a frozen provider catalogue snapshot")
+    if has_model_conditions and spend_ledger is None:
+        raise EvaluationError("model conditions require an external cumulative spend ledger")
+    ledger_start = None
+    if spend_ledger is not None:
+        ledger_start = (read_json(output / "spend-ledger-start.json", 10_000_000)
+                        if resume else spend_ledger.snapshot())
     snapshot_digest = sha256(canonical(model_snapshot)) if model_snapshot is not None else None
     adapter_snapshot_digest = getattr(provider, "model_snapshot_sha256", None)
     if adapter_snapshot_digest is not None and adapter_snapshot_digest != snapshot_digest:
         raise EvaluationError("provider adapter and run use different frozen model snapshots")
     fixtures = load_fixtures(split, case_ids)
     renderer_identity = renderer.identity()
-    run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + sha256(os.urandom(16))[:8]
-    randomization_seed = int(sha256(run_id)[:16], 16)
-    rng = random.Random(randomization_seed)
-    blocks = []
-    for fixture in fixtures:
-        for repetition in range(repetitions):
-            block = []
-            for condition in conditions:
-                targets = [None] if condition == REFERENCE_CONDITION else models
-                for model in targets:
-                    block.append({"caseId": fixture["id"], "split": fixture["split"],
-                                  "condition": condition,
-                                  "requestedModel": model or REFERENCE_CONDITION,
-                                  "repetition": repetition})
-            rng.shuffle(block)
-            blocks.append(block)
-    rng.shuffle(blocks)
-    matrix = [cell for block in blocks for cell in block]
+    protocol_files = _protocol_identity(fixtures)
+    declaration_digest = None
+    receipt_digest = None
+    if study_mode == "confirmatory":
+        if declaration is None or freeze_receipt is None:
+            raise EvaluationError("confirmatory execution requires a declaration and freeze receipt")
+        try:
+            declaration = validate_declaration(declaration)
+            freeze_receipt = validate_freeze_receipt(freeze_receipt)
+        except StudyError as error:
+            raise EvaluationError(str(error)) from error
+        blockers = confirmatory_blockers(declaration, freeze_receipt, snapshot=model_snapshot,
+                                         spend_ledger=ledger_start)
+        if blockers:
+            raise EvaluationError("confirmatory execution blocked: " + " | ".join(blockers))
+        declared_fixtures = {item["id"]: item["sha256"] for item in declaration["fixtures"]}
+        actual_fixtures = {item["id"]: sha256(canonical(item)) for item in fixtures}
+        declared_models = [route["modelId"] for route in declaration["routes"]]
+        if (split != "held-out" or actual_fixtures != declared_fixtures
+                or conditions != declaration["conditions"] or models != declared_models
+                or repetitions != declaration["repetitions"]
+                or max_tokens != declaration["generation"]["maxTokens"]
+                or temperature != declaration["generation"]["temperature"]
+                or max_repairs != declaration["generation"]["maxRepairs"]
+                or worst_case_call_cost_gbp != declaration["generation"]["worstCaseCallCostGbp"]
+                or usd_to_gbp_rate != declaration["generation"]["usdToGbpRate"]
+                or spend_ledger is None
+                or spend_ledger.value["automaticTopUp"] is not declaration["generation"]["automaticTopUp"]
+                or spend_ledger.value["capGbp"] != declaration["budget"]["maximum"]
+                or _release_commit() != declaration["releaseCommit"]
+                or study_digest(renderer_identity) != declaration["renderer"]["identitySha256"]
+                or protocol_files != declaration["protocolFiles"]
+                or getattr(provider, "provider_pins", None) != {
+                    route["modelId"]: route["underlyingProvider"]
+                    for route in declaration["routes"]}
+                or (getattr(provider, "reasoning_effort", None) or "provider-default")
+                != declaration["generation"]["reasoningEffort"]):
+            raise EvaluationError("runtime inputs differ from the externally frozen declaration")
+        randomization_seed = declaration["randomization"]["seed"]
+        declaration_digest = study_digest(declaration)
+        receipt_digest = study_digest(freeze_receipt)
+    if resume:
+        precommit = read_json(output / "precommit.json", 10_000_000)
+        if precommit.get("schemaVersion") != VERSION or precommit.get("studyMode") != study_mode:
+            raise EvaluationError("resume run protocol or study mode differs from this evaluator")
+        run_id = precommit["runId"]
+        frozen = {
+            "conditions": [item["id"] for item in precommit["conditions"]],
+            "fixtures": precommit["fixtures"], "models": precommit["models"],
+            "repetitions": precommit["repetitions"], "maxRepairs": precommit["maxRepairs"],
+            "maxTokens": precommit["maxTokens"], "temperature": precommit["temperature"],
+            "renderer": precommit["renderer"], "snapshot": precommit["modelSnapshot"],
+            "spendLedger": precommit.get("spendLedger"),
+        }
+        current = {
+            "conditions": conditions,
+            "fixtures": [{"id": fixture["id"], "split": fixture["split"],
+                          "sha256": sha256(canonical(fixture))} for fixture in fixtures],
+            "models": models, "repetitions": repetitions, "maxRepairs": max_repairs,
+            "maxTokens": max_tokens, "temperature": temperature,
+            "renderer": renderer_identity,
+            "snapshot": ({"file": "model-snapshot.json",
+                          "canonicalSha256": snapshot_digest,
+                          "retrievedAt": model_snapshot.get("retrievedAt")
+                          if isinstance(model_snapshot, dict) else None,
+                          "selectedModels": precommit["modelSnapshot"]["selectedModels"]}
+                         if model_snapshot is not None else None),
+            "spendLedger": ({"ledgerId": spend_ledger.value["ledgerId"],
+                              "preRunFile": "spend-ledger-start.json",
+                              "preRunSha256": study_digest(ledger_start),
+                              "capGbp": spend_ledger.value["capGbp"],
+                              "automaticTopUp": False}
+                             if spend_ledger is not None else None),
+        }
+        if frozen != current:
+            raise EvaluationError("resume arguments differ from the frozen run")
+        matrix = precommit["matrix"]
+        randomization_seed = precommit["randomization"]["seed"]
+    else:
+        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ") + "-" + sha256(os.urandom(16))[:8]
+        if randomization_seed is None:
+            randomization_seed = int(sha256(run_id)[:16], 16) % (2**63)
+        if type(randomization_seed) is not int or not 0 <= randomization_seed <= 2**63 - 1:
+            raise EvaluationError("randomization seed must be an integer from 0 to 2^63-1")
+        rng = random.Random(randomization_seed)
+        blocks = []
+        for fixture in fixtures:
+            for repetition in range(repetitions):
+                block = []
+                for condition in conditions:
+                    targets = [None] if condition == REFERENCE_CONDITION else models
+                    for model in targets:
+                        block.append({"caseId": fixture["id"], "split": fixture["split"],
+                                      "condition": condition,
+                                      "requestedModel": model or REFERENCE_CONDITION,
+                                      "repetition": repetition})
+                rng.shuffle(block)
+                blocks.append(block)
+        rng.shuffle(blocks)
+        matrix = [cell for block in blocks for cell in block]
     selected_catalogue_rows = []
     if isinstance(model_snapshot, dict) and isinstance(model_snapshot.get("models"), list):
         by_id = {row.get("id"): row for row in model_snapshot["models"] if isinstance(row, dict)}
         selected_catalogue_rows = [by_id[model] for model in models if model in by_id]
-    precommit = {
-        "schemaVersion": VERSION, "runId": run_id, "label": label,
-        "studyMode": study_mode, "createdAt": utc_now(),
-        "status": "precommitted", "pathBase": "runDirectory", "hypotheses": HYPOTHESES,
-        "primaryMetrics": ["firstPassBriefFulfilmentRate",
-                           "promptTokensPerFinalAgentContractConformingArtifact",
-                           "repairSuccessRate"],
-        "guardrails": ["sourceFactCoverage", "agentContractConformance",
-                       "providerFailureRate", "humanDesignScores"],
-        "reviewAttemptPolicy": REVIEW_ATTEMPT_POLICY,
-        "conditions": [{"id": name, "description": CONDITION_DESCRIPTIONS[name],
-                        "modelCalled": name in GENERATIVE_CONDITIONS,
-                        "treatmentClass": ("minimal-baseline" if name in MINIMAL_BASELINE_CONDITIONS else
-                                           "scaffolded-baseline" if name == SCAFFOLDED_CONDITION else
-                                           "agent-native" if name in AGENT_NATIVE_CONDITIONS else
-                                           "deterministic-reference"),
-                        "repairAllowed": name in AGENT_NATIVE_CONDITIONS and max_repairs > 0,
-                        "genericScaffoldSupplied": name in SCAFFOLDED_PROMPT_CONDITIONS,
-                        "agentContractMeasured": (name in AGENT_NATIVE_CONDITIONS
-                                                  or name == REFERENCE_CONDITION),
-                        "maxRepairTurns": max_repairs if name in AGENT_NATIVE_CONDITIONS else 0}
-                       for name in conditions],
-        "fixtures": [{"id": fixture["id"], "split": fixture["split"],
-                      "sha256": sha256(canonical(fixture))} for fixture in fixtures],
-        "models": models, "provider": provider.name if provider else None,
-        "providerConfiguration": getattr(provider, "experiment_metadata", None),
-        "runnerEnvironment": {"python": platform.python_version(),
-                              "platform": f"{sys.platform}-{platform.machine().lower()}"},
-        "modelSnapshot": ({"file": "model-snapshot.json", "canonicalSha256": snapshot_digest,
-                           "retrievedAt": model_snapshot.get("retrievedAt")
-                           if isinstance(model_snapshot, dict) else None,
-                           "selectedModels": selected_catalogue_rows}
-                          if model_snapshot is not None else None),
-        "repetitions": repetitions, "maxRepairs": max_repairs,
-        "maxTokens": max_tokens, "temperature": temperature,
-        "randomization": {"strategy": "shuffle case/repetition blocks and cells within each block",
-                          "seed": randomization_seed},
-        "matrix": matrix, "protocolFiles": _protocol_identity(fixtures),
-        "renderer": renderer_identity,
-        "interpretationRule": "This release executes exploratory and smoke runs only. Do not infer superiority without an externally frozen confirmatory declaration, paired analysis, uncertainty, and completed blinded review.",
-    }
-    if model_snapshot is not None:
-        write_json(output / "model-snapshot.json", model_snapshot, exclusive=True)
-    write_json(output / "precommit.json", precommit, exclusive=True)
-    trials = []
-    for cell in matrix:
+    if not resume:
+        precommit = {
+            "schemaVersion": VERSION, "runId": run_id, "label": label,
+            "studyMode": study_mode, "createdAt": utc_now(),
+            "status": "precommitted", "pathBase": "runDirectory", "hypotheses": HYPOTHESES,
+            "primaryMetrics": ["firstPassBriefFulfilmentRate",
+                               "firstCallPromptTokens",
+                               "repairSuccessRate"],
+            "guardrails": ["sourceFactCoverage", "agentContractConformance",
+                           "providerFailureRate", "humanDesignScores"],
+            "reviewAttemptPolicy": REVIEW_ATTEMPT_POLICY,
+            "conditions": [{"id": name, "description": CONDITION_DESCRIPTIONS[name],
+                            "modelCalled": name in GENERATIVE_CONDITIONS,
+                            "treatmentClass": ("minimal-baseline" if name in MINIMAL_BASELINE_CONDITIONS else
+                                               "scaffolded-baseline" if name == SCAFFOLDED_CONDITION else
+                                               "agent-native" if name in AGENT_NATIVE_CONDITIONS else
+                                               "deterministic-reference"),
+                            "repairAllowed": name in AGENT_NATIVE_CONDITIONS and max_repairs > 0,
+                            "genericScaffoldSupplied": name in SCAFFOLDED_PROMPT_CONDITIONS,
+                            "agentContractMeasured": (name in AGENT_NATIVE_CONDITIONS
+                                                      or name == REFERENCE_CONDITION),
+                            "maxRepairTurns": max_repairs if name in AGENT_NATIVE_CONDITIONS else 0}
+                           for name in conditions],
+            "fixtures": [{"id": fixture["id"], "split": fixture["split"],
+                          "sha256": sha256(canonical(fixture))} for fixture in fixtures],
+            "models": models, "provider": provider.name if provider else None,
+            "providerConfiguration": getattr(provider, "experiment_metadata", None),
+            "runnerEnvironment": {"python": platform.python_version(),
+                                  "platform": f"{sys.platform}-{platform.machine().lower()}"},
+            "modelSnapshot": ({"file": "model-snapshot.json", "canonicalSha256": snapshot_digest,
+                               "retrievedAt": model_snapshot.get("retrievedAt")
+                               if isinstance(model_snapshot, dict) else None,
+                               "selectedModels": selected_catalogue_rows}
+                              if model_snapshot is not None else None),
+            "declaration": ({"file": "study-declaration.json",
+                             "canonicalSha256": declaration_digest}
+                            if declaration is not None else None),
+            "freezeReceipt": ({"file": "freeze-receipt.json",
+                               "canonicalSha256": receipt_digest}
+                            if freeze_receipt is not None else None),
+            "spendLedger": ({"ledgerId": spend_ledger.value["ledgerId"],
+                              "preRunFile": "spend-ledger-start.json",
+                              "preRunSha256": study_digest(ledger_start),
+                              "capGbp": spend_ledger.value["capGbp"],
+                              "automaticTopUp": False}
+                             if spend_ledger is not None else None),
+            "repetitions": repetitions, "maxRepairs": max_repairs,
+            "maxTokens": max_tokens, "temperature": temperature,
+            "randomization": {"strategy": "blocked-case-repetition-shuffle-v1",
+                              "seed": randomization_seed},
+            "matrix": matrix, "protocolFiles": protocol_files,
+            "renderer": renderer_identity,
+            "interpretationRule": (
+                "Confirmatory claims require the frozen paired analysis and a sealed review set; "
+                "a completed generation run alone establishes no advantage."
+                if study_mode == "confirmatory" else
+                "This run is exploratory or operational and establishes no comparative advantage."),
+        }
+        if model_snapshot is not None:
+            write_json(output / "model-snapshot.json", model_snapshot, exclusive=True)
+        if ledger_start is not None:
+            write_json(output / "spend-ledger-start.json", ledger_start, exclusive=True)
+        if declaration is not None:
+            write_json(output / "study-declaration.json", declaration, exclusive=True)
+            write_json(output / "freeze-receipt.json", freeze_receipt, exclusive=True)
+        write_json(output / "precommit.json", precommit, exclusive=True)
+        journal = CellJournal.create(output / "cell-journal.json", run_id, matrix)
+    else:
+        journal = CellJournal.load(output / "cell-journal.json", run_id, matrix)
+        if (output / "results.json").is_file():
+            completed_result = read_json(output / "results.json", 10_000_000)
+            if completed_result.get("status") == "complete" and all(
+                    entry["status"] == "complete" for entry in journal.value["cells"]):
+                return completed_result
+
+    trials_by_index: dict[int, dict[str, Any]] = {}
+    for entry in journal.value["cells"]:
+        if entry["status"] == "complete":
+            trial = read_json(output / "trials" / entry["trialId"] / "trial.json", 10_000_000)
+            journal.verify_trial(entry["cellId"], trial)
+            trials_by_index[entry["index"]] = trial
+    for entry in journal.recover_in_flight():
+        cell = entry["cell"]
+        model = None if cell["condition"] == REFERENCE_CONDITION else cell["requestedModel"]
+        trial_id = sha256(canonical(
+            [run_id, cell["caseId"], cell["condition"], cell["repetition"], model]))[:16]
+        trial_path = output / "trials" / trial_id / "trial.json"
+        if trial_path.is_file():
+            trial = read_json(trial_path, 10_000_000)
+            if trial.get("cellId") != entry["cellId"]:
+                trial["cellId"] = entry["cellId"]
+                write_json(trial_path, trial)
+        else:
+            trial = _failed_cell_trial(
+                run_id, cell, provider, "execution-indeterminate",
+                "The process stopped while this cell was in flight. Protocol 0.5 retains it as "
+                "a scheduled failure and does not retry it in place.")
+            trial["cellId"] = entry["cellId"]
+            write_json(trial_path, trial)
+        journal.complete(entry["cellId"], trial["trialId"], trial)
+        trials_by_index[entry["index"]] = trial
+        _write_trials_jsonl(output / "trials.jsonl",
+                            [trials_by_index[index] for index in sorted(trials_by_index)])
+
+    for entry in journal.value["cells"]:
+        if entry["status"] == "complete":
+            continue
+        if entry["status"] != "pending":
+            raise EvaluationError("cell journal contains an unresolved state")
+        journal.begin(entry["cellId"])
+        cell = entry["cell"]
         fixture = next(item for item in fixtures if item["id"] == cell["caseId"])
         try:
             trial = run_trial(run_id=run_id, run_directory=output, fixture=fixture,
@@ -1452,37 +1776,40 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
                 model=None if cell["condition"] == REFERENCE_CONDITION else cell["requestedModel"],
                 provider=None if cell["condition"] == REFERENCE_CONDITION else provider,
                 renderer=renderer, renderer_identity=renderer_identity, max_tokens=max_tokens,
-                temperature=temperature, max_repairs=max_repairs)
-        except (EvaluationError, OSError, ValueError, TypeError, subprocess.SubprocessError) as error:
-            trial = {**cell, "trialId": sha256(canonical([run_id, cell]))[:16],
-                     "provider": provider.name if provider else "reference", "calls": [], "attempts": [],
-                     "failure": {"stage": "harness", "message": _publication_safe_error(
-                         error, [(output, "<run-directory>"),
-                                 (getattr(renderer, "root", ROOT), "<standards-ui-repository>")]
-                     )},
-                     "metrics": {"firstPassBriefFulfilment": False,
-                                 "finalBriefFulfilment": False,
-                                 "firstPassAgentContractConformance": (
-                                     False if cell["condition"] in AGENT_NATIVE_CONDITIONS
-                                     or cell["condition"] == REFERENCE_CONDITION else None),
-                                 "finalAgentContractConformance": (
-                                     False if cell["condition"] in AGENT_NATIVE_CONDITIONS
-                                     or cell["condition"] == REFERENCE_CONDITION else None),
-                                 "repairEligible": False, "repairSuccess": None,
-                                 "repairAttempts": 0, "firstPassSourceFactCoverage": None,
-                                 "finalSourceFactCoverage": None,
-                                 "firstPassAgentContractFactPreservation": None,
-                                 "finalAgentContractFactPreservation": None,
-                                 "providerLatencyMs": None,
-                                 "promptTokens": None, "completionTokens": None,
-                                 "totalTokens": None, "cost": None}}
-            write_json(output / "trials" / trial["trialId"] / "trial.json", trial)
-        trials.append(trial)
-        with (output / "trials.jsonl").open("a", encoding="utf-8") as stream:
-            stream.write(canonical(trial) + "\n")
-    review, review_key = designer_review_files(output, run_id, trials)
+                temperature=temperature, max_repairs=max_repairs,
+                spend_ledger=spend_ledger,
+                spend_stage="confirmatory" if study_mode == "confirmatory" else "development",
+                worst_case_call_cost_gbp=worst_case_call_cost_gbp,
+                usd_to_gbp_rate=usd_to_gbp_rate)
+        except (EvaluationError, StudyError, OSError, ValueError, TypeError,
+                subprocess.SubprocessError) as error:
+            trial = _failed_cell_trial(run_id, cell, provider, "harness",
+                _publication_safe_error(
+                    error, [(output, "<run-directory>"),
+                            (getattr(renderer, "root", ROOT), "<standards-ui-repository>")]))
+        trial["cellId"] = entry["cellId"]
+        write_json(output / "trials" / trial["trialId"] / "trial.json", trial)
+        journal.complete(entry["cellId"], trial["trialId"], trial)
+        trials_by_index[entry["index"]] = trial
+        _write_trials_jsonl(output / "trials.jsonl",
+                            [trials_by_index[index] for index in sorted(trials_by_index)])
+    trials = [trials_by_index[index] for index in range(len(matrix))]
+    if resume:
+        for derived in (output / "designer-review.json", output / "designer-review-key.json",
+                        output / "results.json"):
+            derived.unlink(missing_ok=True)
+        shutil.rmtree(output / "designer-review-assets", ignore_errors=True)
+    selected_repetition = (declaration["review"]["selectedRepetition"]
+                           if study_mode == "confirmatory" and declaration is not None else None)
+    review, review_key = designer_review_files(
+        output, run_id, trials, selected_repetition=selected_repetition)
     write_json(output / "designer-review.json", review, exclusive=True)
     write_json(output / "designer-review-key.json", review_key, exclusive=True)
+    reviewer_sets = (write_confirmatory_reviewer_sets(
+        output, run_id, review, declaration["review"]["reviewerIds"])
+        if study_mode == "confirmatory" and declaration is not None else [])
+    if spend_ledger is not None:
+        write_json(output / "spend-ledger-final.json", spend_ledger.snapshot(), exclusive=True)
     result = {"schemaVersion": VERSION, "runId": run_id, "label": label,
               "studyMode": study_mode,
               "createdAt": precommit["createdAt"], "finishedAt": utc_now(),
@@ -1490,9 +1817,14 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
               "trials": len(trials), "summary": aggregate(trials),
               "designerReview": {"status": "pending", "file": "designer-review.json",
                                  "key": "designer-review-key.json",
+                                 "reviewerSets": reviewer_sets,
                                  "attemptPolicy": REVIEW_ATTEMPT_POLICY,
                                  "eligibility": review_key["eligibility"]},
-              "claim": "This exploratory run establishes no comparative advantage. Interpret only the recorded conditions, cases, repetitions, failures and review status."}
+              "exploratoryH3Gate": exploratory_h3_gate(trials),
+              "claim": ("This confirmatory generation run establishes no advantage by itself. "
+                        "Apply the frozen paired analysis and sealed multi-reviewer gate."
+                        if study_mode == "confirmatory" else
+                        "This exploratory run establishes no comparative advantage. Interpret only the recorded conditions, cases, repetitions, failures and review status.")}
     write_json(output / "results.json", result, exclusive=True)
     return result
 

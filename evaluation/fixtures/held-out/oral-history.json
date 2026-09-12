@@ -1,0 +1,73 @@
+{
+  "id": "held-oral-history",
+  "split": "held-out",
+  "description": "Five-line held-out Schedule with apostrophes, fractional days and a credit.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Oral history collection handover",
+    "schedule": {
+      "label": "Archive package · OH-73",
+      "columns": {
+        "ref": "REF",
+        "description": "DESCRIPTION",
+        "duration": "DURATION",
+        "amount": "FEE"
+      },
+      "lines": [
+        {
+          "ref": "01",
+          "description": "Recording inventory",
+          "standard": "Thirty-two WAV files",
+          "duration": "0.5 day",
+          "amount": "£280"
+        },
+        {
+          "ref": "02",
+          "description": "Time-coded transcription",
+          "standard": "Up to 18 recorded hours",
+          "duration": "6 days",
+          "amount": "£3,600"
+        },
+        {
+          "ref": "03",
+          "description": "Speaker-name verification",
+          "standard": "Client’s approved name list",
+          "duration": "1 day",
+          "amount": "£480"
+        },
+        {
+          "ref": "04",
+          "description": "Rights and restrictions register",
+          "standard": "One CSV register",
+          "duration": "1 day",
+          "amount": "£520"
+        },
+        {
+          "ref": "05",
+          "description": "Existing deposit credit",
+          "duration": "—",
+          "amount": "−£400"
+        }
+      ],
+      "total": {
+        "label": "Total · VAT not applicable",
+        "duration": "8.5 days",
+        "amount": "£4,480"
+      },
+      "note": "Audio restoration and rights clearance are excluded; the archive confirms every access restriction before deposit."
+    },
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 1050
+      },
+      {
+        "width": 390,
+        "height": 1100
+      }
+    ]
+  }
+}

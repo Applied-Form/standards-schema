@@ -1,9 +1,10 @@
 # Schedule comparison protocol
 
-Protocol version: 0.4.2. This is an exploratory analysis protocol for the first public
-Schedule evaluation. The CLI refuses confirmatory execution until the entry gates below
-are implemented. Amend and externally freeze this protocol before a confirmatory run;
-start a new run rather than changing a completed run.
+Protocol version: 0.5.0. This release contains an exploratory harness and a fail-closed
+confirmatory implementation for the public Schedule evaluation. No protocol 0.5
+confirmatory run or superiority result exists. Externally freeze a strict declaration and
+receipt before a held-out run; start a new study rather than changing frozen or completed
+evidence.
 
 ## Questions and hypotheses
 
@@ -56,8 +57,8 @@ used for a comparative claim.
 
 ## Fixed inputs
 
-Development fixtures are in `fixtures/dev/`; procedural held-out fixtures are in
-`fixtures/held-out/`. They are synthetic and public. “Held-out” means they are excluded
+Six development fixtures are in `fixtures/dev/`; eight procedural held-out fixtures are
+in `fixtures/held-out/`. They are synthetic and public. “Held-out” means they are excluded
 from development decisions for this study, not that they are secret or guaranteed absent
 from a model's training data.
 
@@ -69,12 +70,11 @@ Before a confirmatory run:
 3. Do not edit prompts, rules, fixtures, checker behavior, or renderer code during a run.
 4. Treat a changed model route, renderer, rule build, or checker as a new experiment.
 
-Exploratory runs may use any explicitly recorded model set. A future confirmatory run must
-use at least three models from more than one model family. Decide the model set and
-repetition count before inspecting comparative outputs. Three repetitions are useful for
-plumbing and variance discovery but are usually too few for a strong general claim;
-increase the count based on the minimum effect worth detecting and observed development
-variance before opening held-out results.
+Exploratory runs may use any explicitly recorded model set. A confirmatory declaration must
+contain exactly six pinned routes spanning at least three model families. Its 5–50
+repetitions are chosen before held-out execution by the frozen, seeded paired-binary
+simulation at 90% power. The planner refuses a design that cannot achieve that power inside
+the repetition range and GBP budget.
 
 ## Execution
 
@@ -97,15 +97,26 @@ system fingerprint, and routing metadata when supplied. Accept the resolved iden
 when it is the exact requested ID or that route's release-dated canonical identity from
 the frozen catalogue.
 
-OpenRouter fallback is disabled, but the initial eligible underlying provider endpoint is
-not pinned by this adapter. Record the resolved provider when supplied. A confirmatory
-declaration must either pin it or define a route-level estimand and a rule for endpoint
-changes before any scores are opened.
+OpenRouter fallback is disabled. Exploratory runs may leave the initial eligible endpoint
+unpinned and must retain that caveat. Every confirmatory route pins one named underlying
+provider endpoint. The request uses `provider.only: [pinned]`,
+`allow_fallbacks: false`, and `require_parameters: true`, with no model fallback list. An
+absent or different returned endpoint is a route-integrity failure retained in the
+scheduled denominator. Confirmatory routes may be paid inside the frozen budget; the
+zero-price catalogue restriction applies to free exploratory discovery.
 
-Run development first. The current release permits exploratory inspection of either split,
-but `--mode confirmatory` fails closed. Lock an amended protocol and the number of held-out
-repetitions outside the generated run directory before enabling that mode. A smoke run is
-operational evidence only and stays outside the repository by default.
+One atomic GBP ledger covers qualification, development, and confirmatory calls. Before
+every provider call the runner reserves the declared worst-case charge and refuses the call
+if that would exceed the remaining £500-or-lower cap. Settlement uses retained
+provider-reported USD cost and the frozen exchange rate. Missing usage leaves the full
+reservation charged. Automatic top-up is false.
+
+Run development first. Exploratory inspection may use either public split. Confirmatory
+mode accepts only the eight held-out fixtures and derives its matrix from a strict protocol
+0.5 declaration. It remains blocked until an externally timestamped receipt binds the clean
+release commit, protocol and renderer hashes, frozen catalogue, unexpired route
+qualifications, reviewer commitments, budget approval and execution authorization. A smoke
+run is operational evidence only and stays outside the repository by default.
 
 ## Mechanical outcomes
 
@@ -159,6 +170,11 @@ fails to improve this order, distinguishing a strict regression from a metric ti
 candidate remains evidence and never replaces a stronger earlier artifact. A tied later
 attempt is not evidence that the guard prevented a regression.
 
+H3 is exploratory. Its explicit gate requires at least 30 eligible failures, recovery
+estimate at least .30, a seeded one-sided 95% lower bound above .10, and zero selected
+content regressions. It never enters a primary confirmatory claim. Confirmatory execution
+sets `maxRepairs` to zero; any later repair study needs its own frozen declaration.
+
 Also report:
 
 - final brief fulfilment after zero to two repairs;
@@ -176,9 +192,10 @@ the quantity the provider actually reported.
 ## Blinded design review
 
 Mechanical outcomes do not establish design quality. The precommitted review policy is
-`first-pass-for-H1`: every card uses attempt 0, whether or not a later repair succeeds.
-Reviewers receive shuffled `designer-review.json` cards and PNG-only
-`designer-review-assets/` copies. Cards use
+`first-pass-for-H1`: every card uses attempt 0 from one predeclared repetition, whether or
+not a later exploratory repair succeeds. Exactly three independent reviewers receive
+separately shuffled `designer-review-sets/<reviewer>/review.json` files and PNG-only asset
+copies. Cards use
 cryptographically random IDs and contain no run, case, split, repetition, condition, model,
 or trial metadata. Repeated deterministic-reference renders are included at most once per
 case so identical control images do not reveal or overweight that condition. Attempt index
@@ -204,40 +221,73 @@ Use these anchors; 2 and 4 are intermediate judgments:
 | Rhetorical fit | Obscures scope, duration, or amount | Communicates the transaction with some ambiguity | Makes scope, duration, and amount precise at a glance |
 | Overall | Not credible for the stated professional task | Usable but needs visible refinement | Polished, distinctive, and ready for the stated task |
 
-Use at least two designers for a claim about perceived quality. Keep their raw score files,
+Use exactly three independent declared designers for confirmatory review. Keep their raw score files,
 report agreement as well as means, and disclose reviewer selection and conflicts. Resolve
 missing or invalid ratings through the declared review process before unblinding; never
 remove a low score after seeing its condition.
 
 ## Comparative reporting
 
-The current commands produce descriptive, failure-aware group summaries only. They do not
-implement paired estimates, intervals, non-inferiority, model-family strata, or agreement
-between reviewers. A future confirmatory analysis must report paired condition differences
-within model, case, and repetition when all paired observations exist, alongside the
-unpaired all-trial failure-aware rates. Give uncertainty intervals and the exact interval
-method. Separate development, held-out, and model-family results. A pooled mean can
-supplement those views but cannot replace them.
+Run summaries remain descriptive and failure-aware. Confirmatory analysis is a separate,
+frozen step. H1 uses the paired risk difference within model, case and repetition, with
+every scheduled provider or render failure scored as zero. Its deterministic bootstrap
+resamples model strata and cases using the declared seed and replicate count, and reports
+model and family strata. The primary comparison is `selected_context` versus
+`scaffolded_html`; secondary raw-brief and brand-bible comparisons use Holm-adjusted
+one-sided p-values. H1 passes only when the point estimate is at least .10 and its
+one-sided 95% lower bound is greater than zero. A missing scheduled cell blocks analysis.
+
+H2 uses first-call provider-reported prompt tokens in complete selected/full pairs and
+requires mean token ratio at most .80. Its one-sided 95% lower bounds must exceed the
+negative non-inferiority margins for brief fulfilment, agent-contract conformance, and
+source-fact coverage. The failure-aware paired designer-overall result uses the same
+one-sided interval and a -.25 margin after review sealing; it cannot pass while review is
+missing. Report the descriptive all-trial rates alongside these paired outputs.
 
 ## Confirmatory entry gates
 
-The public CLI rejects `--mode confirmatory`. Do not remove that gate until all of the
-following exist in code and in an externally timestamped declaration created before the
-held-out run:
+`validate-declaration` enforces a strict, additional-properties-closed declaration: exact
+release and protocol identities; eight held-out fixture hashes; exactly six pinned model
+routes spanning at least three declared families; a complete matrix; 5–50 repetitions
+selected by the frozen seeded simulation at 90% power; no confirmatory repairs; exactly
+20,000 bootstrap resamples; H1 minimum effect .10, alpha .05 and power .90; H2 margins
+.05/.05/.02/.25 and mean token ratio no greater than .80; exactly three independent
+reviewers with ordinal-alpha threshold .67; renderer digest; protocol hashes; and a GBP
+budget ceiling of £500.
 
-1. the exact model routes and family strata, conditions, held-out fixtures, repetitions,
-   provider-endpoint rule, and generation settings;
-2. a numerical minimum effect and non-inferiority margin, the paired estimator, interval
-   method, missing-data rules, and any multiplicity handling;
-3. two or more declared designers, immutable score files, an agreement statistic, and a
-   rule for missing artifacts and ratings;
-4. tested analysis code that consumes the retained trial records and refuses undeclared
-   strata or a changed protocol, renderer, or catalogue identity.
+`validate-freeze` additionally requires an independent custodian, retained declaration
+digest, HTTPS timestamp evidence, signature method/value/key identity with a locally
+verified result, release commit, catalogue digest, unexpired route-qualification receipt
+hashes, reviewer commitments, frozen cumulative-ledger digest, approved budget and explicit
+execution authorization. Every route receipt records exactly ten calls across two time
+blocks, at least 90% success and 100% accepted identity. Actual `run --mode confirmatory`
+repeats these checks against the clean checkout and
+renderer before constructing a provider adapter. It uses the already frozen snapshot and
+never performs catalogue discovery. Any mismatch blocks generation.
 
-Publish the complete precommit, catalogue snapshot, trial JSONL, retained scrubbed provider
-response or normalized error records, artifacts, checker reports, failure records, blinded score sheets, unblinding key after
-review, analysis code, and known limitations. Avoid a universal “better” claim. State the
-models, routes, cases, date, system version, and outcomes for which the evidence applies.
+The deterministic cell journal is written before calls. It records pending, in-flight,
+complete and indeterminate cells with matrix and trial hashes. Resume validates all frozen
+inputs, preserves a completed response if it reached disk, and converts an unresolved
+in-flight cell to a scheduled indeterminate failure without retry.
+
+Each declared reviewer completes a separately shuffled copy of the same opaque first-pass cards.
+`review-seal` requires every score, exact card membership and unique declared reviewer IDs;
+it hashes raw files and reports ordinal Krippendorff alpha by dimension. The declared
+minimum is exactly three reviewers. Missing first-pass artifacts enter condition means at
+score 1; missing ratings block sealing. Agreement below the declared threshold blocks the
+claim gate.
+
+`analyze` consumes only a complete declaration-bound matrix. It emits an
+additional-properties-closed analysis result and cannot make the primary claim gate true
+without a matching sealed review set. The implementation makes confirmatory execution
+possible after external inputs exist; it does not claim those inputs or evidence currently
+exist.
+
+`bundle` creates a separate retention copy, excludes the hidden unblinding key by default,
+redacts account and provider response identifiers, rebuilds affected journal hashes and
+writes a sorted SHA-256 manifest. Verification rejects symlinks, credential patterns,
+private absolute paths, unsafe identifier fields and hash drift. Include the unblinding key
+only after every review is sealed and disclosure is intended.
 
 ## Interpretation gates
 
@@ -251,7 +301,7 @@ same first-pass budget, with failures retained and uncertainty reported. A claim
 repair requires successful agent-contract recovery plus complete source-fact
 coverage and contract fact preservation; repaired appearance alone is insufficient.
 
-If model identity is unresolved, the frozen zero-price guard fails, the renderer identity
+If model identity is unresolved, an applicable frozen pricing guard fails, the renderer identity
 changes, the checker cannot evaluate an artifact, or blinding is broken, disclose that
 stratum and exclude it only under a rule declared before unblinding. Otherwise keep it in
 the relevant failure denominator.

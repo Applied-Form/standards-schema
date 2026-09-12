@@ -1,0 +1,95 @@
+{
+  "id": "held-museum-wayfinding",
+  "split": "held-out",
+  "description": "Eight-line held-out Schedule stressing dense mobile layout and mixed zero-value notation.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Museum wayfinding refresh",
+    "schedule": {
+      "label": "Phased scope · MW-61",
+      "columns": {
+        "ref": "ZONE",
+        "description": "DELIVERABLE",
+        "duration": "PROGRAMME",
+        "amount": "COST"
+      },
+      "lines": [
+        {
+          "ref": "Z0",
+          "description": "Existing-sign audit",
+          "standard": "Public areas across three floors",
+          "duration": "2 days",
+          "amount": "£1,200"
+        },
+        {
+          "ref": "Z1",
+          "description": "Visitor-route hierarchy",
+          "standard": "Arrival, orientation and exit routes",
+          "duration": "2 days",
+          "amount": "£1,600"
+        },
+        {
+          "ref": "Z2",
+          "description": "Naming and message schedule",
+          "standard": "Up to 85 sign messages",
+          "duration": "3 days",
+          "amount": "£2,250"
+        },
+        {
+          "ref": "Z3",
+          "description": "Concept design",
+          "standard": "Two visual directions",
+          "duration": "4 days",
+          "amount": "£3,800"
+        },
+        {
+          "ref": "Z4",
+          "description": "Accessibility review",
+          "standard": "Contrast, type size and tactile opportunities",
+          "duration": "1.5 days",
+          "amount": "£1,100"
+        },
+        {
+          "ref": "Z5",
+          "description": "Prototype visitor test",
+          "standard": "One supplied route; six participants",
+          "duration": "2 days",
+          "amount": "£1,900"
+        },
+        {
+          "ref": "Z6",
+          "description": "Production artwork",
+          "standard": "Up to 40 priority signs",
+          "duration": "5 days",
+          "amount": "£4,600"
+        },
+        {
+          "ref": "Z7",
+          "description": "Supplier handover call",
+          "standard": "Included",
+          "duration": "0.5 day",
+          "amount": "£0"
+        }
+      ],
+      "total": {
+        "label": "Total · excluding manufacture",
+        "duration": "20 days",
+        "amount": "£16,450"
+      },
+      "note": "Sign manufacture, installation, statutory approvals and participant recruitment are excluded from this design scope."
+    },
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1450
+      },
+      {
+        "width": 320,
+        "height": 1700
+      }
+    ]
+  }
+}

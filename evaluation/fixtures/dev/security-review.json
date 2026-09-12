@@ -1,0 +1,46 @@
+{
+  "id": "dev-security-review",
+  "split": "dev",
+  "description": "Single-line sparse Schedule for minimum-cardinality and euro-format coverage.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Security review memorandum",
+    "schedule": {
+      "label": "Scope · SR-5",
+      "columns": {
+        "ref": "REF",
+        "description": "DESCRIPTION",
+        "duration": "DURATION",
+        "amount": "FEE"
+      },
+      "lines": [
+        {
+          "ref": "S1",
+          "description": "Application threat-model review",
+          "standard": "One supplied architecture and one readout",
+          "duration": "2 days",
+          "amount": "€1.250,00"
+        }
+      ],
+      "total": {
+        "label": "Total · net",
+        "duration": "2 days",
+        "amount": "€1.250,00"
+      },
+      "note": "Remediation implementation is excluded. Findings are based on the supplied release candidate."
+    },
+    "viewports": [
+      {
+        "width": 1024,
+        "height": 768
+      },
+      {
+        "width": 320,
+        "height": 844
+      }
+    ]
+  }
+}

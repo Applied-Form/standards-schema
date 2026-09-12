@@ -1,0 +1,53 @@
+{
+  "id": "held-incident-response",
+  "split": "held-out",
+  "description": "Sparse two-line held-out Schedule with an urgent window and Swiss-franc notation.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Incident response readiness review",
+    "schedule": {
+      "label": "Readiness scope · IR-31",
+      "columns": {
+        "ref": "ITEM",
+        "description": "RESPONSE",
+        "duration": "WINDOW",
+        "amount": "FEE"
+      },
+      "lines": [
+        {
+          "ref": "IR-A",
+          "description": "Runbook and escalation-path audit",
+          "standard": "One production service; supplied logs",
+          "duration": "24 hours",
+          "amount": "CHF 2’400"
+        },
+        {
+          "ref": "IR-B",
+          "description": "Facilitated tabletop exercise",
+          "standard": "Up to eight responders",
+          "duration": "3 hours",
+          "amount": "CHF 1’100"
+        }
+      ],
+      "total": {
+        "label": "Total · excluding expenses",
+        "duration": "27 hours",
+        "amount": "CHF 3’500"
+      },
+      "note": "Live incident handling, penetration testing and remediation are excluded. No production credentials are supplied."
+    },
+    "viewports": [
+      {
+        "width": 1180,
+        "height": 820
+      },
+      {
+        "width": 320,
+        "height": 900
+      }
+    ]
+  }
+}

@@ -1,0 +1,627 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/study-declaration.schema.json",
+  "title": "Standards protocol 0.5 confirmatory study declaration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "studyId",
+    "protocolVersion",
+    "studyMode",
+    "createdAt",
+    "releaseCommit",
+    "split",
+    "conditions",
+    "fixtures",
+    "routes",
+    "repetitions",
+    "generation",
+    "randomization",
+    "analysis",
+    "review",
+    "budget",
+    "renderer",
+    "protocolFiles"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.5.0"
+    },
+    "studyId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+    },
+    "protocolVersion": {
+      "const": "0.5.0"
+    },
+    "studyMode": {
+      "const": "confirmatory"
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "releaseCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "split": {
+      "const": "held-out"
+    },
+    "conditions": {
+      "type": "array",
+      "minItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "raw_brief",
+          "brand_bible",
+          "scaffolded_html",
+          "full_rules",
+          "compact_rules",
+          "selected_context",
+          "deterministic_component"
+        ]
+      },
+      "allOf": [
+        {
+          "contains": {
+            "const": "selected_context"
+          }
+        },
+        {
+          "contains": {
+            "const": "scaffolded_html"
+          }
+        },
+        {
+          "contains": {
+            "const": "full_rules"
+          }
+        }
+      ]
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "sha256"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+          },
+          "sha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          }
+        }
+      }
+    },
+    "routes": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "routeId",
+          "modelId",
+          "modelFamily",
+          "provider",
+          "endpointPolicy",
+          "underlyingProvider",
+          "snapshotSha256",
+          "qualification"
+        ],
+        "properties": {
+          "routeId": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+          },
+          "modelId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "modelFamily": {
+            "type": "string",
+            "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+          },
+          "provider": {
+            "const": "openrouter"
+          },
+          "endpointPolicy": {
+            "const": "pinned"
+          },
+          "underlyingProvider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "snapshotSha256": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$"
+          },
+          "qualification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "schemaVersion",
+              "routeId",
+              "qualifiedAt",
+              "expiresAt",
+              "receiptSha256",
+              "observations"
+            ],
+            "properties": {
+              "schemaVersion": {
+                "const": "0.5.0"
+              },
+              "routeId": {
+                "type": "string",
+                "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+              },
+              "qualifiedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "receiptSha256": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$"
+              },
+              "observations": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "calls",
+                  "timeBlocks",
+                  "successes",
+                  "successRate",
+                  "acceptedIdentities",
+                  "acceptedIdentityRate",
+                  "textOutput",
+                  "providerPinned",
+                  "parametersAccepted",
+                  "reservationIds"
+                ],
+                "properties": {
+                  "calls": {
+                    "const": 10
+                  },
+                  "timeBlocks": {
+                    "const": 2
+                  },
+                  "successes": {
+                    "type": "integer",
+                    "minimum": 9,
+                    "maximum": 10
+                  },
+                  "successRate": {
+                    "type": "number",
+                    "minimum": 0.9,
+                    "maximum": 1
+                  },
+                  "acceptedIdentities": {
+                    "const": 10
+                  },
+                  "acceptedIdentityRate": {
+                    "const": 1
+                  },
+                  "textOutput": {
+                    "const": true
+                  },
+                  "providerPinned": {
+                    "const": true
+                  },
+                  "parametersAccepted": {
+                    "const": true
+                  },
+                  "reservationIds": {
+                    "type": "array",
+                    "minItems": 10,
+                    "maxItems": 10,
+                    "uniqueItems": true,
+                    "items": {
+                      "type": "string",
+                      "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "repetitions": {
+      "type": "integer",
+      "minimum": 5,
+      "maximum": 50
+    },
+    "generation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "maxTokens",
+        "temperature",
+        "reasoningEffort",
+        "maxRepairs",
+        "worstCaseCallCostGbp",
+        "usdToGbpRate",
+        "automaticTopUp"
+      ],
+      "properties": {
+        "maxTokens": {
+          "type": "integer",
+          "minimum": 256,
+          "maximum": 32000
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "reasoningEffort": {
+          "enum": [
+            "none",
+            "provider-default"
+          ]
+        },
+        "maxRepairs": {
+          "const": 0
+        },
+        "worstCaseCallCostGbp": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "usdToGbpRate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 100
+        },
+        "automaticTopUp": {
+          "const": false
+        }
+      }
+    },
+    "randomization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy",
+        "seed"
+      ],
+      "properties": {
+        "strategy": {
+          "const": "blocked-case-repetition-shuffle-v1"
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "primary",
+        "secondaryComparators",
+        "h2",
+        "bootstrap",
+        "powerPlan",
+        "multiplicity",
+        "missingData"
+      ],
+      "properties": {
+        "primary": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hypothesis",
+            "treatment",
+            "comparator",
+            "outcome",
+            "minimumEffect",
+            "alpha",
+            "power"
+          ],
+          "properties": {
+            "hypothesis": {
+              "const": "H1"
+            },
+            "treatment": {
+              "const": "selected_context"
+            },
+            "comparator": {
+              "const": "scaffolded_html"
+            },
+            "outcome": {
+              "const": "firstPassBriefFulfilment"
+            },
+            "minimumEffect": {
+              "const": 0.1
+            },
+            "alpha": {
+              "const": 0.05
+            },
+            "power": {
+              "const": 0.9
+            }
+          }
+        },
+        "secondaryComparators": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "raw_brief",
+              "brand_bible"
+            ]
+          }
+        },
+        "h2": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "treatment",
+            "comparator",
+            "tokenOutcome",
+            "briefMargin",
+            "contractMargin",
+            "sourceFactMargin",
+            "designMargin",
+            "maximumTokenRatio"
+          ],
+          "properties": {
+            "treatment": {
+              "const": "selected_context"
+            },
+            "comparator": {
+              "const": "full_rules"
+            },
+            "tokenOutcome": {
+              "const": "firstCallPromptTokens"
+            },
+            "briefMargin": {
+              "const": 0.05
+            },
+            "contractMargin": {
+              "const": 0.05
+            },
+            "sourceFactMargin": {
+              "const": 0.02
+            },
+            "designMargin": {
+              "const": 0.25
+            },
+            "maximumTokenRatio": {
+              "const": 0.8
+            }
+          }
+        },
+        "bootstrap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "replicates",
+            "seed",
+            "confidenceLevel"
+          ],
+          "properties": {
+            "method": {
+              "const": "paired-stratified-model-case-v1"
+            },
+            "replicates": {
+              "const": 20000
+            },
+            "seed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "confidenceLevel": {
+              "const": 0.95
+            }
+          }
+        },
+        "powerPlan": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "method",
+            "baselineRate",
+            "treatmentRate",
+            "withinPairCorrelation",
+            "estimatedCostPerCellGbp",
+            "requiredPairs",
+            "selectedRepetitions",
+            "estimatedBudgetGbp",
+            "estimatedPower",
+            "simulationCount",
+            "simulationSeed"
+          ],
+          "properties": {
+            "method": {
+              "const": "paired-binary-seeded-simulation-v1"
+            },
+            "baselineRate": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "treatmentRate": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "withinPairCorrelation": {
+              "type": "number",
+              "minimum": -0.99,
+              "maximum": 0.99
+            },
+            "estimatedCostPerCellGbp": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 500
+            },
+            "requiredPairs": {
+              "type": "integer",
+              "minimum": 240,
+              "maximum": 2400
+            },
+            "selectedRepetitions": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 50
+            },
+            "estimatedBudgetGbp": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 500
+            },
+            "estimatedPower": {
+              "type": "number",
+              "minimum": 0.9,
+              "maximum": 1
+            },
+            "simulationCount": {
+              "type": "integer",
+              "minimum": 10000,
+              "maximum": 200000
+            },
+            "simulationSeed": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "multiplicity": {
+          "const": "holm-secondary-h1"
+        },
+        "missingData": {
+          "const": "scheduled-failure-zero; missing-cell-blocks-analysis"
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "attemptPolicy",
+        "reviewerIds",
+        "minimumReviewers",
+        "agreementStatistic",
+        "agreementThreshold",
+        "missingArtifactScore",
+        "missingRatingPolicy",
+        "reviewerSelection",
+        "conflicts",
+        "independentReviewers",
+        "selectedRepetition"
+      ],
+      "properties": {
+        "attemptPolicy": {
+          "const": "first-pass-for-H1"
+        },
+        "reviewerIds": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "minimumReviewers": {
+          "const": 3
+        },
+        "agreementStatistic": {
+          "const": "krippendorff-alpha-ordinal"
+        },
+        "agreementThreshold": {
+          "const": 0.67
+        },
+        "missingArtifactScore": {
+          "const": 1
+        },
+        "missingRatingPolicy": {
+          "const": "block-analysis"
+        },
+        "reviewerSelection": {
+          "type": "string",
+          "minLength": 1
+        },
+        "conflicts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "independentReviewers": {
+          "const": true
+        },
+        "selectedRepetition": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 49
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currency",
+        "maximum"
+      ],
+      "properties": {
+        "currency": {
+          "const": "GBP"
+        },
+        "maximum": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        }
+      }
+    },
+    "renderer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identitySha256"
+      ],
+      "properties": {
+        "identitySha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "protocolFiles": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "propertyNames": {
+        "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+      }
+    }
+  }
+}

@@ -16,18 +16,21 @@ from evaluation.harness import (AGENT_NATIVE_CONDITIONS, BASELINE_CONDITIONS, CO
     MINIMAL_BASELINE_CONDITIONS, REFERENCE_CONDITION,
     SCAFFOLDED_CONDITION, EvaluationError, agent_contract_fact_metric, brief_fulfilment,
     _compact_repair_prompt, extract_html, generic_scaffold_context, load_fixtures,
-    messages_for, parse_json_bytes, plan_for, run_experiment, source_task_payload,
+    messages_for, parse_json_bytes, plan_for, run_experiment as _run_experiment, source_task_payload,
     summarize_designer_review)
 from evaluation.openrouter import OpenRouterProvider, discover_free_models
 from evaluation.provider import CompletionResult
+from evaluation.study import SpendLedger
 from workflow.engine import digest, sha256
 from workflow.checker import check_artifact
+from workflow.support import support_manifest_sha256
 
 
 def identity():
-    value = {"name": "standards-ui-workflow-render", "version": "0.1.0",
-             "packageVersion": "1.0.0", "browserRevision": "test",
-             "browser": "Chromium test", "platform": "test-x64", "nodeVersion": "v20.0.0"}
+    value = {"name": "standards-ui-workflow-render", "version": "0.2.0",
+             "packageVersion": "2.0.0", "supportManifestSha256": support_manifest_sha256(),
+             "browserRevision": "test",
+             "browser": "Chromium test", "platform": "test-x64", "nodeVersion": "v22.0.0"}
     for field in ("sourceSha256", "packageEntrySha256", "tokensSha256", "fontAssetsSha256",
                   "runtimeModulesSha256", "lockfileSha256", "browserLauncherSha256",
                   "nodeExecutableSha256", "browserPayloadSha256"):
@@ -92,11 +95,9 @@ def evidence_for(plan, html):
                          "scrollWidth": viewport["width"], "scrollHeight": viewport["height"]},
             "bodyTextLength": 100, "overflowingElements": [], "pageErrors": [],
             "blockedRequests": [], "facts": copy.deepcopy(facts), "unmarkedText": [],
-            "semanticChecks": {"oneVisibleH1": True, "tableCount": 1,
-                               "namedTable": True, "captionOrLabel": True,
-                               "columnHeaders": True, "rowHeaders": True, "bodyGrid": True,
-                               "numericColumnOrder": True,
-                               "footerStructure": True},
+            "semanticChecks": {"move": "Schedule", "oneVisibleH1": True,
+                               "relationships": [{"id": item, "passed": True}
+                                                 for item in plan["requiredRelationships"]]},
             "invariantBand": {"count": 1, "containsTitle": True,
                               "bounds": {"x": 0, "y": 0, "width": viewport["width"], "height": 32},
                               "backgroundColor": "rgb(17, 17, 17)",
@@ -105,7 +106,7 @@ def evidence_for(plan, html):
             "screenshot": {"file": f'schedule-{viewport["width"]}x{viewport["height"]}.png',
                            "sha256": hashlib.sha256(image).hexdigest(),
                            "dataBase64": base64.b64encode(image).decode("ascii")}})
-    return {"schemaVersion": "0.1.0", "planSha256": digest(plan),
+    return {"schemaVersion": "0.2.0", "planSha256": digest(plan),
             "artifactSha256": sha256(html), "renderer": copy.deepcopy(plan["renderer"]),
             "viewports": viewports}
 
@@ -149,7 +150,42 @@ class FakeProvider:
             request_parameters={"maxTokens": max_tokens, "temperature": temperature})
 
 
+def run_experiment(**kwargs):
+    """Supply the explicit external ledger required by the public runner contract."""
+    if kwargs.get("provider") is not None and kwargs.get("spend_ledger") is None:
+        output = Path(kwargs["output"])
+        ledger_path = output.parent / f"{output.name}-test-spend-ledger.json"
+        kwargs["spend_ledger"] = SpendLedger.create(
+            ledger_path, "test-" + hashlib.sha256(str(ledger_path).encode()).hexdigest()[:20])
+    return _run_experiment(**kwargs)
+
+
 class EvaluationTests(unittest.TestCase):
+    def test_runner_reserves_worst_case_spend_before_provider_call(self):
+        fixture = load_fixtures("dev", {"dev-archive-digitisation"})[0]
+        _, plan = plan_for(fixture, "raw_brief", identity())
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            ledger = SpendLedger.create(root / "ledger.json", "shared-evaluation-ledger",
+                                        cap_gbp=1)
+
+            class GuardedProvider(FakeProvider):
+                def complete(self, *args, **kwargs):
+                    current = SpendLedger.load(ledger.path)
+                    self.saw_reservation = current.value["entries"][-1]["status"] == "reserved"
+                    return super().complete(*args, **kwargs)
+
+            provider = GuardedProvider([html_for(plan)])
+            run_experiment(output=root / "run", provider=provider, models=["fixture/model"],
+                renderer=FakeRenderer(), conditions=["raw_brief"], split="dev",
+                case_ids={fixture["id"]}, repetitions=1, max_repairs=0,
+                max_tokens=1000, temperature=0, model_snapshot={"models": []},
+                spend_ledger=ledger, worst_case_call_cost_gbp=.25,
+                usd_to_gbp_rate=.8, label="budget-order-test")
+            self.assertTrue(provider.saw_reservation)
+            self.assertEqual(SpendLedger.load(ledger.path).value["entries"][0]["status"],
+                             "settled")
+
     def test_fixed_fixture_splits_and_all_condition_prompts(self):
         fixtures = load_fixtures("all")
         self.assertEqual({item["split"] for item in fixtures}, {"dev", "held-out"})
@@ -748,7 +784,7 @@ class EvaluationTests(unittest.TestCase):
 
     def test_confirmatory_mode_fails_before_provider_discovery(self):
         with patch("evaluation.cli.discover_free_models") as discovery:
-            with self.assertRaisesRegex(EvaluationError, "confirmatory execution is disabled"):
+            with self.assertRaisesRegex(EvaluationError, "confirmatory execution requires"):
                 cli_main(["run", "--models", "maker/model:free", "--mode", "confirmatory"])
             discovery.assert_not_called()
 

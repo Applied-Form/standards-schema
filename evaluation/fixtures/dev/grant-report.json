@@ -1,0 +1,67 @@
+{
+  "id": "dev-grant-report",
+  "split": "dev",
+  "description": "Four-line Schedule with long prose, em dashes and Australian-dollar notation.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Community grant impact report",
+    "schedule": {
+      "label": "Reporting plan · GR–2026",
+      "columns": {
+        "ref": "MILESTONE",
+        "description": "ACTIVITY",
+        "duration": "PERIOD",
+        "amount": "BUDGET"
+      },
+      "lines": [
+        {
+          "ref": "G-01",
+          "description": "Evidence inventory and outcome framework",
+          "standard": "Nine partner submissions; supplied participant data",
+          "duration": "Week 1",
+          "amount": "A$2,100"
+        },
+        {
+          "ref": "G-02",
+          "description": "Stakeholder interviews and thematic analysis",
+          "standard": "Up to fourteen remote interviews with summary notes",
+          "duration": "Weeks 2–3",
+          "amount": "A$4,600"
+        },
+        {
+          "ref": "G-03",
+          "description": "Draft report, accessible charts and plain-language summary",
+          "standard": "Maximum 32 pages plus a two-page summary",
+          "duration": "Weeks 4–5",
+          "amount": "A$5,900"
+        },
+        {
+          "ref": "G-04",
+          "description": "Board presentation and consolidated amendments",
+          "standard": "One 60-minute session; one amendment round",
+          "duration": "Week 6",
+          "amount": "A$1,400"
+        }
+      ],
+      "total": {
+        "label": "Total · GST exclusive",
+        "duration": "6 weeks",
+        "amount": "A$14,000"
+      },
+      "note": "Travel, primary data collection and independent assurance are excluded — source evidence is supplied by the client."
+    },
+    "viewports": [
+      {
+        "width": 1200,
+        "height": 1000
+      },
+      {
+        "width": 375,
+        "height": 1050
+      }
+    ]
+  }
+}

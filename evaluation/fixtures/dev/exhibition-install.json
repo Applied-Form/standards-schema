@@ -1,0 +1,74 @@
+{
+  "id": "dev-exhibition-install",
+  "split": "dev",
+  "description": "Five-line production Schedule with decimals, included work and mobile pressure.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Exhibition graphic installation",
+    "schedule": {
+      "label": "Install schedule · EX-42",
+      "columns": {
+        "ref": "PHASE",
+        "description": "SCOPE",
+        "duration": "SITE TIME",
+        "amount": "PRICE"
+      },
+      "lines": [
+        {
+          "ref": "P1",
+          "description": "Final artwork inspection",
+          "standard": "Twelve supplied print files",
+          "duration": "0.5 day",
+          "amount": "£350"
+        },
+        {
+          "ref": "P2",
+          "description": "Colour proof review",
+          "standard": "One A2 proof set",
+          "duration": "1 day",
+          "amount": "£600"
+        },
+        {
+          "ref": "P3",
+          "description": "Production coordination",
+          "standard": "Supplier liaison included",
+          "duration": "2 days",
+          "amount": "£1,100"
+        },
+        {
+          "ref": "P4",
+          "description": "On-site graphic installation",
+          "standard": "Two installers; one venue",
+          "duration": "2 days",
+          "amount": "£1,900"
+        },
+        {
+          "ref": "P5",
+          "description": "Completion photographs",
+          "standard": "Twelve edited images",
+          "duration": "0.5 day",
+          "amount": "£0"
+        }
+      ],
+      "total": {
+        "label": "Total · excluding VAT",
+        "duration": "6 days",
+        "amount": "£3,950"
+      },
+      "note": "Venue access is available from 08:00. Print manufacture, fixings and overnight accommodation are excluded."
+    },
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 1100
+      },
+      {
+        "width": 390,
+        "height": 1100
+      }
+    ]
+  }
+}

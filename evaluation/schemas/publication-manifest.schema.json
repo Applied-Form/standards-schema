@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://standards.local/evaluation/publication-manifest.schema.json",
+  "title": "Publication-safe evidence manifest", "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "sourceRunId", "unblindingKeyIncluded", "files"],
+  "properties": {"schemaVersion": {"const": "0.5.0"}, "sourceRunId": {"type": "string", "minLength": 1}, "unblindingKeyIncluded": {"type": "boolean"}, "files": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["path", "sha256", "bytes"], "properties": {"path": {"type": "string", "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"}, "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "bytes": {"type": "integer", "minimum": 0}}}}}
+}

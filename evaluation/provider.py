@@ -15,6 +15,7 @@ class CompletionResult:
     requested_model: str = ""
     resolved_model: str | None = None
     provider_name: str | None = None
+    provider_endpoint: str | None = None
     response_id: str | None = None
     finish_reason: str | None = None
     service_tier: str | None = None
@@ -29,6 +30,7 @@ class CompletionResult:
     raw: Any = None
     error: dict[str, Any] | None = None
     request_parameters: dict[str, Any] = field(default_factory=dict)
+    effective_settings: dict[str, Any] | None = None
 
 
 class ModelProvider(Protocol):
