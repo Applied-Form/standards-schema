@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "0.1.0",
+  "recordedDate": "2026-09-12",
+  "purpose": "Synthetic, retained, offline-verifiable review records produced by examples/workflow/reference_loop.py; they prove the deterministic plan/render/check/repair path, not designer approval or comparative model performance.",
+  "renderer": {
+    "name": "standards-ui-workflow-render",
+    "version": "0.1.0",
+    "sourceSha256": "d1b95c8b3228ee7a5b456cbd5d78f13404681eacefe3d711615c9ae1b2119b7c",
+    "packageVersion": "1.0.0",
+    "packageEntrySha256": "4836c4b3c1d80dea6539cd5658d5425e9d61c54d5c5deb8a210188530d15aca4",
+    "tokensSha256": "c87adb48c1b9664e2b357c7bd88a8d615323fe82809bd4901eed21df137f5256",
+    "fontAssetsSha256": "6fdde2f31d97c7546fddc4d35ebd9cc25a01e4ced0857e64ba43538fdf0a1667",
+    "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
+    "lockfileSha256": "553b3c93c7e364a40e54dd6676566e81588affb6ce28a5cd5d09959bfa8a5213",
+    "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
+    "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
+    "nodeExecutableSha256": "9bd9754f5300bd7910f280d8e413f13bb1460b30457243aa366d253677e893f3",
+    "browserRevision": "1243",
+    "browser": "153.0.8010.12",
+    "platform": "darwin-arm64",
+    "nodeVersion": "v25.8.0"
+  },
+  "cases": [
+    {
+      "name": "reference",
+      "brief": "../schedule-brief.json",
+      "planSha256": "426cf16d2d7ea7ca26e21eeabe3de0e0ebe87eb42595d07cbb6c714823f472b8",
+      "contextSha256": "99f3c0cfaa08c4f630b5c720cf2aa91eef8f29aa2d0f39cbd079867532d76035",
+      "artifactSha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "schedule-plan.json",
+          "sha256": "4669c1448ba68895c9e992a232efcd62625fb4c28b0e488bf542ffeb91d3d7eb"
+        },
+        "context": {
+          "file": "schedule-context.json",
+          "sha256": "eed3861853e52ef07c908dbde10f3ae09c85b55c969637fd0ed3a96fd2dccd6b"
+        },
+        "artifact": {
+          "file": "schedule.html",
+          "sha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca"
+        },
+        "evidence": {
+          "file": "schedule-render-evidence.json",
+          "sha256": "62fbcd2b9f0f9f0604520b6e9e8f16d0635d62a0c7f8f1ff9326b96c19fe6ed6"
+        },
+        "report": {
+          "file": "schedule-report.json",
+          "sha256": "1a00b67740dabb15504cd613cf02990ab43999a427160bbbec79422f0464e545"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "schedule-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "46e0f6d7e10d650274cae44bb0bf10221c4afe7a9f58de15827c510222e38448"
+        },
+        {
+          "file": "schedule-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 924
+          },
+          "sha256": "cc267a395da69700c8d505ae03b023dca7755dd4f3d07b53caa4c078c2df281e"
+        }
+      ]
+    },
+    {
+      "name": "long-content",
+      "brief": "../schedule-long-brief.json",
+      "planSha256": "d26d6b8d3be084d015382038a71419ebec40875c640e36e10cac576062b4fe50",
+      "contextSha256": "8fe0e110f7d09414ea23b0895e46136b3128f9961d824937f8cc81cf808e519d",
+      "artifactSha256": "ec7e51bd387fcef33c70f8901b6f527718c714cf3639946cd92c4f47cad84ae4",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "schedule-long-plan.json",
+          "sha256": "e9d8c828dd814c563681ef9e1a69bfae8be34e4aa4d2eceb7ebe95f7398b8c30"
+        },
+        "context": {
+          "file": "schedule-long-context.json",
+          "sha256": "5e072d53a90177431dc951fd7e54b74435012abbbee153e8d00cbe4724983071"
+        },
+        "artifact": {
+          "file": "schedule-long.html",
+          "sha256": "ec7e51bd387fcef33c70f8901b6f527718c714cf3639946cd92c4f47cad84ae4"
+        },
+        "evidence": {
+          "file": "schedule-long-render-evidence.json",
+          "sha256": "5b261a0ce14ed9393a2d12934c6ec8fadaf69fdc692a753ab08360551ed25843"
+        },
+        "report": {
+          "file": "schedule-long-report.json",
+          "sha256": "16bda808e25efe622637c9b9f9477676028ec6e2807846069efd4b67356bb93b"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "schedule-long-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 1117
+          },
+          "sha256": "ef129146d1baf3678ab510d747d158255a86e79008b8746b5738d715e1cd449d"
+        }
+      ]
+    }
+  ]
+}

@@ -13,14 +13,16 @@ agents, and **Instrument** — an open reference system, available under CC BY 4
 | Use a system today | [Instrument](packs/instrument/README.md) — CC BY 4.0 |
 | Understand how systems are written | [Schema v0.4](schema/schema-v0.4.md) |
 | Serve the system to an agent | [MCP setup and tools](mcp/README.md) |
-| Contribute as a designer | [Design and rule challenges](CONTRIBUTING.md#choose-a-contribution-path) — no code required |
-| Contribute as a developer | [Implementation fixes and checks](CONTRIBUTING.md#edit-sources-then-regenerate) |
+| Run the first plan/check/repair workflow | [Instrument Schedule workflow](workflow/README.md) |
+| Prepare a design contribution | [Design and rule challenges](CONTRIBUTING.md#choose-a-contribution-path) — no code required |
+| Prepare a developer contribution | [Developer quickstart](CONTRIBUTING.md#developer-quickstart) |
 | Write your own system | [Schema v0.4](schema/schema-v0.4.md), then [Contributing](CONTRIBUTING.md) |
-| Check the evidence | [Schema discussion and sources](schema/schema-v0.4.md), and [Study run sheet](schema/RUNNING-THE-STUDY.md) |
+| Check the evidence | [Evaluation protocol and harness](evaluation/README.md), [reproducible workflow proof](examples/workflow/README.md), and [study run sheet](schema/RUNNING-THE-STUDY.md) |
 | See proposed work | [Open foundation roadmap](ROADMAP.md) |
 
-Project process: [governance](GOVERNANCE.md), [conduct](CODE_OF_CONDUCT.md),
-[private security reporting](SECURITY.md) and [changelog](CHANGELOG.md).
+Project process: [governance](GOVERNANCE.md), [maintainer status](MAINTAINERS.md),
+[conduct](CODE_OF_CONDUCT.md), [private security reporting](SECURITY.md),
+[release process](RELEASING.md) and [changelog](CHANGELOG.md).
 The [CLA](CLA.md) is an unreviewed draft; legal review remains required before active
 contributor recruitment.
 
@@ -49,6 +51,9 @@ packs/instrument/       technical modernism. Free, complete, CC BY 4.0
   dist/claude/          the pack as an Agent Skill, with its assets
   dist/cursor/          the pack as a Cursor rule (.mdc)
 mcp/server.py           MCP server. Standard library only, stdio
+workflow/               versioned plan, selected context, artifact checks and bounded repair
+evaluation/             fixed-condition, multi-model evaluation and blinded-review harness
+examples/workflow/      reproducible browser reference loop and synthetic review artifacts
 tests/check.py          the checks CI runs. No dependencies
 ```
 
@@ -82,20 +87,22 @@ accessibility or design quality; report what was actually tested.
 
 ## On the evidence
 
-Two internal studies compared a flat schema against a layered, precedence-ordered one and
-returned no clear difference on consistency. The published literature had already predicted
-that: the benefit of that structure is capability-graded, worth about +11 points of
-instruction-following on the weakest model tested and essentially nothing on the strongest,
-and both studies ran on a frontier model. Schema v0.4 is the response.
+Earlier internal comparisons did not show a clear consistency advantage for a layered,
+precedence-ordered schema over a flatter one. Their consistency measure was collected before
+a blinding defect in `study.html` was fixed, so those rounds cannot support a comparative
+claim and must be re-run before their result is quoted.
 
-Those rounds are written up in full, including where the conclusion drawn from them was
-wrong. Their consistency measure was collected before a blinding defect in `study.html` was
-fixed, so both need re-running before the result is quoted. The highest-value experiment
-remaining is in `schema/RUNNING-THE-STUDY.md`, and it is a decision gate rather than a
-formality — one outcome makes the product simpler.
+The repository therefore makes no current claim that Standards is superior to a strong
+brand guide, improves a particular model, or reduces human correction. The public
+[evaluation harness](evaluation/README.md) is built to test those questions across fixed
+conditions, development and held-out cases, frozen model routes, complete failure records,
+mechanical conformance and blinded human review. The deterministic
+[reference loop](examples/workflow/README.md) proves plan/check/repair/stop mechanics only; it
+makes no model call. The earlier study design remains documented in
+[`schema/RUNNING-THE-STUDY.md`](schema/RUNNING-THE-STUDY.md).
 
-Precision about your own evidence is the point. Two studies, seven briefs each, judged by one
-person: say so every time it is quoted.
+Precision about evidence is part of the product. Publish the fixtures, model identifiers,
+settings, failures, denominators, scoring records and limits with any result.
 
 ## Where things live
 

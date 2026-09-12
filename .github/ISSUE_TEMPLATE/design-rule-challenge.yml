@@ -44,10 +44,8 @@ body:
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed resolution and tradeoff
-      description: What should change, what should remain, and what alternative did you consider? If adding a constraint, explain the budget impact or proposed replacement.
-    validations:
-      required: true
+      label: Proposed resolution and tradeoff (optional)
+      description: If you have a resolution, explain what should change, what should remain and the tradeoff. A reproducible, annotated counterexample is complete without a proposed fix.
   - type: textarea
     id: evidence
     attributes:

@@ -28,7 +28,10 @@ rather than assuming it is supported. The MCP server reads locally available pac
 not provide an entitlement service. Serve only the catalogue intended for that client.
 
 Maintainers should acknowledge a private report, agree a safe reproduction, explain its
-status and coordinate a fix and disclosure with the reporter. Capacity and response times
-are not guaranteed. Release notes should describe the fix without exposing private report
-content. Publish an advisory when appropriate and offer attribution only with the reporter's
-agreement. No bounty or compensation programme is promised.
+status and coordinate a fix and disclosure with the reporter. Once the private route is
+tested and recruitment opens, the target is acknowledgement within two UK business days
+and a status update at least every ten business days; the named backup in `MAINTAINERS.md`
+handles escalation or recusal. No target applies while those launch gates remain open.
+Release notes should describe the fix without exposing private report content. Publish an
+advisory when appropriate and offer attribution only with the reporter's agreement. No
+bounty or compensation programme is promised.

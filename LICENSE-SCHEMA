@@ -1,7 +1,9 @@
 # Schema licence
 
-`schema/schema-v0.3.md` and `schema/schema-v0.4.md` are licensed under the Creative Commons
-Attribution 4.0 International Licence (CC BY 4.0).
+The schema and documentation, plus the synthetic inputs and reference artifacts assigned
+to this file by the root `LICENSE`, are licensed under the Creative Commons Attribution
+4.0 International Licence (CC BY 4.0). The root licence table is the authoritative path
+map; this notice supplies the corresponding terms.
 
 Full text: https://creativecommons.org/licenses/by/4.0/legalcode
 
@@ -9,7 +11,8 @@ You may share and adapt the schema, including commercially, provided you give ap
 credit, link to the licence, and indicate if changes were made.
 
 Attribute as: *System schema, from Standards by Applied Form —
-https://github.com/jordanberkowitz-afk/standards*
+https://github.com/appliedform/standards*
 
-This licence covers the schema documents only. It does not cover the six systems authored
-against the schema; see `LICENSE`.
+This notice does not cover the MIT tooling, the separately licensed Instrument pack, or
+font software embedded in retained workflow HTML; see the root `LICENSE` for those
+boundaries and font notices.

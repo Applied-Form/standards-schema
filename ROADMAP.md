@@ -3,13 +3,15 @@
 Standards aims to help agents select a design approach, make a composition plan, produce
 an artefact and check and repair it against explicit rules. The foundation here already
 includes authored rules, compiled instruction builds, token and archetype contracts,
-an MCP retrieval and move-selection interface, and Instrument assets and templates.
-An integrated plan/check/repair loop is proposed work, not a shipped capability or a
-demonstrated quality advantage.
+an MCP retrieval and move-selection interface, and Instrument assets and templates. A
+versioned preview now implements plan, selected context, rule-linked checking and bounded
+repair for one Instrument Transaction/Schedule HTML surface. It is a scoped implementation,
+not a demonstrated quality advantage; coverage of other jobs and formats remains proposed.
 
 This roadmap is ordered by dependency, without promised dates. Discuss substantial work
 through the [decision process](GOVERNANCE.md) before implementing it. Active contributor
-recruitment awaits review of the [draft CLA](CLA.md) and the reporting arrangements.
+recruitment awaits review of the [draft CLA](CLA.md), working private reporting routes and
+named primary and backup maintainers.
 
 ## First: dependable foundations
 
@@ -25,6 +27,12 @@ Done means a contributor can follow the installation example, reproduce the chec
 report a failure with enough information for another person to investigate it.
 
 ## Next: an inspectable agent workflow
+
+The Schedule preview is the first completed slice of this stage. Its
+[cross-repository reference loop](examples/workflow/README.md) records a passing artifact,
+seeded fact failure, fresh targeted repair and bounded stop path. Those contracts establish
+the interface for the remaining moves; they do not establish that the interface improves
+model performance.
 
 - **Select and plan:** build on MCP `select_move` with an inspectable plan that records the
   rhetorical job, selected move, content needs, source version and applicable rules.

@@ -1,0 +1,325 @@
+{
+  "schemaVersion": "0.1.0",
+  "planSha256": "426cf16d2d7ea7ca26e21eeabe3de0e0ebe87eb42595d07cbb6c714823f472b8",
+  "artifactSha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca",
+  "status": "pass",
+  "summary": {
+    "total": 20,
+    "pass": 20,
+    "fail": 0,
+    "unknown": 0,
+    "critical": 0,
+    "error": 0,
+    "warning": 0
+  },
+  "findings": [
+    {
+      "ruleId": "plan.valid",
+      "severity": "info",
+      "status": "pass",
+      "location": "plan",
+      "expected": "facts agree with the bound Schedule",
+      "observed": true,
+      "repairable": false
+    },
+    {
+      "ruleId": "html.structure",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "complete, balanced HTML document",
+      "observed": [],
+      "repairable": false
+    },
+    {
+      "ruleId": "html.self_contained",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "static self-contained Schedule HTML",
+      "observed": [],
+      "repairable": false
+    },
+    {
+      "ruleId": "facts.unique",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "25 unique fact markers",
+      "observed": 25,
+      "repairable": false
+    },
+    {
+      "ruleId": "facts.exact",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "25 exact facts",
+      "observed": 25,
+      "repairable": false
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "body",
+      "expected": "all visible source text belongs to approved facts",
+      "observed": [],
+      "repairable": false
+    },
+    {
+      "ruleId": "schedule.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "table",
+      "expected": "named Schedule table with associated headers, rows and total",
+      "observed": [],
+      "repairable": false
+    },
+    {
+      "ruleId": "render.binding",
+      "severity": "info",
+      "status": "pass",
+      "location": "render_evidence",
+      "expected": {
+        "planSha256": "426cf16d2d7ea7ca26e21eeabe3de0e0ebe87eb42595d07cbb6c714823f472b8",
+        "artifactSha256": "c793df32024e582beafdfaee8e4c69520636c86ee6308fbf5b899783550c27ca"
+      },
+      "observed": null,
+      "repairable": false
+    },
+    {
+      "ruleId": "render.viewport_fit",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:1280x960",
+      "expected": "horizontal fit, readable body and no browser/resource errors",
+      "observed": {
+        "clientWidth": 1280,
+        "clientHeight": 960,
+        "scrollWidth": 1280,
+        "scrollHeight": 960
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "render.facts",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:1280x960",
+      "expected": "25 exact, visible, unclipped and unobscured facts",
+      "observed": 25,
+      "repairable": false
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:1280x960",
+      "expected": "no unapproved visible text",
+      "observed": [],
+      "repairable": false
+    },
+    {
+      "ruleId": "render.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:1280x960",
+      "expected": {
+        "oneVisibleH1": true,
+        "tableCount": 1,
+        "namedTable": true,
+        "captionOrLabel": true,
+        "columnHeaders": true,
+        "rowHeaders": true,
+        "bodyGrid": true,
+        "numericColumnOrder": true,
+        "footerStructure": true
+      },
+      "observed": {
+        "oneVisibleH1": true,
+        "tableCount": 1,
+        "namedTable": true,
+        "captionOrLabel": true,
+        "columnHeaders": true,
+        "rowHeaders": true,
+        "bodyGrid": true,
+        "numericColumnOrder": true,
+        "footerStructure": true
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "instrument.invariant_band",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:1280x960",
+      "expected": {
+        "count": 1,
+        "containsTitle": true,
+        "x": 0,
+        "width": 1280,
+        "height": 32,
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "observed": {
+        "count": 1,
+        "containsTitle": true,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 32
+        },
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "render.screenshot",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:1280x960",
+      "expected": "hash-matched embedded PNG with declared width and captured height",
+      "observed": {
+        "file": "schedule-1280x960.png",
+        "sha256": "46e0f6d7e10d650274cae44bb0bf10221c4afe7a9f58de15827c510222e38448"
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "render.viewport_fit",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:390x844",
+      "expected": "horizontal fit, readable body and no browser/resource errors",
+      "observed": {
+        "clientWidth": 390,
+        "clientHeight": 844,
+        "scrollWidth": 390,
+        "scrollHeight": 924
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "render.facts",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:390x844",
+      "expected": "25 exact, visible, unclipped and unobscured facts",
+      "observed": 25,
+      "repairable": false
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:390x844",
+      "expected": "no unapproved visible text",
+      "observed": [],
+      "repairable": false
+    },
+    {
+      "ruleId": "render.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:390x844",
+      "expected": {
+        "oneVisibleH1": true,
+        "tableCount": 1,
+        "namedTable": true,
+        "captionOrLabel": true,
+        "columnHeaders": true,
+        "rowHeaders": true,
+        "bodyGrid": true,
+        "numericColumnOrder": true,
+        "footerStructure": true
+      },
+      "observed": {
+        "oneVisibleH1": true,
+        "tableCount": 1,
+        "namedTable": true,
+        "captionOrLabel": true,
+        "columnHeaders": true,
+        "rowHeaders": true,
+        "bodyGrid": true,
+        "numericColumnOrder": true,
+        "footerStructure": true
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "instrument.invariant_band",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:390x844",
+      "expected": {
+        "count": 1,
+        "containsTitle": true,
+        "x": 0,
+        "width": 390,
+        "height": 32,
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "observed": {
+        "count": 1,
+        "containsTitle": true,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 390,
+          "height": 32
+        },
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "repairable": false
+    },
+    {
+      "ruleId": "render.screenshot",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:390x844",
+      "expected": "hash-matched embedded PNG with declared width and captured height",
+      "observed": {
+        "file": "schedule-390x844.png",
+        "sha256": "cc267a395da69700c8d505ae03b023dca7755dd4f3d07b53caa4c078c2df281e"
+      },
+      "repairable": false
+    }
+  ],
+  "limitations": [
+    "Supports Instrument Schedule HTML only; checks a bounded static HTML subset.",
+    "Visual quality, rhetorical effectiveness and full accessibility compliance are unassessed.",
+    "Source visibility is conservative; CSS layout and clipping require current browser evidence.",
+    "Render evidence is caller supplied and hash-bound, not an attestation of browser execution.",
+    "Vertical document scrolling is permitted; required horizontal viewport fit is checked."
+  ]
+}

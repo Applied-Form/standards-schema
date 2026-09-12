@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Standards MCP server — serves the six packs to any MCP client.
+"""Standards MCP server — serves installed packs and a local artifact workflow.
 
 Turns the catalogue from a download into something an agent can query: list the
 systems, pull one build, read the token and archetype contracts, and select a
@@ -18,17 +18,25 @@ Client config (Claude Code, Claude Desktop and anything else reading MCP stdio):
         "command": "python3",
         "args": ["/absolute/path/to/standards/mcp/server.py"]}}}
 """
-import argparse, json, os, sys
+import argparse, importlib, json, os, sys
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 PROTOCOL_VERSION = "2025-06-18"
+MAX_MESSAGE_CHARS = 4_000_000
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PACKS = os.path.join(ROOT, "packs")
 
-BUILDS = {"compact": "SKILL-compact.md",   # small and fast models
-          "full": "SKILL.md",              # frontier models
-          "reference": "REFERENCE.md"}     # on demand, either
+BUILDS = {"compact": "SKILL-compact.md",   # compact instruction build
+          "full": "SKILL.md",              # full instruction build
+          "reference": "REFERENCE.md"}     # detailed reference
+
+
+def workflow_module(name):
+    """Load repository-local workflow code, independent of the launch directory."""
+    if not sys.path or sys.path[0] != ROOT:
+        sys.path.insert(0, ROOT)
+    return importlib.import_module("workflow." + name)
 
 
 # ---------------------------------------------------------------- catalogue
@@ -107,10 +115,9 @@ TOOLS = [
      "inputSchema": {"type": "object", "properties": {}, "additionalProperties": False}},
 
     {"name": "get_system",
-     "description": "Fetch one system's instruction build. Use 'compact' for small and fast "
-                    "models, 'full' for frontier models, 'reference' when you need a specific "
-                    "detail. Load one build, never two - loading the reference alongside a "
-                    "core costs compliance on the core.",
+     "description": "Fetch one system's compact or full instruction build, or its detailed "
+                    "reference. Choose the context appropriate to the task; comparative "
+                    "quality and efficiency of these formats remain evaluation questions.",
      "inputSchema": {"type": "object",
                      "properties": {"system": {"type": "string",
                                                "description": "system slug, e.g. instrument"},
@@ -119,8 +126,8 @@ TOOLS = [
                      "required": ["system"], "additionalProperties": False}},
 
     {"name": "get_tokens",
-     "description": "The system's token contract as JSON: colour, type and system tokens. "
-                    "Cheaper and more accurate than parsing them out of the prose build.",
+     "description": "The system's token contract as JSON: colour, type and system tokens, "
+                    "available without extracting values from the prose build.",
      "inputSchema": {"type": "object",
                      "properties": {"system": {"type": "string"}},
                      "required": ["system"], "additionalProperties": False}},
@@ -132,16 +139,66 @@ TOOLS = [
                      "required": ["system"], "additionalProperties": False}},
 
     {"name": "select_move",
-     "description": "Pick the compositional move for a rhetorical job. Jobs are E evidence, "
-                    "S structure, N narrative, C change, T transaction, W wayfinding. One move "
-                    "is active per artefact; the others are not in force, so select rather "
-                    "than trying to satisfy the whole table.",
+     "description": "Return candidate compositional moves for a rhetorical job; a job may "
+                    "have several matches. Jobs are E evidence, S structure, N narrative, "
+                    "C change, T transaction, W wayfinding. Choose one applicable move "
+                    "for the artefact; this retrieval call does not make a complete plan.",
      "inputSchema": {"type": "object",
                      "properties": {"system": {"type": "string"},
                                     "job": {"type": "string",
                                             "description": "job code or name, e.g. E or evidence"}},
                      "required": ["system", "job"], "additionalProperties": False}},
 ]
+
+
+def tool_definitions():
+    """Advertise the same nested input contracts used by the local workflow."""
+    load_schema = workflow_module("schema").load_schema
+    brief = load_schema("brief")
+    plan = load_schema("plan")
+    renderer = load_schema("renderer-identity")
+    evidence = load_schema("render-evidence")
+    history = load_schema("history")
+    context_output = load_schema("context")
+    report_output = load_schema("report")
+    repair_output = load_schema("repair")
+    html = {"type": "string", "minLength": 1,
+            "maxLength": 2000000,
+            "description": "HTML source to inspect; the server does not execute it."}
+
+    def arguments(properties, required):
+        return {"type": "object", "properties": properties, "required": required,
+                "additionalProperties": False}
+
+    return TOOLS + [
+        {"name": "plan_artifact",
+         "description": "Validate a supported fixed-content brief and create a versioned "
+                        "artifact plan with selected move and source provenance. Unsupported "
+                        "workflows return an error; no model call or rendering occurs.",
+         "inputSchema": arguments({"brief": brief, "renderer": renderer}, ["brief", "renderer"]),
+         "outputSchema": plan},
+        {"name": "assemble_context",
+         "description": "Assemble context for a validated artifact plan from installed pack "
+                        "sources and record exactly what was supplied. This does not prove "
+                        "that less context produces better output.",
+         "inputSchema": arguments({"plan": plan}, ["plan"]),
+         "outputSchema": context_output},
+        {"name": "check_artifact",
+         "description": "Check supplied HTML against a supported artifact plan. Return "
+                        "rule-linked findings and explicit unknowns; source checks are not "
+                        "a browser audit or a human design-quality judgement.",
+         "inputSchema": arguments({"plan": plan, "html": html,
+                                    "render_evidence": evidence}, ["plan", "html"]),
+         "outputSchema": report_output},
+        {"name": "prepare_repair",
+         "description": "Prepare a bounded repair packet from artifact findings and prior "
+                        "records. Preserve protected content and report stop conditions. "
+                        "This returns instructions and a record; it does not call a model "
+                        "or apply an edit.",
+         "inputSchema": arguments({"plan": plan, "html": html, "history": history,
+                                    "render_evidence": evidence}, ["plan", "html"]),
+         "outputSchema": repair_output},
+    ]
 
 JOBS = {"e": "evidence", "s": "structure", "n": "narrative",
         "c": "change", "t": "transaction", "w": "wayfinding"}
@@ -198,9 +255,32 @@ def tool_select_move(system, job):
                        "note": "One move is active per artefact."}, indent=2)
 
 
+def workflow_text(value):
+    return json.dumps(value, ensure_ascii=False, allow_nan=False, indent=2)
+
+
+def tool_plan_artifact(brief, renderer):
+    return workflow_module("engine").create_plan(brief, read, renderer)
+
+
+def tool_assemble_context(plan):
+    return workflow_module("engine").assemble_context(plan, read)
+
+
+def tool_check_artifact(plan, html, render_evidence=None):
+    return workflow_module("checker").check_artifact(plan, html, render_evidence=render_evidence)
+
+
+def tool_prepare_repair(plan, html, history=None, render_evidence=None):
+    return workflow_module("engine").prepare_repair(
+        plan, html, history=history, render_evidence=render_evidence, read_pack=read)
+
+
 DISPATCH = {"list_systems": tool_list_systems, "get_system": tool_get_system,
             "get_tokens": tool_get_tokens, "get_archetypes": tool_get_archetypes,
-            "select_move": tool_select_move}
+            "select_move": tool_select_move, "plan_artifact": tool_plan_artifact,
+            "assemble_context": tool_assemble_context,
+            "check_artifact": tool_check_artifact, "prepare_repair": tool_prepare_repair}
 
 
 # ---------------------------------------------------------------- resources
@@ -249,19 +329,9 @@ def tool_error(rid, message):
 
 
 def validate_arguments(name, arguments):
-    """Enforce the small string-only schemas advertised by this server."""
-    schema = next(tool["inputSchema"] for tool in TOOLS if tool["name"] == name)
-    for field in schema.get("required", []):
-        if field not in arguments:
-            raise ValueError(f"missing required argument {field!r}")
-    for field, value in arguments.items():
-        spec = schema["properties"].get(field)
-        if spec is None:
-            raise ValueError(f"unknown argument {field!r}")
-        if not isinstance(value, str):
-            raise ValueError(f"argument {field!r} must be a string")
-        if "enum" in spec and value not in spec["enum"]:
-            raise ValueError(f"argument {field!r} must be one of {', '.join(spec['enum'])}")
+    """Validate recursively against the exact advertised argument schema."""
+    schema = next(tool["inputSchema"] for tool in tool_definitions() if tool["name"] == name)
+    workflow_module("schema").validate(arguments, schema, path="arguments")
 
 
 def handle(msg):
@@ -284,14 +354,16 @@ def handle(msg):
             "protocolVersion": PROTOCOL_VERSION,
             "capabilities": {"tools": {}, "resources": {}},
             "serverInfo": {"name": "standards", "version": "1.0.0"},
-            "instructions": "Six design systems written as rulesets a model can execute. "
-                            "Call list_systems first, then get_system with one build."})
+            "instructions": "Open design rules, contracts and a scoped local artifact "
+                            "workflow. Call list_systems to discover installed packs. "
+                            "Use plan_artifact for supported workflows; check and repair "
+                            "tools report findings without generating or executing HTML."})
     if method in ("notifications/initialized", "notifications/cancelled"):
         return None
     if method == "ping":
         return result(rid, {})
     if method == "tools/list":
-        return result(rid, {"tools": TOOLS})
+        return result(rid, {"tools": tool_definitions()})
     if method == "resources/list":
         return result(rid, {"resources": resources()})
     if method == "resources/read":
@@ -312,23 +384,43 @@ def handle(msg):
             return error(rid, -32601, f"unknown tool {name!r}")
         try:
             validate_arguments(name, args)
-            text = fn(**args)
+            payload = fn(**args)
         except TypeError as e:
             return tool_error(rid, f"bad arguments: {e}")
+        except RecursionError:
+            return tool_error(rid, "input nesting is too deep")
         except (OSError, ValueError, KeyError, UnicodeError) as e:
             return tool_error(rid, str(e))
-        return result(rid, {"content": [{"type": "text", "text": text}]})
+        if isinstance(payload, (dict, list)):
+            return result(rid, {"content": [{"type": "text", "text": workflow_text(payload)}],
+                                "structuredContent": payload})
+        return result(rid, {"content": [{"type": "text", "text": payload}]})
     return error(rid, -32601, f"unknown method {method!r}")
 
 
 def serve(stdin=sys.stdin, stdout=sys.stdout):
     for line in stdin:
+        if len(line) > MAX_MESSAGE_CHARS:
+            stdout.write(json.dumps(error(None, -32600, "request exceeds the message size limit")) + "\n")
+            stdout.flush()
+            continue
         line = line.strip()
         if not line:
             continue
         try:
-            msg = json.loads(line)
-        except json.JSONDecodeError:
+            def unique_object(pairs):
+                value = {}
+                for key, item in pairs:
+                    if key in value:
+                        raise ValueError("duplicate JSON object key")
+                    value[key] = item
+                return value
+
+            def reject_constant(value):
+                raise ValueError(f"non-finite JSON number {value}")
+
+            msg = json.loads(line, object_pairs_hook=unique_object, parse_constant=reject_constant)
+        except (json.JSONDecodeError, RecursionError, ValueError):
             resp = error(None, -32700, "invalid JSON")
         else:
             resp = handle(msg)
@@ -369,6 +461,10 @@ def selftest():
             continue
         res = r["result"]
         if "tools" in res:
+            names = [tool["name"] for tool in res["tools"]]
+            if len(names) != len(set(names)) or set(names) != set(DISPATCH):
+                print("  tool definitions do not match the dispatch table")
+                ok = False
             print(f"  {label:38s} {len(res['tools'])} tools")
         elif "resources" in res:
             print(f"  {label:38s} {len(res['resources'])} resources")

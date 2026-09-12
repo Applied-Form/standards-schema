@@ -3,8 +3,10 @@
 ## Stewardship and authority
 
 Applied Form is the project steward, as recorded in [CONTRIBUTORS.md](CONTRIBUTORS.md).
-Repository owners and maintainers with the appropriate permissions review, merge and
-release work. This document appoints no individual, partner or contributor to those roles.
+Repository owners and maintainers named in [MAINTAINERS.md](MAINTAINERS.md), with the
+appropriate permissions, review, merge and release work. No person is currently appointed;
+that register must name a primary and backup before recruitment opens. This document does
+not appoint an individual, partner or contributor to those roles.
 Contributing, signing the CLA or proposing a roadmap item does not confer merge authority,
 ownership or compensation.
 
@@ -12,6 +14,14 @@ Maintainer appointments and changes to this process should be recorded in a publ
 decision. Maintainers are expected to explain decisions, preserve attribution, disclose
 relevant conflicts and avoid promising review capacity they do not have. Responses and
 acceptance are not guaranteed.
+
+After recruitment opens, the published service targets are: initial issue triage within
+five UK business days, a first pull-request review within ten, private security
+acknowledgement within two, and a status update at least every ten business days while a
+review remains active. These are best-effort targets rather than acceptance promises. If a
+target passes, the contributor may mention the listed backup once in the same thread; if
+both owners are unavailable, the steward should mark intake paused. No target applies
+while the contribution status in [CONTRIBUTING.md](CONTRIBUTING.md) is preparation only.
 
 ## Decisions and requests for comment
 
@@ -35,12 +45,12 @@ Reviewers check authored sources, generated output, tests, evidence limits, lice
 privacy using the [contribution guide](CONTRIBUTING.md). Seek a second reviewer for
 substantial changes where one is available; disclose when the steward is the sole reviewer.
 
-A release maintainer should verify a clean, reproducible build; run the public checks;
-inspect installable bundles and documented examples; record changes and compatibility
-notes in [CHANGELOG.md](CHANGELOG.md); and identify the release commit. A passing compiler
-check does not establish rendered accessibility, design quality or benchmark superiority.
-Any such claim needs its own evidence. Release announcements also require a working
-[private vulnerability reporting route](SECURITY.md).
+A release maintainer follows [RELEASING.md](RELEASING.md): verify a clean, reproducible
+build; run the public checks; inspect installable bundles, licences and documented examples;
+record compatibility notes and the release commit; publish; and verify rollback. A passing
+compiler check does not establish rendered accessibility, design quality or benchmark
+superiority. Any such claim needs its own evidence. Release announcements also require a
+working [private vulnerability reporting route](SECURITY.md).
 
 The [CLA](CLA.md) is an unreviewed draft. Obtain legal review before active contributor
 recruitment, and record the reviewed process and any changed terms clearly. These policies

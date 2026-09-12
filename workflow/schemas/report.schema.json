@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standards report preview 0.1.0",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "0.1.0"
+    },
+    "planSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "artifactSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "enum": [
+        "pass",
+        "fail",
+        "unknown"
+      ]
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "total": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "pass": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "fail": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "unknown": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "critical": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "error": { "type": "integer", "minimum": 0, "maximum": 1000 },
+        "warning": { "type": "integer", "minimum": 0, "maximum": 1000 }
+      },
+      "required": ["total", "pass", "fail", "unknown", "critical", "error", "warning"],
+      "additionalProperties": false
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "ruleId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "\\S"
+          },
+          "severity": {
+            "enum": [
+              "critical",
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "status": {
+            "enum": [
+              "pass",
+              "fail",
+              "unknown"
+            ]
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
+            "pattern": "\\S"
+          },
+          "expected": {},
+          "observed": {},
+          "repairable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ruleId",
+          "severity",
+          "status",
+          "location",
+          "expected",
+          "observed",
+          "repairable"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 2000
+    },
+    "limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 2000,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 40
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "planSha256",
+    "artifactSha256",
+    "status",
+    "summary",
+    "findings",
+    "limitations"
+  ],
+  "additionalProperties": false
+}

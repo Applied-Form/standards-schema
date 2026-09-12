@@ -4,15 +4,14 @@
 One source, two delivery builds plus a reference.
 
     SOURCE.md          the system, authored once, full detail
-      -> SKILL.md          frontier build: core only, flat, minimum constraints
-      -> SKILL-compact.md  small-model build: clustered, precedence, checklist
+      -> SKILL.md          full build: core only, flat, minimum constraints
+      -> SKILL-compact.md  compact build: clustered, precedence, checklist
       -> REFERENCE.md      on-demand detail: rationales, registers, failure modes
 
-Why two builds. Published work on instruction stacking finds that a rewrite which
-clusters constraints, merges them and inserts precedence notes recovers roughly +11
-points of follow rate on the weakest model tested, +3.3 on the middle one, and
-essentially nothing on the strongest (-1.2, not statistically robust). Structure that
-helps a small model is dead weight on a frontier one. So we ship both.
+Why two builds. Published work on instruction stacking suggests that clustering,
+merging and precedence can affect instruction following differently by model. That
+result has not been established for these design tasks, so both structures remain
+explicit evaluation conditions rather than capability-based recommendations.
 
 Why a core/reference split. Follow rate falls from ~96% at one instruction to 20-60%
 at twenty. Every pack in this catalogue stacked 30-37 constraints. Only fewer active
@@ -54,16 +53,15 @@ REFERENCE = [                 # loaded when a specific answer is needed
     "Failure mode",
     "Files",
 ]
-# Compact build order follows the category ordering the literature found effective:
+# Compact build order follows the category ordering evaluated in the literature:
 # reasoning-adjacent first (nearest "thinking"), format last (nearest token production).
 #
 # It carries the SAME rule set as the core, restructured — not a larger one. Schema v0.4
 # rule 1 describes the compact build as "category-clustered, precedence note, numbered
 # checklist, verification line", which is a change of structure. An earlier version of this
 # list also added Product register, State encoding, Interaction, Prohibitions and Data
-# treatment, so the build aimed at small models carried roughly twice the constraints of
-# the build aimed at frontier models — backwards, since the collapse curve is steepest
-# exactly where this build is used. Those sections are in REFERENCE.md.
+# treatment, so one build carried roughly twice the constraints of the other and
+# confounded a comparison of structure. Those sections are in REFERENCE.md.
 # The conflict register is the one addition, because the v0.4 authoring checklist places it
 # in the reference and the compact build by name.
 COMPACT_ORDER = [
@@ -233,12 +231,12 @@ def build_skill(fm, head, sections):
 
 
 def build_compact(fm, head, sections, name):
-    """Small-model build: clustered, precedence, numbered checklist, verification line."""
+    """Clustered build: precedence, numbered checklist and verification line."""
     ft, fb = floors(sections)
     parts = [fm, head, ""]
-    parts += ["> **Compact build.** Clustered by category with precedence made explicit, for",
-              "> small and fast models. On a frontier model use `SKILL.md` instead — the extra",
-              "> structure costs tokens and returns nothing there.", ""]
+    parts += ["> **Compact build.** The same core rules, clustered by category with precedence",
+              "> made explicit. Choose this or `SKILL.md` as an evaluation condition; the better",
+              "> structure for this task and model has not been established.", ""]
     if fb:
         parts += [f"## 0 · {ft} — these override everything below", fb, ""]
     n = 1
@@ -581,8 +579,8 @@ returns that component and nothing else, and the gaps get filled with assumption
 
 | Need | Read |
 |---|---|
-| The system's rules, on a frontier model | `SKILL.md` |
-| The system's rules, on a small or fast model | `SKILL-compact.md` |
+| The system's flat core rules | `SKILL.md` |
+| The same core rules, clustered with precedence | `SKILL-compact.md` |
 | Full rationales, conflict register, failure modes | `REFERENCE.md` |
 | Token contract, machine-readable | `tokens.json` |
 | Move index with triggers, machine-readable | `archetypes.json` |
@@ -650,7 +648,7 @@ if __name__ == "__main__":
                   f"from the largest archetype ---")
             for u in sorted(uncond):
                 print(f"    {u[:110]}")
-    print("\nBuilds: SKILL.md (frontier) · SKILL-compact.md (small models) · REFERENCE.md (on demand)")
+    print("\nBuilds: SKILL.md (flat core) · SKILL-compact.md (clustered core) · REFERENCE.md (on demand)")
     if over_any:
         print(f"\nAt least one build exceeds the budget of {BUDGET} active constraints.")
         print("Schema v0.4 rule 2: cut rather than reorganise.")

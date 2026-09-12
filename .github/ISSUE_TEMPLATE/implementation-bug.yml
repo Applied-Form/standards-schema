@@ -20,6 +20,8 @@ body:
       options:
         - Schema or compiler
         - MCP server
+        - Workflow planner or checker
+        - Evaluation harness or provider adapter
         - Instrument assets or templates
         - Distribution or installation
         - Documentation

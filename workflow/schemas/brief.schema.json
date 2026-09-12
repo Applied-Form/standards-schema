@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standards brief preview 0.1.0",
+  "type": "object",
+  "properties": {
+    "system": {
+      "const": "instrument"
+    },
+    "job": {
+      "const": "T"
+    },
+    "format": {
+      "const": "html"
+    },
+    "instructionBuild": {
+      "enum": ["full", "compact"]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 240,
+      "pattern": "\\S"
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 240,
+          "pattern": "\\S"
+        },
+        "columns": {
+          "type": "object",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            },
+            "description": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            },
+            "duration": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            },
+            "amount": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 80,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "duration",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "ref": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "\\S"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "pattern": "\\S"
+              },
+              "standard": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 1000,
+                "pattern": "\\S"
+              },
+              "duration": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "\\S"
+              },
+              "amount": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 120,
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "ref",
+              "description",
+              "duration",
+              "amount"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1,
+          "maxItems": 24
+        },
+        "total": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "\\S"
+            },
+            "duration": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "\\S"
+            },
+            "amount": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 160,
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "label",
+            "duration",
+            "amount"
+          ],
+          "additionalProperties": false
+        },
+        "note": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 3000,
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "label",
+        "lines"
+      ],
+      "additionalProperties": false
+    },
+    "viewports": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "width": {
+            "type": "integer",
+            "minimum": 320,
+            "maximum": 1920
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 320,
+            "maximum": 2160
+          }
+        },
+        "required": [
+          "width",
+          "height"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1,
+      "maxItems": 3
+    }
+  },
+  "required": [
+    "system",
+    "job",
+    "format",
+    "instructionBuild",
+    "title",
+    "schedule"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standards history preview 0.1.0",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "schemaVersion": {
+        "const": "0.1.0"
+      },
+      "planSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$",
+        "minLength": 64,
+        "maxLength": 64
+      },
+      "artifactSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$",
+        "minLength": 64,
+        "maxLength": 64
+      },
+      "reportSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$",
+        "minLength": 64,
+        "maxLength": 64
+      },
+      "parentRecordSha256": {
+        "anyOf": [
+          {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "turn": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 2
+      },
+      "recordSha256": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$",
+        "minLength": 64,
+        "maxLength": 64
+      }
+    },
+    "required": [
+      "schemaVersion",
+      "planSha256",
+      "artifactSha256",
+      "reportSha256",
+      "parentRecordSha256",
+      "turn",
+      "recordSha256"
+    ],
+    "additionalProperties": false
+  },
+  "minItems": 0,
+  "maxItems": 2
+}

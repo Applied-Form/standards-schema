@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standards workflow reference manifest 0.1.0",
+  "type": "object",
+  "properties": {
+    "schemaVersion": { "const": "0.1.0" },
+    "recordedDate": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 10,
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    },
+    "purpose": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "\\S" },
+    "renderer": { "type": "object" },
+    "cases": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 20,
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[a-z0-9][a-z0-9._-]*$"
+          },
+          "brief": { "type": "string", "minLength": 1, "maxLength": 240, "pattern": "\\S" },
+          "planSha256": {
+            "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"
+          },
+          "contextSha256": {
+            "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"
+          },
+          "artifactSha256": {
+            "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"
+          },
+          "baselineStatus": { "const": "pass" },
+          "records": {
+            "type": "object",
+            "properties": {
+              "plan": { "$ref": "#/$defs/record" },
+              "context": { "$ref": "#/$defs/record" },
+              "artifact": { "$ref": "#/$defs/record" },
+              "evidence": { "$ref": "#/$defs/record" },
+              "report": { "$ref": "#/$defs/record" }
+            },
+            "required": ["plan", "context", "artifact", "evidence", "report"],
+            "additionalProperties": false
+          },
+          "screenshots": {
+            "type": "array",
+            "minItems": 1,
+            "maxItems": 3,
+            "items": {
+              "type": "object",
+              "properties": {
+                "file": { "type": "string", "minLength": 1, "maxLength": 240, "pattern": "\\.png$" },
+                "declaredViewport": { "$ref": "#/$defs/viewport" },
+                "capturedPixels": { "$ref": "#/$defs/pixels" },
+                "sha256": {
+                  "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"
+                }
+              },
+              "required": ["file", "declaredViewport", "capturedPixels", "sha256"],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": ["name", "brief", "planSha256", "contextSha256", "artifactSha256", "baselineStatus", "records", "screenshots"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["schemaVersion", "recordedDate", "purpose", "renderer", "cases"],
+  "additionalProperties": false,
+  "$defs": {
+    "record": {
+      "type": "object",
+      "properties": {
+        "file": { "type": "string", "minLength": 1, "maxLength": 240, "pattern": "\\S" },
+        "sha256": {
+          "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$"
+        }
+      },
+      "required": ["file", "sha256"],
+      "additionalProperties": false
+    },
+    "viewport": {
+      "type": "object",
+      "properties": {
+        "width": { "type": "integer", "minimum": 320, "maximum": 1920 },
+        "height": { "type": "integer", "minimum": 320, "maximum": 2160 }
+      },
+      "required": ["width", "height"],
+      "additionalProperties": false
+    },
+    "pixels": {
+      "type": "object",
+      "properties": {
+        "width": { "type": "integer", "minimum": 1, "maximum": 1920 },
+        "height": { "type": "integer", "minimum": 1, "maximum": 20000 }
+      },
+      "required": ["width", "height"],
+      "additionalProperties": false
+    }
+  }
+}

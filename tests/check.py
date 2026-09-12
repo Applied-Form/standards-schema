@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Standards repository checks. Run from anywhere: python3 tests/check.py
 
-Six checks, in the order they are cheapest to fix:
+Checks, in the order they are cheapest to fix:
 
   1. every Python file parses
   2. every pack carries a licence
@@ -13,6 +13,7 @@ Six checks, in the order they are cheapest to fix:
   7. the proof grids meet the Layer 0 contrast floor
   8. the MCP server answers the protocol
      and rejects unsafe resource paths and malformed requests
+     including nested artifact-workflow arguments
   9. the study harnesses parse, if node is available
 """
 import os, subprocess, sys, glob, py_compile, shutil, tempfile, filecmp
@@ -266,7 +267,6 @@ def _():
 def _():
     r = run(sys.executable, "mcp/server.py", "--selftest")
     assert r.returncode == 0, r.stdout.strip()[-300:] or r.stderr.strip()[-300:]
-    assert "5 tools" in r.stdout, "tool list did not come back"
     return "self test clean"
 
 
@@ -275,6 +275,29 @@ def _():
     r = run(sys.executable, "tests/test_mcp.py")
     assert r.returncode == 0, r.stderr.strip()[-2000:] or r.stdout.strip()[-2000:]
     return "boundary regressions clean"
+
+
+@check("mcp workflow schemas and integration")
+def _():
+    r = run(sys.executable, "tests/test_mcp_workflow.py")
+    assert r.returncode == 0, r.stderr.strip()[-2000:] or r.stdout.strip()[-2000:]
+    return "nested inputs, scoped workflow and recovery"
+
+
+@check("artifact workflow planning and checking")
+def _():
+    for test in ("tests/test_workflow_engine.py", "tests/test_workflow_checker.py",
+                 "tests/test_workflow_reference.py"):
+        r = run(sys.executable, test)
+        assert r.returncode == 0, r.stderr.strip()[-2000:] or r.stdout.strip()[-2000:]
+    return "plan, context, facts, evidence, reference receipt and bounded repair"
+
+
+@check("comparative evaluation harness")
+def _():
+    r = run(sys.executable, "-m", "unittest", "evaluation.tests.test_evaluation", "-v")
+    assert r.returncode == 0, r.stderr.strip()[-3000:] or r.stdout.strip()[-3000:]
+    return "conditions, model integrity, failures, repairs and portable records"
 
 
 @check("study harnesses parse")

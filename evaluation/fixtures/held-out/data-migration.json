@@ -1,0 +1,25 @@
+{
+  "id": "held-data-migration",
+  "split": "held-out",
+  "description": "Held-out migration schedule with technical identifiers and a signed adjustment.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Collection data migration",
+    "schedule": {
+      "label": "Implementation schedule · DM-208",
+      "columns": {"ref": "ID", "description": "DELIVERABLE", "duration": "WINDOW", "amount": "VALUE"},
+      "lines": [
+        {"ref": "M-01", "description": "Field mapping and exception register", "standard": "Source schema v2.4", "duration": "3 days", "amount": "£1,650"},
+        {"ref": "M-02", "description": "Validated transformation of approved records", "standard": "25,000 synthetic records", "duration": "4 days", "amount": "£2,400"},
+        {"ref": "M-03", "description": "Prior discovery credit", "duration": "—", "amount": "−£350"}
+      ],
+      "total": {"label": "Total · excluding tax", "duration": "7 days", "amount": "£3,700"},
+      "note": "The source export is frozen before transformation. Live-system integration and data correction are outside this case."
+    },
+    "viewports": [{"width": 1280, "height": 960}, {"width": 390, "height": 844}]
+  }
+}
+

@@ -5,8 +5,10 @@ Standards can be a reference other people build against; the catalogue is the pr
 
 | What | Licence | File |
 |---|---|---|
-| The schema (`schema/*.md`) | CC BY 4.0 | `LICENSE-SCHEMA` |
-| The tooling (`schema/compile.py`, `mcp/server.py`, `tests/`) | MIT | `LICENSE-CODE` |
+| The schema and public project documentation (`schema/*.md`, root Markdown, `.github/`, and Markdown under `mcp/`, `workflow/`, and `evaluation/`) | CC BY 4.0 | `LICENSE-SCHEMA` |
+| The tooling (`schema/compile.py`, `schema/*.html`, `mcp/server.py`, Python and JSON schemas under `workflow/`, Python under `evaluation/`, `examples/workflow/reference_loop.py`, and `tests/`) | MIT | `LICENSE-CODE` |
+| Synthetic evaluation inputs (`evaluation/conditions/`, `evaluation/fixtures/`) and original workflow briefs/reference content (`examples/workflow/` except `reference_loop.py` and the embedded font software described below) | CC BY 4.0 | `LICENSE-SCHEMA` |
+| Public Sans and DM Mono WOFF2 font software embedded in retained workflow HTML, plus its notices | SIL Open Font License 1.1 | `examples/workflow/reference/font-licenses/` and the embedded licence metadata |
 | **Instrument** — the free flagship (`packs/instrument/`) | CC BY 4.0 | `packs/instrument/LICENSE` |
 
 Everything in this repository is covered by one of the three licences above.
@@ -35,4 +37,6 @@ https://github.com/appliedform/standards*
 Every system in this repository extends a design tradition. No organisation's marks,
 logotypes or identities are reproduced, and nothing here is affiliated with or endorsed by
 any institution referenced. Instrument names its open-licence typefaces in
-`packs/instrument/SOURCE.md`; font files are not distributed in this repository.
+`packs/instrument/SOURCE.md`. The Instrument pack itself contains no font binaries. Retained
+workflow HTML embeds Public Sans and DM Mono WOFF2 files for offline reproduction under
+their SIL Open Font License 1.1 notices.

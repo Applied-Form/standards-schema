@@ -1,0 +1,92 @@
+name: Evaluation or research proposal
+description: Propose a reproducible comparison, rubric, fixture, replication or research contribution.
+title: "Research: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form before investing in a large run. A useful proposal can be a protocol, rubric, fixed brief, adapter or replication; it does not need paid model access. Keep observations separate from hypotheses, retain failures and bound every claim to the tested conditions. Read [CONTRIBUTING.md](https://github.com/appliedform/standards/blob/main/CONTRIBUTING.md) and use only synthetic or clearly licensed material.
+  - type: dropdown
+    id: contribution_type
+    attributes:
+      label: Contribution type
+      options:
+        - Protocol or research design
+        - Fixed brief or dataset
+        - Evaluation runner or model adapter
+        - Design-review rubric
+        - Replication or analysis
+        - Other research contribution
+    validations:
+      required: true
+  - type: textarea
+    id: question
+    attributes:
+      label: Question and proposed decision
+      description: State the research question, the decision it could inform and a falsifiable hypothesis. If the work is exploratory, say so.
+      placeholder: We want to learn whether... This would inform... We expect... because...
+    validations:
+      required: true
+  - type: textarea
+    id: conditions
+    attributes:
+      label: Conditions and baselines
+      description: Name every condition being compared and what will be held constant. Examples include a raw brief, a brand-bible reference, a strong scaffolded HTML baseline, the full or compact rule build, selected structured context, or a deterministic template.
+    validations:
+      required: true
+  - type: textarea
+    id: cases
+    attributes:
+      label: Cases, inputs and rights
+      description: Describe the fixed briefs or fixtures, development versus held-out cases, expected edge cases, source licences and anything excluded from analysis.
+    validations:
+      required: true
+  - type: textarea
+    id: models_runs
+    attributes:
+      label: Models, settings and runs
+      description: Record provider, exact model/version, prompts, sampling settings, tool access, repetitions, seeds where supported, stopping rules and treatment of failed or invalid runs. Write "No model involved" when applicable.
+    validations:
+      required: true
+  - type: textarea
+    id: measures
+    attributes:
+      label: Measures and review method
+      description: Define measures before running. Separate source conformance, content preservation, blinded human design review, accessibility observations, repair outcomes, latency, tokens and cost as applicable. Explain rater blinding and uncertainty.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction and retained evidence
+      description: List the runner, commands, environment and shareable artefacts another contributor would need. Include how raw outputs, failed runs and analysis will be retained without exposing keys or private material.
+    validations:
+      required: true
+  - type: textarea
+    id: threshold_limits
+    attributes:
+      label: Decision threshold and limits
+      description: State the result that would change a project decision, how ties or inconclusive results will be handled, and what the study cannot establish.
+    validations:
+      required: true
+  - type: input
+    id: first_slice
+    attributes:
+      label: Smallest reviewable first slice
+      description: Name one bounded deliverable that can be reviewed before a full run or implementation.
+      placeholder: For example, pilot the rubric on three synthetic output pairs.
+    validations:
+      required: true
+  - type: checkboxes
+    id: integrity
+    attributes:
+      label: Evidence integrity, rights and privacy
+      options:
+        - label: I will retain and report failed or invalid runs, pre-declare exclusions, and limit conclusions to the tested cases, models, settings and review method.
+          required: true
+        - label: I will distinguish automated conformance from human design judgement and will not infer broad superiority from a single example.
+          required: true
+        - label: I removed secrets, private conversations, client material and proprietary packs; any third-party material is identified with a licence that permits this use.
+          required: true
+        - label: This public proposal does not disclose a security vulnerability; I will use the private reporting route described in SECURITY.md for one.
+          required: true

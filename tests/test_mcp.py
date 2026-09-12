@@ -53,7 +53,8 @@ class MCPBoundaryTests(unittest.TestCase):
 
     def test_valid_requests_and_nested_resource_reads_still_work(self):
         self.assertEqual(self.request("initialize")["result"]["protocolVersion"], server.PROTOCOL_VERSION)
-        self.assertEqual(len(self.request("tools/list")["result"]["tools"]), 5)
+        tools = self.request("tools/list")["result"]["tools"]
+        self.assertEqual({tool["name"] for tool in tools}, set(server.DISPATCH))
         for uri, expected in (("standards://instrument/SKILL.md", "Full synthetic instructions"),
                               ("standards://instrument/assets/type%20scale.json", '{"size":12}')):
             response = self.request("resources/read", {"uri": uri})

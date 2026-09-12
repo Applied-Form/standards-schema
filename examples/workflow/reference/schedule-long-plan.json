@@ -1,0 +1,213 @@
+{
+  "schemaVersion": "0.1.0",
+  "system": "instrument",
+  "job": "T",
+  "move": "Schedule",
+  "artifact": {
+    "format": "html",
+    "title": "Museum archive digitisation and public access programme",
+    "viewports": [
+      {
+        "width": 320,
+        "height": 844
+      }
+    ]
+  },
+  "context": {
+    "build": "full",
+    "reason": "Explicit brief choice; comparative benefit remains unproven."
+  },
+  "selection": {
+    "reason": "Precision is the persuasion",
+    "trigger": "Scope, cost or duration must be stated exactly",
+    "alternatives": []
+  },
+  "binding": {
+    "package": "@standards/instrument",
+    "packageVersion": "1.0.0",
+    "component": "Schedule",
+    "props": {
+      "label": "Scope, delivery stages and professional fees · proposal AF-2026-041",
+      "columns": {
+        "ref": "PROJECT REFERENCE",
+        "description": "DELIVERABLE AND STANDARD",
+        "duration": "ESTIMATED DELIVERY TIME",
+        "amount": "PROFESSIONAL FEE"
+      },
+      "lines": [
+        {
+          "ref": "AF-2026-01",
+          "description": "Collection discovery, rights review and digitisation roadmap",
+          "standard": "Includes a stakeholder workshop, item-level inventory and an approved representative sample.",
+          "duration": "12 working days",
+          "amount": "£18,750.00"
+        },
+        {
+          "ref": "AF-2026-02",
+          "description": "Accessible template system and component implementation",
+          "standard": "Conforms to WCAG 2.2 AA, current browser support and the approved component acceptance checklist.",
+          "duration": "6 working weeks",
+          "amount": "£42,500.00"
+        }
+      ],
+      "total": {
+        "label": "Total professional fees · excluding VAT and third-party licensing",
+        "duration": "8 working weeks",
+        "amount": "£61,250.00"
+      },
+      "note": "Programme dates assume approved source files, rights decisions and consolidated stakeholder feedback arrive by each agreed review milestone.",
+      "factPrefix": "schedule"
+    }
+  },
+  "renderer": {
+    "name": "standards-ui-workflow-render",
+    "version": "0.1.0",
+    "sourceSha256": "d1b95c8b3228ee7a5b456cbd5d78f13404681eacefe3d711615c9ae1b2119b7c",
+    "packageVersion": "1.0.0",
+    "packageEntrySha256": "4836c4b3c1d80dea6539cd5658d5425e9d61c54d5c5deb8a210188530d15aca4",
+    "tokensSha256": "c87adb48c1b9664e2b357c7bd88a8d615323fe82809bd4901eed21df137f5256",
+    "fontAssetsSha256": "6fdde2f31d97c7546fddc4d35ebd9cc25a01e4ced0857e64ba43538fdf0a1667",
+    "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
+    "lockfileSha256": "553b3c93c7e364a40e54dd6676566e81588affb6ce28a5cd5d09959bfa8a5213",
+    "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
+    "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
+    "nodeExecutableSha256": "9bd9754f5300bd7910f280d8e413f13bb1460b30457243aa366d253677e893f3",
+    "browserRevision": "1243",
+    "browser": "153.0.8010.12",
+    "platform": "darwin-arm64",
+    "nodeVersion": "v25.8.0"
+  },
+  "facts": [
+    {
+      "id": "title",
+      "text": "Museum archive digitisation and public access programme"
+    },
+    {
+      "id": "schedule.label",
+      "text": "Scope, delivery stages and professional fees · proposal AF-2026-041"
+    },
+    {
+      "id": "schedule.columns.ref",
+      "text": "PROJECT REFERENCE"
+    },
+    {
+      "id": "schedule.columns.description",
+      "text": "DELIVERABLE AND STANDARD"
+    },
+    {
+      "id": "schedule.columns.duration",
+      "text": "ESTIMATED DELIVERY TIME"
+    },
+    {
+      "id": "schedule.columns.amount",
+      "text": "PROFESSIONAL FEE"
+    },
+    {
+      "id": "schedule.lines.0.ref",
+      "text": "AF-2026-01"
+    },
+    {
+      "id": "schedule.lines.0.description",
+      "text": "Collection discovery, rights review and digitisation roadmap"
+    },
+    {
+      "id": "schedule.lines.0.standard",
+      "text": "Includes a stakeholder workshop, item-level inventory and an approved representative sample."
+    },
+    {
+      "id": "schedule.lines.0.duration",
+      "text": "12 working days"
+    },
+    {
+      "id": "schedule.lines.0.amount",
+      "text": "£18,750.00"
+    },
+    {
+      "id": "schedule.lines.1.ref",
+      "text": "AF-2026-02"
+    },
+    {
+      "id": "schedule.lines.1.description",
+      "text": "Accessible template system and component implementation"
+    },
+    {
+      "id": "schedule.lines.1.standard",
+      "text": "Conforms to WCAG 2.2 AA, current browser support and the approved component acceptance checklist."
+    },
+    {
+      "id": "schedule.lines.1.duration",
+      "text": "6 working weeks"
+    },
+    {
+      "id": "schedule.lines.1.amount",
+      "text": "£42,500.00"
+    },
+    {
+      "id": "schedule.total.label",
+      "text": "Total professional fees · excluding VAT and third-party licensing"
+    },
+    {
+      "id": "schedule.total.duration",
+      "text": "8 working weeks"
+    },
+    {
+      "id": "schedule.total.amount",
+      "text": "£61,250.00"
+    },
+    {
+      "id": "schedule.note",
+      "text": "Programme dates assume approved source files, rights decisions and consolidated stakeholder feedback arrive by each agreed review milestone."
+    }
+  ],
+  "rules": [
+    "plan.valid",
+    "html.structure",
+    "html.self_contained",
+    "facts.unique",
+    "facts.exact",
+    "facts.approved_text",
+    "schedule.semantics",
+    "render.binding",
+    "render.viewport_fit",
+    "render.facts",
+    "render.semantics",
+    "instrument.invariant_band",
+    "render.screenshot"
+  ],
+  "maxRepairTurns": 2,
+  "source": {
+    "systemVersion": "1.0.0",
+    "schemaVersion": "v0.4",
+    "files": {
+      "SOURCE.md": "6a2b794596f17bcc411164f6209812408b4b2e54c2cf0749e08a9f11b52a04d2",
+      "manifest.json": "67f82ee40cb3755c4d06206ad46d9725a32b0d1023c6f66deba46332d003721b",
+      "archetypes.json": "00c70b00e92e5bf5fb40eb879e210159bac1edb1cbd1c6512d8f29ae12392bb7",
+      "tokens.json": "d2c1890df830801e72d868ecd4db57e433340f935ddb8ac53d544f49be899d5b",
+      "SKILL.md": "3580aeeda02c4ead863f0bbb967cb4a2a28d48305983fb4319342c774eda41b8",
+      "SKILL-compact.md": "f8945420bb9796553f08c2129324054b945fff7daed03e557a6a1b08252d3d48",
+      "assets/tokens.css": "1d683bf49d6e92e165a51a3524c699cfd854ed082d8619ccfd392bd440eb7124"
+    },
+    "implementation": {
+      "workflow/engine.py": "b779ffaec60a9d2cb3152374fe2bf99d8c53a4e11f32046f376293ecc6900a3f",
+      "workflow/schema.py": "340a3265dced3c66c1bfa5d8ba9e873f4b831606f50bd39104825963f100e9be",
+      "workflow/checker.py": "a7767823fb34e30bfa8e45c8243d2a69abd4af65156eff224a3bc8bd97012616",
+      "workflow/schemas/brief.schema.json": "07810335d331a924ef4895f0e3a675137d73faa34124b0f2752c9eab3607b6ca",
+      "workflow/schemas/plan.schema.json": "2fbafb8952e9b950cd4277dc3b1bb70f64f500e98c0d7b6b8885f9e7b8bbb548",
+      "workflow/schemas/report.schema.json": "9b744e289b37cf74c7ffca7754578c8f3edb0330cc69bc61c9147d255eff89e9",
+      "workflow/schemas/history.schema.json": "281f9793ca317862ad297fe5b4e645431c338a8a223ce454a156429e529753c7",
+      "workflow/schemas/render-evidence.schema.json": "aed0931e30314172ff067adf741d6d2d34036b0d70656302b434bd7ef408a367",
+      "workflow/schemas/renderer-identity.schema.json": "6dc13eb9e8a0b5b976a293c6f04267d3bdf842370c28986d3ddbce4cbdaca1e2",
+      "workflow/schemas/context.schema.json": "8e4d9bf5fb696d95cc6044b5d922b63f05feed55fd08e672448243b25d3f2f68",
+      "workflow/schemas/repair.schema.json": "4af2c034bf1015d75fee9f61d56378ae738a2c26c13cef1b27504ac95b27c092",
+      "schema/compile.py": "a4e4838f05c05921a39c6631b31849f71c341ac4fc333ce7cdc51b097f347308",
+      "schema/schema-v0.4.md": "6fd9263fdfe41e3d2b168705cc4794508be81ba2f0dbbeb92942dd280ea36e55"
+    }
+  },
+  "limitations": [
+    "Preview supports one Instrument Schedule HTML surface; other moves and native formats are unsupported.",
+    "Selection uses the supplied Transaction job and its single matching move; it does not infer the reader's task.",
+    "The instruction build is explicitly selected by the brief; this preview assumes no model-class advantage.",
+    "Authoritative text is preserved after Unicode composition and whitespace normalization; arithmetic and real-world truth are not verified.",
+    "Mechanical conformance does not establish visual quality, full accessibility or comparative model performance."
+  ]
+}

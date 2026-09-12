@@ -23,8 +23,8 @@ Measure ceiling 66ch. Open-licence type only.
 
 | Need | Read |
 |---|---|
-| The system's rules, on a frontier model | `SKILL.md` |
-| The system's rules, on a small or fast model | `SKILL-compact.md` |
+| The system's flat core rules | `SKILL.md` |
+| The same core rules, clustered with precedence | `SKILL-compact.md` |
 | Full rationales, conflict register, failure modes | `REFERENCE.md` |
 | Token contract, machine-readable | `tokens.json` |
 | Move index with triggers, machine-readable | `archetypes.json` |

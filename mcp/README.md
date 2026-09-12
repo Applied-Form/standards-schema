@@ -1,14 +1,17 @@
 # Standards MCP server
 
-Serves the catalogue to any MCP client, so a system is something an agent queries rather
-than a file somebody remembers to paste. Standard library only, like the compiler.
+The local server exposes installed design systems, structured contracts and a scoped
+artifact workflow over stdio. It uses Python's standard library and makes no model calls.
+The client supplies a brief and generated HTML; the server plans, assembles context,
+checks supplied evidence and prepares repair instructions. It does not generate, execute
+or automatically edit HTML.
 
 ```bash
-python3 mcp/server.py --selftest     # exercise the protocol without a client
-python3 mcp/server.py                # serve over stdio
+python3 mcp/server.py --selftest
+python3 mcp/server.py
 ```
 
-## Connecting it
+## Connect a client
 
 ```json
 {
@@ -21,37 +24,85 @@ python3 mcp/server.py                # serve over stdio
 }
 ```
 
-Add `"--packs", "/path/to/packs"` to the args to serve a catalogue somewhere else.
+Replace the absolute path with your checkout. Add `"--packs", "/path/to/packs"` to the
+arguments to serve a different local catalogue. The workflow imports code from the
+server's repository, independently of the client's working directory. Client setup
+support must be verified in the actual client; a protocol self-test is not that check.
 
-## Tools
+## Retrieval tools
 
-| Tool | What it does |
+| Tool | Purpose |
 |---|---|
-| `list_systems` | Every system, with constraint counts, type licence and pack licence. Call first |
-| `get_system` | One instruction build — `compact` for small models, `full` for frontier, `reference` on demand |
-| `get_tokens` | The token contract as JSON |
-| `get_archetypes` | The compositional moves as JSON |
-| `select_move` | The move for a rhetorical job — E, S, N, C, T or W, by code or name |
+| `list_systems` | Discover installed systems, constraint counts and licences |
+| `get_system` | Read the compact or full instruction build, or detailed reference |
+| `get_tokens` | Read the token contract as JSON |
+| `get_archetypes` | Read compositional moves and selection guidance as JSON |
+| `select_move` | Retrieve candidates for E Evidence, S Structure, N Narrative, C Change, T Transaction or W Wayfinding |
 
-Every pack file is also exposed as a resource under `standards://<system>/<file>`.
+`select_move` can return several candidates for a job. It does not resolve a complete
+artifact plan. Structured contracts avoid extracting values from prose; that is an
+interface property, not evidence of lower cost, fewer errors or better design. Choose
+instruction context deliberately and evaluate its effect for the task and model in use.
 
-## Why a server rather than a download
+Advertised resource files can be read under `standards://<system>/<file>`. Reads are
+contained to the selected installed pack, including resolved symlinks. Nested local text
+files can also be read through that URI form when present inside the pack. The server
+does not serve arbitrary host paths.
 
-Two reasons, one practical and one commercial.
+## Workflow tools
 
-**Practical.** `get_tokens` and `get_archetypes` return the JSON contracts rather than making
-the model parse them out of prose — measurably fewer tokens and fewer hallucinated values.
-And `select_move` implements the selection argument the schema makes: one move is active per
-artefact, so an agent should ask for the one it needs rather than load a table of nine and
-try to satisfy all of them.
+| Tool | Arguments | Result |
+|---|---|---|
+| `plan_artifact` | `brief`, `renderer` identity objects | A validated artifact plan with selected move and source/runtime provenance |
+| `assemble_context` | `plan` object | Selected source context and a manifest of what was supplied |
+| `check_artifact` | `plan`, `html`; optional `render_evidence` object | Rule-linked findings, failures and explicit unknowns |
+| `prepare_repair` | `plan`, `html`; optional `history` array and `render_evidence` object | A repair packet, history record and stop condition |
 
-**Commercial.** A markdown ruleset can be pasted anywhere once bought. A server is how this
-category installs things, and it is the difference between being a download and being
-infrastructure.
+The initial workflow is deliberately narrower than the retrieval catalogue. See the
+[workflow guide](../workflow/README.md) for supported briefs and the runnable example.
+The [brief schema](../workflow/schemas/brief.schema.json),
+[renderer identity schema](../workflow/schemas/renderer-identity.schema.json) and
+[plan schema](../workflow/schemas/plan.schema.json) are the same contracts advertised in
+`tools/list`; malformed nested fields are rejected before execution. Every workflow tool
+also advertises an output schema and returns `structuredContent`. Errors are returned as
+tool results, and the server can process the next valid request.
 
-## Licensing
+Use the tools in this order:
 
-The server serves whatever packs are present on disk. It does not enforce entitlement —
-`list_systems` reports each pack's licence so a client can see what it is holding, and
-Instrument is CC BY 4.0 while the other five are proprietary. Entitlement belongs at
-distribution, not here.
+1. Discover the installed system. Ask the UI renderer for its local identity, then submit
+   that identity with a supported fixed-content brief to `plan_artifact`. Preserve the
+   returned host-pinned plan.
+2. Pass that plan to `assemble_context` and give the returned context to the generating
+   agent. Preserve the context manifest alongside the output.
+3. Pass the generated HTML and the same plan to `check_artifact`. Add externally produced
+   render evidence only when it follows the documented contract.
+4. Pass the HTML, plan and prior repair records to `prepare_repair`. Follow its stop
+   condition; if it allows another attempt, the client or agent applies the proposed
+   correction and submits the new HTML for checking. Retain previous artifacts and records.
+
+Repair preparation is deterministic and makes no inference call. It cannot guarantee that
+an agent will follow a repair instruction. Carry the returned history forward rather than
+resetting it to evade the workflow's repair budget.
+
+## What the results establish
+
+Source conformance, external render observations and human design judgement are separate.
+A source check does not prove the browser rendered an artifact accessibly or attractively.
+Missing or schema-invalid render evidence remains unknown. Valid evidence binds the exact
+plan, artifact, renderer/runtime identity and embedded PNG bytes. Caller-supplied
+observations are not independent attestation; the hashes establish consistency rather
+than the truth of a claimed execution.
+
+The workflow is an inspectable implementation, not a demonstrated advantage over another
+tool, model or design approach. Comparative claims require an appropriate evaluation.
+See the [public roadmap](../ROADMAP.md) for the broader proposed scope.
+
+## Licensing and private reporting
+
+The server serves the packs installed on disk and reports their licences. It does not
+enforce entitlement. Serve only the catalogue intended for the client; placing a private
+pack there makes it available through the server. Instrument is CC BY 4.0; tooling is MIT.
+See [LICENSE](../LICENSE) and the licence within each pack.
+
+Do not include credentials or private client material in public reproductions. Report
+vulnerabilities through the [private reporting policy](../SECURITY.md).

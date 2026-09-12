@@ -1,0 +1,24 @@
+{
+  "id": "held-publication-production",
+  "split": "held-out",
+  "description": "Held-out schedule with mixed units, punctuation and longer descriptive content.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Field guide production scope",
+    "schedule": {
+      "label": "Production terms · guide FG-9",
+      "columns": {"ref": "REF", "description": "DESCRIPTION", "duration": "DURATION", "amount": "FEE"},
+      "lines": [
+        {"ref": "01", "description": "Editorial structure and sample chapter", "standard": "One 16-page sample; supplied manuscript", "duration": "2 weeks", "amount": "$4,800"},
+        {"ref": "02", "description": "Complete layout and image-caption placement", "standard": "Maximum extent: 128 pages", "duration": "4 weeks", "amount": "$8,200"},
+        {"ref": "03", "description": "Preflight files and accessible reading PDF", "standard": "One consolidated amendment cycle", "duration": "1 week", "amount": "$2,000"}
+      ],
+      "total": {"label": "Total · before local taxes", "duration": "7 weeks", "amount": "$15,000"},
+      "note": "Printing, image licensing, copy-editing and translation are excluded; all source material in this case is synthetic."
+    },
+    "viewports": [{"width": 1100, "height": 900}, {"width": 360, "height": 800}]
+  }
+}
