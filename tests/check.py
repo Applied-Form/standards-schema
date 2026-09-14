@@ -295,9 +295,10 @@ def _():
 
 @check("comparative evaluation harness")
 def _():
-    r = run(sys.executable, "-m", "unittest", "evaluation.tests.test_evaluation", "-v")
+    r = run(sys.executable, "-m", "unittest", "discover", "-s", "evaluation/tests",
+            "-p", "test_*.py", "-v")
     assert r.returncode == 0, r.stderr.strip()[-3000:] or r.stdout.strip()[-3000:]
-    return "conditions, model integrity, failures, repairs and portable records"
+    return "conditions, routes, model integrity, failures, repairs and portable records"
 
 
 @check("study harnesses parse")
