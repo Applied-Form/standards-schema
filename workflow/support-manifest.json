@@ -115,8 +115,15 @@
       "requiredRelationships": ["runningIndex.section-order", "runningIndex.current-section"]
     }
   ],
-  "testedClients": [],
-  "clientTestingStatus": "No clean-profile Codex, Claude Code or Claude Desktop compatibility trace is included in this release candidate.",
+  "testedClients": [
+    {
+      "name": "Codex CLI",
+      "version": "0.154.0-alpha.6.2",
+      "transport": "stdio",
+      "receipt": "examples/workflow/client-traces/codex-cli-0.154.0-alpha.6.2.json"
+    }
+  ],
+  "clientTestingStatus": "A clean-profile Codex CLI trace passes the complete workflow. Claude Code and Claude Desktop remain unverified.",
   "runtimeRequirements": {
     "python": ">=3.10",
     "node": "22.x or 24.x LTS for the renderer",

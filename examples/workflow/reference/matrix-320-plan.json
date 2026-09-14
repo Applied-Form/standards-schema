@@ -120,7 +120,7 @@
   "renderer": {
     "name": "standards-ui-workflow-render",
     "version": "0.2.0",
-    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+    "supportManifestSha256": "74bd6d275cec43dba6b45ab1ea42edd77e6d15fac2cda711092135989ee3a16e",
     "sourceSha256": "51b0f200b69064ff5ca1f0bfa80929a38f4e4323a9ffad8223effcd5dc2624a8",
     "packageVersion": "2.0.0",
     "packageEntrySha256": "d4759c898ac2e4c407827cfd24b411331b18ad4694eca3a89fa245f43fd2638b",
@@ -250,7 +250,7 @@
   "source": {
     "systemVersion": "1.0.0",
     "schemaVersion": "v0.4",
-    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+    "supportManifestSha256": "74bd6d275cec43dba6b45ab1ea42edd77e6d15fac2cda711092135989ee3a16e",
     "files": {
       "SOURCE.md": "6a2b794596f17bcc411164f6209812408b4b2e54c2cf0749e08a9f11b52a04d2",
       "manifest.json": "67f82ee40cb3755c4d06206ad46d9725a32b0d1023c6f66deba46332d003721b",
@@ -266,7 +266,7 @@
       "workflow/support.py": "aa31d446ba5e6054b3cfd4d0fb4c46424b96419e14db5657aa2163d84ca87f32",
       "workflow/repair_policy.py": "e7faf9d1461a9fbb1b2af3b4f122cedc7416bcda26ca43d7854f60d552d5b2a2",
       "workflow/checker.py": "50334a5237b73e60204205f39bf49faecda5d412edb4dea2c270bfc8a26d73c5",
-      "workflow/support-manifest.json": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+      "workflow/support-manifest.json": "74bd6d275cec43dba6b45ab1ea42edd77e6d15fac2cda711092135989ee3a16e",
       "workflow/schemas/support-manifest.schema.json": "94aff761f3207e79efb2e4cc8d1cb04c067187297040e59a5fab04a114e38658",
       "workflow/schemas/brief.schema.json": "c6856291dc742a3713436af3693c1be18f1fa5bee120562e6e48cfab577ff038",
       "workflow/schemas/plan.schema.json": "69a74e3883e99913d36ef173bb55851cb53c6c8150150ae5677f3a20419692ba",

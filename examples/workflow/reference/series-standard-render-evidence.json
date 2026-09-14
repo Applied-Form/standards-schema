@@ -1,11 +1,11 @@
 {
   "schemaVersion": "0.2.0",
-  "planSha256": "7dd3c94e593d031558680a0fce57fa85e02963a2739ce36f12694e1b919a1c85",
+  "planSha256": "45afd6505390dbeeed363937d87f771f2c1ee714a24fdd378134c05c6e89a70c",
   "artifactSha256": "978863567a1b96c49a7cd579da854f6f31d7e7898a6e4e5aea1d8ce93e42b721",
   "renderer": {
     "name": "standards-ui-workflow-render",
     "version": "0.2.0",
-    "supportManifestSha256": "5a53493085f8761f7a8a1f3b983b47fae8bb37e032cd1d821cbbdb41ba9dd4ab",
+    "supportManifestSha256": "74bd6d275cec43dba6b45ab1ea42edd77e6d15fac2cda711092135989ee3a16e",
     "sourceSha256": "51b0f200b69064ff5ca1f0bfa80929a38f4e4323a9ffad8223effcd5dc2624a8",
     "packageVersion": "2.0.0",
     "packageEntrySha256": "d4759c898ac2e4c407827cfd24b411331b18ad4694eca3a89fa245f43fd2638b",

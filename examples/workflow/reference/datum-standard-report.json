@@ -1,6 +1,6 @@
 {
   "schemaVersion": "0.2.0",
-  "planSha256": "fa9e766d53de457f2953205d0f44d88bb34547fb28948ba6a5047e0b4f77bb7e",
+  "planSha256": "59d71b22398861531266b66b76fdec17df2e11e69488dac6b9d7e333eeb03662",
   "artifactSha256": "16e32285f4a54075e44bd58c378e8fff594572c34998ef956f2ebe99831b2964",
   "status": "pass",
   "summary": {
@@ -96,7 +96,7 @@
       "status": "pass",
       "location": "render_evidence",
       "expected": {
-        "planSha256": "fa9e766d53de457f2953205d0f44d88bb34547fb28948ba6a5047e0b4f77bb7e",
+        "planSha256": "59d71b22398861531266b66b76fdec17df2e11e69488dac6b9d7e333eeb03662",
         "artifactSha256": "16e32285f4a54075e44bd58c378e8fff594572c34998ef956f2ebe99831b2964"
       },
       "observed": null,
