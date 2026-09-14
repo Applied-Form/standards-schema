@@ -363,6 +363,7 @@ class OpenRouterProvider:
     def __init__(self, model_snapshot: dict[str, Any], key: str | None = None,
                  timeout: float = 120, reasoning_effort: str | None = None,
                  provider_pins: dict[str, str] | None = None,
+                 provider_display_names: dict[str, str] | None = None,
                  require_zero_price: bool = True):
         if reasoning_effort not in {None, "none"}:
             raise OpenRouterError("reasoning effort must be omitted or none")
@@ -372,11 +373,18 @@ class OpenRouterProvider:
         self.model_snapshot_sha256 = snapshot_sha256(model_snapshot)
         self.reasoning_effort = reasoning_effort
         provider_pins = dict(provider_pins or {})
+        provider_display_names = dict(provider_display_names or {})
         if (any(model not in self._catalogue for model in provider_pins)
                 or any(not isinstance(endpoint, str) or not endpoint.strip()
                        for endpoint in provider_pins.values())):
             raise OpenRouterError("provider pins must map frozen model IDs to nonblank endpoints")
+        if (any(model not in provider_pins for model in provider_display_names)
+                or any(not isinstance(name, str) or not name.strip()
+                       for name in provider_display_names.values())):
+            raise OpenRouterError(
+                "provider display names must map pinned model IDs to nonblank names")
         self.provider_pins = provider_pins
+        self.provider_display_names = provider_display_names
         self.experiment_metadata = {
             "adapter": f"evaluation.openrouter/{ADAPTER_VERSION}",
             "environment": environment_metadata(),
@@ -386,6 +394,7 @@ class OpenRouterProvider:
             "providerFallbacks": False,
             "underlyingProviderPinned": bool(provider_pins),
             "underlyingProviderPins": provider_pins,
+            "underlyingProviderDisplayNames": provider_display_names,
             "routingCaveat": ("Each declared model request is restricted to its named provider endpoint."
                               if provider_pins else
                               "OpenRouter selects the initial eligible provider endpoint for each request; fallback is disabled, and the resolved provider is recorded when supplied."),
@@ -425,6 +434,7 @@ class OpenRouterProvider:
             "provider": {"allow_fallbacks": False, "require_parameters": True},
         }
         pinned_endpoint = self.provider_pins.get(model)
+        expected_provider_name = self.provider_display_names.get(model, pinned_endpoint)
         if pinned_endpoint:
             payload["provider"]["only"] = [pinned_endpoint]
         if self.require_zero_price:
@@ -467,7 +477,7 @@ class OpenRouterProvider:
         if not integrity["accepted"]:
             error = {"httpStatus": status, "code": "model_integrity_failure",
                      "detail": "resolved model is absent or differs from the frozen exact model identity"}
-        elif pinned_endpoint and selected_provider != pinned_endpoint:
+        elif pinned_endpoint and selected_provider != expected_provider_name:
             error = {"httpStatus": status, "code": "provider_endpoint_integrity_failure",
                      "detail": "resolved provider endpoint is absent or differs from the frozen pin"}
         elif self.require_zero_price and reported_cost is not None and reported_cost != 0:
@@ -481,7 +491,8 @@ class OpenRouterProvider:
         return CompletionResult(
             ok=bool(text) and error is None, text=text, requested_model=model,
             resolved_model=resolved_model,
-            provider_name=selected_provider, provider_endpoint=selected_provider,
+            provider_name=selected_provider,
+            provider_endpoint=pinned_endpoint if pinned_endpoint else selected_provider,
             response_id=clean.get("id") if isinstance(clean.get("id"), str) else None,
             finish_reason=first.get("finish_reason") if isinstance(first.get("finish_reason"), str) else None,
             service_tier=clean.get("service_tier") if isinstance(clean.get("service_tier"), str) else None,
@@ -494,7 +505,8 @@ class OpenRouterProvider:
             routing=routing, model_integrity=integrity, raw=clean, error=error,
             request_parameters=request_parameters,
             effective_settings={"resolvedModel": resolved_model,
-                                "providerEndpoint": selected_provider,
+                                "providerEndpoint": pinned_endpoint,
+                                "providerName": selected_provider,
                                 "serviceTier": clean.get("service_tier"),
                                 "systemFingerprint": clean.get("system_fingerprint")},
         )

@@ -26,7 +26,8 @@ class FakeQualificationProvider:
     def __init__(self, model_snapshot, ledger, outputs=None, raise_at=None,
                  failure_modes=None, cost=0):
         self.model_snapshot_sha256 = digest(model_snapshot)
-        self.provider_pins = {"maker/model-a": "Pinned Provider"}
+        self.provider_pins = {"maker/model-a": "pinned-provider"}
+        self.provider_display_names = {"maker/model-a": "Pinned Provider"}
         self.require_zero_price = False
         self.ledger = ledger
         self.outputs = list(outputs or [EXPECTED_TEXT] * 10)
@@ -46,17 +47,18 @@ class FakeQualificationProvider:
         text = self.outputs.pop(0)
         mode = self.failure_modes.get(call)
         resolved_model = "maker/model-a-v1"
-        endpoint = "Other Provider" if mode == "pin" else "Pinned Provider"
+        endpoint = "other-provider" if mode == "pin" else "pinned-provider"
+        provider_name = "Other Provider" if mode == "pin" else "Pinned Provider"
         accepted = mode != "identity"
         error = ({"code": "model_integrity_failure"} if mode == "identity" else
                  {"code": "provider_endpoint_integrity_failure"} if mode == "pin" else
                  {"code": "unsupported_parameter"} if mode == "parameter" else None)
-        provider_parameters = {"only": ["Pinned Provider"],
+        provider_parameters = {"only": ["pinned-provider"],
                                "allow_fallbacks": mode == "parameter",
                                "require_parameters": True}
         return CompletionResult(
             ok=error is None, text=text, requested_model=model,
-            resolved_model=resolved_model, provider_name=endpoint,
+            resolved_model=resolved_model, provider_name=provider_name,
             provider_endpoint=endpoint, prompt_tokens=3, completion_tokens=1,
             total_tokens=4, cost=self.cost,
             raw={"model": resolved_model, "text": text}, error=error,
@@ -75,7 +77,8 @@ class QualificationTests(unittest.TestCase):
         return dict(output=root / "qualification", provider=provider,
                     model_snapshot=snapshot(), spend_ledger=ledger,
                     route_id="route-a", model_id="maker/model-a",
-                    model_family="family-a", provider_endpoint="Pinned Provider",
+                    model_family="family-a", provider_endpoint="pinned-provider",
+                    provider_display_name="Pinned Provider",
                     block_index=block, expires_at="2099-09-12T00:00:00Z",
                     max_tokens=64, temperature=0, worst_case_call_cost_gbp=.1,
                     usd_to_gbp_rate=.8, resume=resume)
@@ -210,7 +213,8 @@ class QualificationTests(unittest.TestCase):
             ledger = SpendLedger.create(root / "ledger.json", "qualification-ledger")
             provider = FakeQualificationProvider(snapshot(), ledger)
             common = ["route-qualify", "--route-id", "route-a", "--model", "maker/model-a",
-                      "--model-family", "family-a", "--provider-endpoint", "Pinned Provider",
+                      "--model-family", "family-a", "--provider-endpoint", "pinned-provider",
+                      "--provider-display-name", "Pinned Provider",
                       "--snapshot", str(snap), "--spend-ledger", str(ledger.path),
                       "--out", str(root / "qualification"), "--expires-at",
                       "2099-09-12T00:00:00Z", "--worst-case-call-cost-gbp", ".1",
@@ -227,7 +231,8 @@ class QualificationTests(unittest.TestCase):
             ledger = SpendLedger.create(root / "ledger.json", "qualification-ledger")
             provider = OpenRouterProvider(
                 snapshot(), key="test-key", reasoning_effort="none",
-                provider_pins={"maker/model-a": "Pinned Provider"},
+                provider_pins={"maker/model-a": "pinned-provider"},
+                provider_display_names={"maker/model-a": "Pinned Provider"},
                 require_zero_price=False)
 
             def response(_path, _key, payload, _timeout):
@@ -249,7 +254,7 @@ class QualificationTests(unittest.TestCase):
             self.assertEqual(transport.call_count, 10)
             for call in transport.call_args_list:
                 payload = call.args[2]
-                self.assertEqual(payload["provider"]["only"], ["Pinned Provider"])
+                self.assertEqual(payload["provider"]["only"], ["pinned-provider"])
                 self.assertFalse(payload["provider"]["allow_fallbacks"])
                 self.assertTrue(payload["provider"]["require_parameters"])
                 self.assertEqual(payload["reasoning"], {"effort": "none"})

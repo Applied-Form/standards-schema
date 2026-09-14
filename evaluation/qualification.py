@@ -77,7 +77,8 @@ def _snapshot_identity(model_snapshot: Any, model_id: str) -> list[str]:
 
 
 def _validate_inputs(*, route_id: str, model_id: str, model_family: str,
-                     provider_endpoint: str, max_tokens: int, temperature: float,
+                     provider_endpoint: str, provider_display_name: str,
+                     max_tokens: int, temperature: float,
                      worst_case_call_cost_gbp: float, usd_to_gbp_rate: float) -> None:
     if not isinstance(route_id, str) or not IDENTIFIER.fullmatch(route_id):
         raise StudyError("qualification route ID must be a stable lowercase identifier")
@@ -85,8 +86,10 @@ def _validate_inputs(*, route_id: str, model_id: str, model_family: str,
         raise StudyError("qualification model family must be a stable lowercase identifier")
     if (not isinstance(model_id, str) or not model_id.strip() or len(model_id) > 240
             or not isinstance(provider_endpoint, str) or not provider_endpoint.strip()
-            or len(provider_endpoint) > 240):
-        raise StudyError("qualification model and provider endpoint must be nonblank")
+            or len(provider_endpoint) > 240
+            or not isinstance(provider_display_name, str) or not provider_display_name.strip()
+            or len(provider_display_name) > 240):
+        raise StudyError("qualification model, provider endpoint and display name must be nonblank")
     if type(max_tokens) is not int or not 1 <= max_tokens <= 32_000:
         raise StudyError("qualification max tokens must be an integer between 1 and 32000")
     if (isinstance(temperature, bool) or not isinstance(temperature, (int, float))
@@ -103,7 +106,8 @@ def _validate_inputs(*, route_id: str, model_id: str, model_family: str,
 
 
 def _precommit(*, route_id: str, model_id: str, model_family: str,
-               provider_endpoint: str, snapshot_sha256: str, expires_at: str,
+               provider_endpoint: str, provider_display_name: str,
+               snapshot_sha256: str, expires_at: str,
                accepted_resolved_models: list[str], require_zero_price: bool,
                ledger_header: dict[str, Any], ledger_identity_sha256: str,
                max_tokens: int, temperature: float, worst_case_call_cost_gbp: float,
@@ -112,6 +116,7 @@ def _precommit(*, route_id: str, model_id: str, model_family: str,
         "schemaVersion": VERSION, "routeId": route_id, "modelId": model_id,
         "modelFamily": model_family, "provider": "openrouter",
         "providerEndpoint": provider_endpoint, "modelSnapshotSha256": snapshot_sha256,
+        "providerDisplayName": provider_display_name,
         "expiresAt": expires_at,
         "settings": {"maxTokens": max_tokens, "temperature": temperature,
                      "reasoningEffort": "none", "expectedText": EXPECTED_TEXT,
@@ -293,7 +298,7 @@ def _checks(record: dict[str, Any], *, precommit: dict[str, Any],
                        and record["text"].strip() == EXPECTED_TEXT),
         "providerPinned": (
             record.get("provider_endpoint") == precommit["providerEndpoint"]
-            and record.get("provider_name") == precommit["providerEndpoint"]),
+            and record.get("provider_name") == precommit["providerDisplayName"]),
         "parametersAccepted": _parameter_check(
             record.get("request_parameters"), record.get("error"),
             precommit=precommit, block_index=block_index, call_index=call_index),
@@ -435,6 +440,7 @@ def _summarize(output: Path, journal: dict[str, Any], precommit: dict[str, Any])
                 "modelId": precommit["modelId"], "modelFamily": precommit["modelFamily"],
                 "provider": precommit["provider"],
                 "providerEndpoint": precommit["providerEndpoint"],
+                "providerDisplayName": precommit["providerDisplayName"],
                 "modelSnapshotSha256": precommit["modelSnapshotSha256"],
                 "precommitSha256": digest(precommit), "journalSha256": digest(journal),
                 "blocks": journal["blocks"], "observations": observations}
@@ -445,7 +451,8 @@ def _summarize(output: Path, journal: dict[str, Any], precommit: dict[str, Any])
 def run_route_qualification(*, output: Path, provider: ModelProvider,
                             model_snapshot: dict[str, Any], spend_ledger: SpendLedger,
                             route_id: str, model_id: str, model_family: str,
-                            provider_endpoint: str, block_index: int, expires_at: str,
+                            provider_endpoint: str, provider_display_name: str,
+                            block_index: int, expires_at: str,
                             max_tokens: int = 64, temperature: float = 0,
                             worst_case_call_cost_gbp: float = 0,
                             usd_to_gbp_rate: float = 1,
@@ -455,7 +462,8 @@ def run_route_qualification(*, output: Path, provider: ModelProvider,
         raise StudyError("qualification block must be 1 or 2")
     _validate_inputs(
         route_id=route_id, model_id=model_id, model_family=model_family,
-        provider_endpoint=provider_endpoint, max_tokens=max_tokens,
+        provider_endpoint=provider_endpoint, provider_display_name=provider_display_name,
+        max_tokens=max_tokens,
         temperature=temperature, worst_case_call_cost_gbp=worst_case_call_cost_gbp,
         usd_to_gbp_rate=usd_to_gbp_rate)
     if output.is_symlink():
@@ -465,6 +473,9 @@ def run_route_qualification(*, output: Path, provider: ModelProvider,
     if not isinstance(getattr(provider, "provider_pins", None), dict) \
             or provider.provider_pins != {model_id: provider_endpoint}:
         raise StudyError("route qualification requires one exact pinned provider endpoint")
+    if not isinstance(getattr(provider, "provider_display_names", None), dict) \
+            or provider.provider_display_names != {model_id: provider_display_name}:
+        raise StudyError("route qualification requires the endpoint's frozen display name")
     if getattr(provider, "model_snapshot_sha256", None) != digest(model_snapshot):
         raise StudyError("qualification provider and frozen snapshot differ")
     expiry = _utc(expires_at, "qualification expiry")
@@ -478,7 +489,8 @@ def run_route_qualification(*, output: Path, provider: ModelProvider,
     ledger_identity_sha256, ledger_header = _ledger_identity(spend_ledger.value)
     precommit = _precommit(
         route_id=route_id, model_id=model_id, model_family=model_family,
-        provider_endpoint=provider_endpoint, snapshot_sha256=digest(model_snapshot),
+        provider_endpoint=provider_endpoint, provider_display_name=provider_display_name,
+        snapshot_sha256=digest(model_snapshot),
         accepted_resolved_models=accepted_resolved_models,
         require_zero_price=require_zero_price, ledger_header=ledger_header,
         ledger_identity_sha256=ledger_identity_sha256,

@@ -283,7 +283,9 @@ Qualify one route in two explicit invocations. Each invocation makes exactly fiv
 block 2 must resume the byte-identical block-1 precommit. Replace these illustrative values
 with the route's frozen provider, reservation, expiry, and paths. Add
 `--require-zero-price` for a route declared free; omit it for an eligible paid route inside
-the fixed GBP cap:
+the fixed GBP cap. `--provider-endpoint` is the exact endpoint slug used by `provider.only`;
+`--provider-display-name` is the corresponding name returned in router metadata. Freeze
+both from the same endpoint-catalogue response:
 
 These two qualification invocations make provider calls and charge their reservations to
 the shared ledger.
@@ -291,14 +293,16 @@ the shared ledger.
 ```bash
 python3 -m evaluation.cli route-qualify \
   --route-id route-a --model maker/model-a --model-family family-a \
-  --provider-endpoint "Pinned Provider" --snapshot snapshot.json \
+  --provider-endpoint "pinned-provider" --provider-display-name "Pinned Provider" \
+  --snapshot snapshot.json \
   --spend-ledger spend-ledger.json --out /path/to/route-a-qualification \
   --block 1 --expires-at 2026-10-01T00:00:00Z \
   --worst-case-call-cost-gbp .05 --usd-to-gbp-rate .80
 
 python3 -m evaluation.cli route-qualify \
   --route-id route-a --model maker/model-a --model-family family-a \
-  --provider-endpoint "Pinned Provider" --snapshot snapshot.json \
+  --provider-endpoint "pinned-provider" --provider-display-name "Pinned Provider" \
+  --snapshot snapshot.json \
   --spend-ledger spend-ledger.json --out /path/to/route-a-qualification \
   --block 2 --resume --expires-at 2026-10-01T00:00:00Z \
   --worst-case-call-cost-gbp .05 --usd-to-gbp-rate .80

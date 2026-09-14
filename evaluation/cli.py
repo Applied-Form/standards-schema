@@ -148,6 +148,7 @@ def parser() -> argparse.ArgumentParser:
     qualify.add_argument("--model", required=True)
     qualify.add_argument("--model-family", required=True)
     qualify.add_argument("--provider-endpoint", required=True)
+    qualify.add_argument("--provider-display-name", required=True)
     qualify.add_argument("--snapshot", type=Path, required=True)
     qualify.add_argument("--spend-ledger", type=Path, required=True)
     qualify.add_argument("--out", type=Path, required=True)
@@ -217,11 +218,13 @@ def main(argv=None) -> int:
         provider = OpenRouterProvider(
             snapshot, reasoning_effort="none",
             provider_pins={args.model: args.provider_endpoint},
+            provider_display_names={args.model: args.provider_display_name},
             require_zero_price=args.require_zero_price)
         result = run_route_qualification(
             output=args.out.resolve(), provider=provider, model_snapshot=snapshot,
             spend_ledger=ledger, route_id=args.route_id, model_id=args.model,
             model_family=args.model_family, provider_endpoint=args.provider_endpoint,
+            provider_display_name=args.provider_display_name,
             block_index=args.block, expires_at=args.expires_at,
             max_tokens=args.max_tokens, temperature=args.temperature,
             worst_case_call_cost_gbp=args.worst_case_call_cost_gbp,

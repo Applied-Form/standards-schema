@@ -4,7 +4,7 @@
   "title": "Standards protocol 0.5 route qualification precommit",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "routeId", "modelId", "modelFamily", "provider", "providerEndpoint", "modelSnapshotSha256", "expiresAt", "settings", "budget", "design"],
+  "required": ["schemaVersion", "routeId", "modelId", "modelFamily", "provider", "providerEndpoint", "providerDisplayName", "modelSnapshotSha256", "expiresAt", "settings", "budget", "design"],
   "properties": {
     "schemaVersion": {"const": "0.5.0"},
     "routeId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
@@ -12,6 +12,7 @@
     "modelFamily": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
     "provider": {"const": "openrouter"},
     "providerEndpoint": {"type": "string", "minLength": 1, "maxLength": 240},
+    "providerDisplayName": {"type": "string", "minLength": 1, "maxLength": 240},
     "modelSnapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "expiresAt": {"type": "string", "format": "date-time"},
     "settings": {
