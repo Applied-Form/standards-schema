@@ -201,7 +201,7 @@ def validate_declaration(value: Any) -> dict[str, Any]:
     for index, route in enumerate(routes):
         route = _exact(route, {
             "routeId", "modelId", "modelFamily", "provider", "endpointPolicy",
-            "underlyingProvider", "snapshotSha256", "qualification",
+            "underlyingProvider", "providerDisplayName", "snapshotSha256", "qualification",
         }, f"declaration.routes[{index}]")
         route_ids.append(_identifier(route["routeId"], f"declaration.routes[{index}].routeId"))
         model_ids.append(_string(route["modelId"], f"declaration.routes[{index}].modelId", 240))
@@ -209,6 +209,8 @@ def validate_declaration(value: Any) -> dict[str, Any]:
         if route["provider"] != "openrouter" or route["endpointPolicy"] != "pinned":
             raise StudyError("confirmatory routes must use pinned OpenRouter endpoints")
         _string(route["underlyingProvider"], f"declaration.routes[{index}].underlyingProvider", 240)
+        _string(route["providerDisplayName"],
+                f"declaration.routes[{index}].providerDisplayName", 240)
         if not isinstance(route["snapshotSha256"], str) or not HEX64.fullmatch(route["snapshotSha256"]):
             raise StudyError(f"declaration.routes[{index}].snapshotSha256 must be SHA-256")
         validate_route_qualification(route["qualification"], route)
@@ -313,6 +315,160 @@ def validate_route_qualification(value: Any, route: dict[str, Any] | None = None
     if route is not None and qualification["routeId"] != route["routeId"]:
         raise StudyError("route qualification ID differs from its route")
     return qualification
+
+
+def validate_development_plan(value: Any) -> dict[str, Any]:
+    """Validate a pinned, claim-disabled development comparison plan."""
+    top = _exact(value, {
+        "schemaVersion", "planId", "protocolVersion", "studyMode", "createdAt",
+        "releaseCommit", "split", "conditions", "fixtures", "routes", "repetitions",
+        "generation", "randomization", "budget", "renderer", "protocolFiles", "claims",
+    }, "development plan")
+    if top["schemaVersion"] != VERSION or top["protocolVersion"] != VERSION:
+        raise StudyError(f"development plan must use protocol {VERSION}")
+    _identifier(top["planId"], "development plan.planId")
+    if top["studyMode"] != "development" or top["split"] != "dev":
+        raise StudyError("development plans must use the development split")
+    _utc(top["createdAt"], "development plan.createdAt")
+    if not isinstance(top["releaseCommit"], str) or not COMMIT.fullmatch(top["releaseCommit"]):
+        raise StudyError("development plan.releaseCommit must be a full lowercase Git commit")
+    expected_conditions = [
+        "raw_brief", "brand_bible", "scaffolded_html", "selected_context", "full_rules"]
+    if top["conditions"] != expected_conditions:
+        raise StudyError("development plan must freeze the five declared comparison conditions")
+    fixtures = top["fixtures"]
+    if not isinstance(fixtures, list) or len(fixtures) != 6:
+        raise StudyError("development plan.fixtures must contain exactly six development fixtures")
+    fixture_ids: list[str] = []
+    for index, row in enumerate(fixtures):
+        row = _exact(row, {"id", "sha256"}, f"development plan.fixtures[{index}]")
+        fixture_ids.append(_identifier(row["id"], f"development plan.fixtures[{index}].id"))
+        if not isinstance(row["sha256"], str) or not HEX64.fullmatch(row["sha256"]):
+            raise StudyError(f"development plan.fixtures[{index}].sha256 must be SHA-256")
+    if len(fixture_ids) != len(set(fixture_ids)):
+        raise StudyError("development fixture IDs must be unique")
+    routes = top["routes"]
+    if not isinstance(routes, list) or len(routes) != 6:
+        raise StudyError("development plan.routes must contain exactly six pinned routes")
+    route_ids: list[str] = []
+    model_ids: list[str] = []
+    families: set[str] = set()
+    reservations: list[str] = []
+    for index, route in enumerate(routes):
+        route = _exact(route, {
+            "routeId", "modelId", "modelFamily", "provider", "endpointPolicy",
+            "underlyingProvider", "providerDisplayName", "snapshotSha256", "qualification",
+        }, f"development plan.routes[{index}]")
+        route_ids.append(_identifier(route["routeId"], f"development plan.routes[{index}].routeId"))
+        model_ids.append(_string(route["modelId"], f"development plan.routes[{index}].modelId", 240))
+        families.add(_identifier(route["modelFamily"], f"development plan.routes[{index}].modelFamily"))
+        if route["provider"] != "openrouter" or route["endpointPolicy"] != "pinned":
+            raise StudyError("development routes must use pinned OpenRouter endpoints")
+        _string(route["underlyingProvider"],
+                f"development plan.routes[{index}].underlyingProvider", 240)
+        _string(route["providerDisplayName"],
+                f"development plan.routes[{index}].providerDisplayName", 240)
+        if not isinstance(route["snapshotSha256"], str) or not HEX64.fullmatch(route["snapshotSha256"]):
+            raise StudyError(f"development plan.routes[{index}].snapshotSha256 must be SHA-256")
+        validate_route_qualification(route["qualification"], route)
+        reservations.extend(route["qualification"]["observations"]["reservationIds"])
+    if len(route_ids) != len(set(route_ids)) or len(model_ids) != len(set(model_ids)):
+        raise StudyError("development route and model IDs must be unique")
+    if len(families) < 3:
+        raise StudyError("development routes must span at least three model families")
+    if len(reservations) != len(set(reservations)):
+        raise StudyError("development qualification reservations must be unique across routes")
+    _integer(top["repetitions"], "development plan.repetitions", 1, 10)
+    generation = _exact(top["generation"], {
+        "maxTokens", "temperature", "reasoningEffort", "maxRepairs",
+        "worstCaseCallCostGbp", "usdToGbpRate", "automaticTopUp",
+    }, "development plan.generation")
+    _integer(generation["maxTokens"], "development plan.generation.maxTokens", 256, 32000)
+    _number(generation["temperature"], "development plan.generation.temperature", 0, 2)
+    if generation["reasoningEffort"] != "none" or generation["maxRepairs"] != 0:
+        raise StudyError("development comparison must be reasoning-off and repair-free")
+    _number(generation["worstCaseCallCostGbp"],
+            "development plan.generation.worstCaseCallCostGbp", 0, 500)
+    _number(generation["usdToGbpRate"], "development plan.generation.usdToGbpRate", .000001, 100)
+    if generation["automaticTopUp"] is not False:
+        raise StudyError("development execution must disable automatic budget top-up")
+    randomization = _exact(top["randomization"], {"strategy", "seed"},
+                           "development plan.randomization")
+    if randomization["strategy"] != "blocked-case-repetition-shuffle-v1":
+        raise StudyError("unsupported development randomization strategy")
+    _integer(randomization["seed"], "development plan.randomization.seed", 0, 2**63 - 1)
+    budget = _exact(top["budget"], {"currency", "maximum"}, "development plan.budget")
+    if budget["currency"] != "GBP":
+        raise StudyError("development plan budget must use GBP")
+    _number(budget["maximum"], "development plan.budget.maximum", 0, 500)
+    renderer = _exact(top["renderer"], {"identitySha256"}, "development plan.renderer")
+    if not isinstance(renderer["identitySha256"], str) or not HEX64.fullmatch(renderer["identitySha256"]):
+        raise StudyError("development plan renderer identity must be SHA-256")
+    files = top["protocolFiles"]
+    if (not isinstance(files, dict) or not files
+            or any(not isinstance(path, str) or not path or path.startswith("/")
+                   or ".." in Path(path).parts or not isinstance(checksum, str)
+                   or not HEX64.fullmatch(checksum) for path, checksum in files.items())):
+        raise StudyError("development plan.protocolFiles must map safe relative paths to SHA-256 values")
+    if top["claims"] != {"status": "disabled", "interpretation": "exploratory-development-only"}:
+        raise StudyError("development plan must keep comparative claims disabled")
+    return top
+
+
+def development_plan_blockers(plan: Any, *, snapshot: Any | None = None,
+                              spend_ledger: Any | None = None,
+                              current_identity: dict[str, Any] | None = None,
+                              now: datetime | None = None) -> list[str]:
+    """Return every local entry blocker for a pinned development comparison."""
+    try:
+        plan = validate_development_plan(plan)
+    except StudyError as error:
+        return [str(error)]
+    blockers: list[str] = []
+    current_time = now or datetime.now(timezone.utc)
+    for route in plan["routes"]:
+        if _utc(route["qualification"]["expiresAt"], "route qualification.expiresAt") <= current_time:
+            blockers.append(f"route qualification expired before execution: {route['routeId']}")
+    snapshot_hashes = {route["snapshotSha256"] for route in plan["routes"]}
+    if len(snapshot_hashes) != 1:
+        blockers.append("development routes do not bind one model snapshot")
+    if snapshot is None:
+        blockers.append("the frozen model snapshot is required")
+    elif digest(snapshot) not in snapshot_hashes:
+        blockers.append("model snapshot differs from the development route plan")
+    if spend_ledger is None:
+        blockers.append("the cumulative spend ledger is required")
+    else:
+        try:
+            validate_spend_ledger(spend_ledger)
+        except StudyError as error:
+            blockers.append(str(error))
+        else:
+            if spend_ledger["capGbp"] != plan["budget"]["maximum"]:
+                blockers.append("spend ledger cap differs from the development plan")
+            retained = {entry["reservationId"]: entry for entry in spend_ledger["entries"]}
+            qualification_ids = {
+                reservation_id for route in plan["routes"]
+                for reservation_id in route["qualification"]["observations"]["reservationIds"]}
+            if qualification_ids - set(retained):
+                blockers.append("spend ledger lacks route-qualification reservations")
+            elif any(retained[item]["stage"] != "qualification"
+                     or retained[item]["status"] == "reserved" for item in qualification_ids):
+                blockers.append("route-qualification spend reservations are not finalized")
+            charged = sum(float(entry["chargedGbp"]) for entry in spend_ledger["entries"])
+            reservation = (len(plan["routes"]) * len(plan["fixtures"])
+                           * plan["repetitions"] * len(plan["conditions"])
+                           * plan["generation"]["worstCaseCallCostGbp"])
+            if charged + reservation > spend_ledger["capGbp"] + 1e-9:
+                blockers.append("cumulative ledger lacks budget for the development matrix")
+    if current_identity is not None:
+        if current_identity.get("releaseCommit") != plan["releaseCommit"]:
+            blockers.append("current release commit differs from the development plan")
+        if current_identity.get("rendererIdentitySha256") != plan["renderer"]["identitySha256"]:
+            blockers.append("current renderer identity differs from the development plan")
+        if current_identity.get("protocolFiles") != plan["protocolFiles"]:
+            blockers.append("current protocol files differ from the development plan")
+    return blockers
 
 
 def _validate_analysis_plan(value: Any, conditions: list[str]) -> None:

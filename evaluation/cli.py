@@ -18,7 +18,8 @@ from .qualification import run_route_qualification
 from .study import (SpendLedger, StudyError, analyze_confirmatory, confirmatory_blockers,
                     create_publication_bundle, digest, plan_paired_power,
                     read_json as read_study_json, seal_review_set,
-                    validate_declaration, validate_freeze_receipt,
+                    development_plan_blockers, validate_declaration,
+                    validate_development_plan, validate_freeze_receipt,
                     validate_spend_ledger, verify_publication_safe)
 
 
@@ -80,6 +81,8 @@ def parser() -> argparse.ArgumentParser:
                      help="freeze reasoning off or retain the provider/model default")
     run.add_argument("--declaration", type=Path,
                      help="required frozen protocol 0.5 declaration for confirmatory execution")
+    run.add_argument("--development-plan", type=Path,
+                     help="qualified pinned-route plan for a claim-disabled development run")
     run.add_argument("--freeze-receipt", type=Path,
                      help="required externally timestamped receipt for confirmatory execution")
     run.add_argument("--snapshot", type=Path,
@@ -111,6 +114,15 @@ def parser() -> argparse.ArgumentParser:
     declaration.add_argument("--freeze-receipt", type=Path)
     declaration.add_argument("--snapshot", type=Path)
     declaration.add_argument("--spend-ledger", type=Path)
+
+    development = commands.add_parser(
+        "validate-development-plan",
+        help="validate a qualified pinned-route development plan without network access")
+    development.add_argument("--plan", type=Path, required=True)
+    development.add_argument("--snapshot", type=Path)
+    development.add_argument("--spend-ledger", type=Path)
+    development.add_argument("--ui-root", type=Path,
+                             default=EVALUATION_ROOT.parents[1] / "standards-ui")
 
     freeze = commands.add_parser(
         "validate-freeze", help="verify an external freeze receipt binds a declaration and snapshot")
@@ -245,6 +257,19 @@ def main(argv=None) -> int:
                   "blockers": blockers}
         _print(result)
         return 0 if not blockers else 2
+    if args.command == "validate-development-plan":
+        plan = validate_development_plan(read_study_json(args.plan.resolve()))
+        snapshot = read_study_json(args.snapshot.resolve()) if args.snapshot else None
+        spend = (SpendLedger.load(args.spend_ledger.resolve()).snapshot()
+                 if args.spend_ledger else None)
+        renderer = UIRenderer(args.ui_root)
+        blockers = development_plan_blockers(
+            plan, snapshot=snapshot, spend_ledger=spend,
+            current_identity=current_confirmatory_identity(renderer, load_fixtures("dev")))
+        result = {"schemaVersion": "0.5.0", "planId": plan["planId"],
+                  "planSha256": digest(plan), "ready": not blockers, "blockers": blockers}
+        _print(result)
+        return 0 if not blockers else 2
     if args.command == "power":
         _print(plan_paired_power(
             baseline_rate=args.baseline_rate, treatment_rate=args.treatment_rate,
@@ -278,6 +303,7 @@ def main(argv=None) -> int:
         return 0
 
     declaration_record = None
+    development_plan = None
     freeze_receipt = None
     frozen_snapshot = None
     spend_ledger = (SpendLedger.load(args.spend_ledger.resolve())
@@ -295,6 +321,16 @@ def main(argv=None) -> int:
             spend_ledger=spend_ledger.snapshot())
         if blockers:
             raise EvaluationError("confirmatory execution blocked: " + " | ".join(blockers))
+    if args.command == "run" and args.development_plan:
+        if args.mode != "exploratory":
+            raise EvaluationError("a development plan can only run in exploratory mode")
+        if args.declaration:
+            raise EvaluationError("development plan and confirmatory declaration are mutually exclusive")
+        if not args.snapshot or spend_ledger is None:
+            raise EvaluationError("development execution requires --snapshot and --spend-ledger")
+        development_plan = validate_development_plan(
+            read_study_json(args.development_plan.resolve()))
+        frozen_snapshot = read_study_json(args.snapshot.resolve())
     if args.command in {"run", "smoke"} and spend_ledger is None:
         raise EvaluationError("live evaluation requires --spend-ledger for cumulative GBP reservations")
 
@@ -308,6 +344,13 @@ def main(argv=None) -> int:
                 renderer, load_fixtures("held-out")))
         if blockers:
             raise EvaluationError("confirmatory execution blocked: " + " | ".join(blockers))
+    if development_plan is not None:
+        blockers = development_plan_blockers(
+            development_plan, snapshot=snapshot,
+            spend_ledger=spend_ledger.snapshot() if spend_ledger else None,
+            current_identity=current_confirmatory_identity(renderer, load_fixtures("dev")))
+        if blockers:
+            raise EvaluationError("development execution blocked: " + " | ".join(blockers))
     if args.command == "smoke":
         models = _select_free(snapshot, args.model_limit)
         if not models:
@@ -323,32 +366,36 @@ def main(argv=None) -> int:
             spend_ledger=spend_ledger, worst_case_call_cost_gbp=0,
             usd_to_gbp_rate=1)
     else:
-        models = ([route["modelId"] for route in declaration_record["routes"]]
-                  if declaration_record is not None else _csv(args.models or ""))
+        plan_record = declaration_record or development_plan
+        models = ([route["modelId"] for route in plan_record["routes"]]
+                  if plan_record is not None else _csv(args.models or ""))
         if not models:
             raise EvaluationError("at least one model is required")
         validate_frozen_models(snapshot, models,
                                require_zero_price=declaration_record is None)
-        reasoning_effort = (declaration_record["generation"]["reasoningEffort"]
-                            if declaration_record is not None else
+        reasoning_effort = (plan_record["generation"]["reasoningEffort"]
+                            if plan_record is not None else
                             "none" if args.reasoning == "off" else "provider-default")
         provider = OpenRouterProvider(
             snapshot, reasoning_effort="none" if reasoning_effort == "none" else None,
             provider_pins=({route["modelId"]: route["underlyingProvider"]
-                            for route in declaration_record["routes"]}
-                           if declaration_record is not None else None),
+                            for route in plan_record["routes"]}
+                           if plan_record is not None else None),
+            provider_display_names=({route["modelId"]: route["providerDisplayName"]
+                                     for route in plan_record["routes"]}
+                                    if plan_record is not None else None),
             require_zero_price=declaration_record is None,
         )
-        conditions = (declaration_record["conditions"] if declaration_record is not None
+        conditions = (plan_record["conditions"] if plan_record is not None
                       else _csv(args.conditions))
         unknown = sorted(set(conditions) - set(CONDITIONS))
         if unknown:
             raise EvaluationError("unknown conditions: " + ", ".join(unknown))
         output = (args.out or _default_output("comparison")).resolve()
-        run_split = declaration_record["split"] if declaration_record is not None else args.split
-        run_repetitions = (declaration_record["repetitions"]
-                           if declaration_record is not None else args.repetitions)
-        generation = declaration_record["generation"] if declaration_record is not None else None
+        run_split = plan_record["split"] if plan_record is not None else args.split
+        run_repetitions = (plan_record["repetitions"]
+                           if plan_record is not None else args.repetitions)
+        generation = plan_record["generation"] if plan_record is not None else None
         result = run_experiment(output=output, provider=provider, models=models,
             renderer=renderer, conditions=conditions, split=run_split,
             case_ids=set(_csv(args.cases)) if args.cases else None,
@@ -360,12 +407,15 @@ def main(argv=None) -> int:
             label=("confirmatory-comparative-evaluation" if declaration_record is not None
                    else "exploratory-comparative-evaluation"),
             study_mode=args.mode, declaration=declaration_record,
-            freeze_receipt=freeze_receipt, spend_ledger=spend_ledger,
+            development_plan=development_plan, freeze_receipt=freeze_receipt,
+            spend_ledger=spend_ledger,
             worst_case_call_cost_gbp=(generation["worstCaseCallCostGbp"]
                                       if generation else args.worst_case_call_cost_gbp),
             usd_to_gbp_rate=(generation["usdToGbpRate"]
                              if generation else args.usd_to_gbp_rate),
-            resume=args.resume)
+            resume=args.resume,
+            randomization_seed=(development_plan["randomization"]["seed"]
+                                if development_plan is not None else None))
     result["outputDirectory"] = str(output)
     _print(result)
     return 0

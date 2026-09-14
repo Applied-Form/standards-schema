@@ -1510,6 +1510,7 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
                    max_tokens: int, temperature: float, model_snapshot: dict[str, Any] | None,
                    label: str = "evaluation", study_mode: str = "exploratory",
                    declaration: dict[str, Any] | None = None,
+                   development_plan: dict[str, Any] | None = None,
                    freeze_receipt: dict[str, Any] | None = None,
                    spend_ledger: SpendLedger | None = None,
                    worst_case_call_cost_gbp: float = 0,
@@ -1558,6 +1559,7 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
     protocol_files = _protocol_identity(fixtures)
     declaration_digest = None
     receipt_digest = None
+    development_plan_digest = study_digest(development_plan) if development_plan is not None else None
     if study_mode == "confirmatory":
         if declaration is None or freeze_receipt is None:
             raise EvaluationError("confirmatory execution requires a declaration and freeze receipt")
@@ -1590,12 +1592,35 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
                 or getattr(provider, "provider_pins", None) != {
                     route["modelId"]: route["underlyingProvider"]
                     for route in declaration["routes"]}
+                or getattr(provider, "provider_display_names", None) != {
+                    route["modelId"]: route["providerDisplayName"]
+                    for route in declaration["routes"]}
                 or (getattr(provider, "reasoning_effort", None) or "provider-default")
                 != declaration["generation"]["reasoningEffort"]):
             raise EvaluationError("runtime inputs differ from the externally frozen declaration")
         randomization_seed = declaration["randomization"]["seed"]
         declaration_digest = study_digest(declaration)
         receipt_digest = study_digest(freeze_receipt)
+    if development_plan is not None:
+        if study_mode != "exploratory" or declaration is not None:
+            raise EvaluationError("a development plan requires exploratory mode without a declaration")
+        if (split != development_plan["split"]
+                or conditions != development_plan["conditions"]
+                or models != [route["modelId"] for route in development_plan["routes"]]
+                or repetitions != development_plan["repetitions"]
+                or max_tokens != development_plan["generation"]["maxTokens"]
+                or temperature != development_plan["generation"]["temperature"]
+                or max_repairs != development_plan["generation"]["maxRepairs"]
+                or worst_case_call_cost_gbp
+                != development_plan["generation"]["worstCaseCallCostGbp"]
+                or usd_to_gbp_rate != development_plan["generation"]["usdToGbpRate"]
+                or getattr(provider, "provider_pins", None) != {
+                    route["modelId"]: route["underlyingProvider"]
+                    for route in development_plan["routes"]}
+                or getattr(provider, "provider_display_names", None) != {
+                    route["modelId"]: route["providerDisplayName"]
+                    for route in development_plan["routes"]}):
+            raise EvaluationError("runtime inputs differ from the pinned development plan")
     if resume:
         precommit = read_json(output / "precommit.json", 10_000_000)
         if precommit.get("schemaVersion") != VERSION or precommit.get("studyMode") != study_mode:
@@ -1608,6 +1633,7 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
             "maxTokens": precommit["maxTokens"], "temperature": precommit["temperature"],
             "renderer": precommit["renderer"], "snapshot": precommit["modelSnapshot"],
             "spendLedger": precommit.get("spendLedger"),
+            "developmentPlan": precommit.get("developmentPlan"),
         }
         current = {
             "conditions": conditions,
@@ -1628,6 +1654,9 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
                               "capGbp": spend_ledger.value["capGbp"],
                               "automaticTopUp": False}
                              if spend_ledger is not None else None),
+            "developmentPlan": ({"file": "development-plan.json",
+                                  "canonicalSha256": development_plan_digest}
+                                 if development_plan is not None else None),
         }
         if frozen != current:
             raise EvaluationError("resume arguments differ from the frozen run")
@@ -1696,6 +1725,9 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
             "declaration": ({"file": "study-declaration.json",
                              "canonicalSha256": declaration_digest}
                             if declaration is not None else None),
+            "developmentPlan": ({"file": "development-plan.json",
+                                  "canonicalSha256": development_plan_digest}
+                                 if development_plan is not None else None),
             "freezeReceipt": ({"file": "freeze-receipt.json",
                                "canonicalSha256": receipt_digest}
                             if freeze_receipt is not None else None),
@@ -1724,6 +1756,8 @@ def run_experiment(*, output: Path, provider: ModelProvider | None, models: list
         if declaration is not None:
             write_json(output / "study-declaration.json", declaration, exclusive=True)
             write_json(output / "freeze-receipt.json", freeze_receipt, exclusive=True)
+        if development_plan is not None:
+            write_json(output / "development-plan.json", development_plan, exclusive=True)
         write_json(output / "precommit.json", precommit, exclusive=True)
         journal = CellJournal.create(output / "cell-journal.json", run_id, matrix)
     else:

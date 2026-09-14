@@ -119,6 +119,7 @@
           "provider",
           "endpointPolicy",
           "underlyingProvider",
+          "providerDisplayName",
           "snapshotSha256",
           "qualification"
         ],
@@ -142,6 +143,10 @@
             "const": "pinned"
           },
           "underlyingProvider": {
+            "type": "string",
+            "minLength": 1
+          },
+          "providerDisplayName": {
             "type": "string",
             "minLength": 1
           },

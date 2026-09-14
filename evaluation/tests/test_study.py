@@ -10,10 +10,11 @@ from evaluation.openrouter import OpenRouterProvider
 from evaluation.study import (
     CellJournal, SpendLedger, StudyError, analyze_confirmatory, canonical,
     confirmatory_blockers, create_publication_bundle, digest, holm_adjust,
+    development_plan_blockers,
     exploratory_h3_gate, krippendorff_alpha_ordinal, paired_binary_analysis,
     plan_paired_power,
     seal_review_set, validate_analysis_result, validate_declaration,
-    validate_spend_ledger, verify_publication_safe,
+    validate_development_plan, validate_spend_ledger, verify_publication_safe,
 )
 
 
@@ -45,7 +46,8 @@ def declaration_and_receipt():
             "routeId": route_id, "modelId": f"maker/model-{index}",
             "modelFamily": f"family-{index // 2}",
             "provider": "openrouter", "endpointPolicy": "pinned",
-            "underlyingProvider": f"Provider {index}", "snapshotSha256": snapshot_sha,
+            "underlyingProvider": f"provider-{index}",
+            "providerDisplayName": f"Provider {index}", "snapshotSha256": snapshot_sha,
             "qualification": {"schemaVersion": "0.5.0", "routeId": route_id,
                               "qualifiedAt": "2026-09-12T10:00:00Z",
                               "expiresAt": "2099-09-12T10:00:00Z",
@@ -157,7 +159,48 @@ def binary_trials():
     return trials
 
 
+def development_plan(declaration):
+    return {
+        "schemaVersion": "0.5.0", "planId": "schedule-development-1",
+        "protocolVersion": "0.5.0", "studyMode": "development",
+        "createdAt": "2026-09-12T11:00:00Z",
+        "releaseCommit": declaration["releaseCommit"], "split": "dev",
+        "conditions": ["raw_brief", "brand_bible", "scaffolded_html",
+                       "selected_context", "full_rules"],
+        "fixtures": declaration["fixtures"][:6], "routes": declaration["routes"],
+        "repetitions": 1,
+        "generation": {**declaration["generation"], "maxRepairs": 0},
+        "randomization": declaration["randomization"],
+        "budget": declaration["budget"], "renderer": declaration["renderer"],
+        "protocolFiles": declaration["protocolFiles"],
+        "claims": {"status": "disabled",
+                   "interpretation": "exploratory-development-only"},
+    }
+
+
 class StudyProtocolTests(unittest.TestCase):
+    def test_pinned_development_plan_is_qualified_and_claim_disabled(self):
+        declaration, _, snapshot, ledger = declaration_and_receipt()
+        plan = development_plan(declaration)
+        self.assertEqual(validate_development_plan(plan), plan)
+        identity = {"releaseCommit": plan["releaseCommit"],
+                    "rendererIdentitySha256": plan["renderer"]["identitySha256"],
+                    "protocolFiles": plan["protocolFiles"]}
+        self.assertEqual(development_plan_blockers(
+            plan, snapshot=snapshot, spend_ledger=ledger, current_identity=identity), [])
+        self.assertIn("frozen model snapshot", development_plan_blockers(plan)[0])
+        changed = copy.deepcopy(plan)
+        changed["claims"]["status"] = "enabled"
+        with self.assertRaisesRegex(StudyError, "claims disabled"):
+            validate_development_plan(changed)
+
+    def test_declaration_requires_endpoint_slug_and_display_name(self):
+        declaration, _, _, _ = declaration_and_receipt()
+        changed = copy.deepcopy(declaration)
+        del changed["routes"][0]["providerDisplayName"]
+        with self.assertRaisesRegex(StudyError, "missing"):
+            validate_declaration(changed)
+
     def test_strict_declaration_and_external_freeze_are_fail_closed(self):
         declaration, receipt, snapshot, ledger = declaration_and_receipt()
         self.assertEqual(validate_declaration(declaration), declaration)
@@ -186,6 +229,8 @@ class StudyProtocolTests(unittest.TestCase):
         route = declaration["routes"][0]
         provider = OpenRouterProvider(snapshot, key="test-key", reasoning_effort="none",
                                       provider_pins={route["modelId"]: route["underlyingProvider"]},
+                                      provider_display_names={
+                                          route["modelId"]: route["providerDisplayName"]},
                                       require_zero_price=False)
         response = {"id": "provider-uuid", "model": "maker/model-0-v1",
                     "openrouter_metadata": {"attempts": [{"status": 200,
@@ -198,12 +243,12 @@ class StudyProtocolTests(unittest.TestCase):
                                        max_tokens=256, temperature=0)
         self.assertTrue(result.ok)
         sent = request.call_args.args[2]
-        self.assertEqual(sent["provider"]["only"], ["Provider 0"])
+        self.assertEqual(sent["provider"]["only"], ["provider-0"])
         self.assertFalse(sent["provider"]["allow_fallbacks"])
         self.assertTrue(sent["provider"]["require_parameters"])
         self.assertNotIn("order", sent["provider"])
         self.assertNotIn("models", sent)
-        self.assertEqual(result.provider_endpoint, "Provider 0")
+        self.assertEqual(result.provider_endpoint, "provider-0")
         wrong = copy.deepcopy(response)
         wrong["openrouter_metadata"]["attempts"][0]["provider"] = "Provider other"
         with patch("evaluation.openrouter._http_json", return_value=(200, wrong, 3)):

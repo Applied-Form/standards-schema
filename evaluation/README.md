@@ -102,6 +102,28 @@ held-out fixture hashes, exactly six pinned routes across at least three model f
 three independent committed reviewers, seeded 90%-power repetition choice, cumulative
 spend ledger, approved GBP budget, release commit, renderer identity, and protocol bytes all match.
 
+The formal six-route development study uses a validated `development-plan.json` rather
+than `--models`. The plan embeds all six ten-call qualification receipts and records each
+OpenRouter endpoint slug separately from its returned provider display name. Validate it
+and then run the exact frozen matrix:
+
+```bash
+python3 -m evaluation.cli validate-development-plan \
+  --plan /path/to/development-plan.json \
+  --snapshot /path/to/model-snapshot.json \
+  --spend-ledger /path/to/spend-ledger.json
+python3 -m evaluation.cli run \
+  --mode exploratory \
+  --development-plan /path/to/development-plan.json \
+  --snapshot /path/to/model-snapshot.json \
+  --spend-ledger /path/to/spend-ledger.json
+```
+
+The command refuses expired or partial qualifications, changed source or renderer bytes,
+an unpinned endpoint, and insufficient remaining budget. It retains the plan with the run
+and keeps comparative claims disabled; development results only supply variance and
+feasibility inputs for a later externally frozen confirmatory declaration.
+
 ## What is frozen before generation
 
 Before the first provider call, a run writes:
@@ -115,9 +137,9 @@ Before the first provider call, a run writes:
 OpenRouter calls are allowed only for exact IDs in that frozen snapshot. Exploratory discovery
 requires every published price field to be zero. A confirmatory route may be paid within the
 fixed £500 ledger cap, but must publish finite non-negative prompt and completion prices.
-Automatic routers are rejected. Provider fallback is disabled. Exploratory free calls carry
+Automatic routers are rejected. Provider fallback is disabled. Ad hoc exploratory free calls carry
 a zero-price ceiling and may still leave the initial provider endpoint unpinned and
-disclose that limitation. Protocol 0.5 confirmatory declarations name one underlying
+disclose that limitation. Pinned development plans and protocol 0.5 confirmatory declarations name one underlying
 provider endpoint per model. The adapter sends `provider.only: [pinned]`,
 `allow_fallbacks: false`, and `require_parameters: true`; it sends no model fallback list.
 The cell fails if the returned endpoint is absent or different.

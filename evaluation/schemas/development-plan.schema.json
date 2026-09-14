@@ -1,0 +1,99 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/development-plan.schema.json",
+  "title": "Standards protocol 0.5 pinned development study plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion", "planId", "protocolVersion", "studyMode", "createdAt",
+    "releaseCommit", "split", "conditions", "fixtures", "routes", "repetitions",
+    "generation", "randomization", "budget", "renderer", "protocolFiles", "claims"
+  ],
+  "properties": {
+    "schemaVersion": {"const": "0.5.0"},
+    "planId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+    "protocolVersion": {"const": "0.5.0"},
+    "studyMode": {"const": "development"},
+    "createdAt": {"type": "string", "format": "date-time"},
+    "releaseCommit": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "split": {"const": "dev"},
+    "conditions": {
+      "const": ["raw_brief", "brand_bible", "scaffolded_html", "selected_context", "full_rules"]
+    },
+    "fixtures": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "sha256"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "routes": {
+      "type": "array", "minItems": 6, "maxItems": 6,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["routeId", "modelId", "modelFamily", "provider", "endpointPolicy",
+                     "underlyingProvider", "providerDisplayName", "snapshotSha256", "qualification"],
+        "properties": {
+          "routeId": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+          "modelId": {"type": "string", "minLength": 1},
+          "modelFamily": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"},
+          "provider": {"const": "openrouter"},
+          "endpointPolicy": {"const": "pinned"},
+          "underlyingProvider": {"type": "string", "minLength": 1},
+          "providerDisplayName": {"type": "string", "minLength": 1},
+          "snapshotSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "qualification": {"$ref": "route-qualification.schema.json"}
+        }
+      }
+    },
+    "repetitions": {"type": "integer", "minimum": 1, "maximum": 10},
+    "generation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["maxTokens", "temperature", "reasoningEffort", "maxRepairs",
+                   "worstCaseCallCostGbp", "usdToGbpRate", "automaticTopUp"],
+      "properties": {
+        "maxTokens": {"type": "integer", "minimum": 256, "maximum": 32000},
+        "temperature": {"type": "number", "minimum": 0, "maximum": 2},
+        "reasoningEffort": {"const": "none"},
+        "maxRepairs": {"const": 0},
+        "worstCaseCallCostGbp": {"type": "number", "minimum": 0, "maximum": 500},
+        "usdToGbpRate": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
+        "automaticTopUp": {"const": false}
+      }
+    },
+    "randomization": {
+      "type": "object", "additionalProperties": false,
+      "required": ["strategy", "seed"],
+      "properties": {
+        "strategy": {"const": "blocked-case-repetition-shuffle-v1"},
+        "seed": {"type": "integer", "minimum": 0}
+      }
+    },
+    "budget": {
+      "type": "object", "additionalProperties": false,
+      "required": ["currency", "maximum"],
+      "properties": {"currency": {"const": "GBP"}, "maximum": {"type": "number", "minimum": 0, "maximum": 500}}
+    },
+    "renderer": {
+      "type": "object", "additionalProperties": false, "required": ["identitySha256"],
+      "properties": {"identitySha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+    },
+    "protocolFiles": {
+      "type": "object", "minProperties": 1,
+      "additionalProperties": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+      "propertyNames": {"pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$)).+$"}
+    },
+    "claims": {
+      "type": "object", "additionalProperties": false,
+      "required": ["status", "interpretation"],
+      "properties": {
+        "status": {"const": "disabled"},
+        "interpretation": {"const": "exploratory-development-only"}
+      }
+    }
+  }
+}
