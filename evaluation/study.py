@@ -471,6 +471,161 @@ def development_plan_blockers(plan: Any, *, snapshot: Any | None = None,
     return blockers
 
 
+def _development_power_inputs(trials: list[dict[str, Any]], *, treatment: str,
+                              comparator: str) -> dict[str, Any]:
+    pairs: dict[tuple[str, str, int], dict[str, int]] = {}
+    for trial in trials:
+        condition = trial.get("condition")
+        if condition not in {treatment, comparator}:
+            continue
+        value = (trial.get("metrics") or {}).get("firstPassBriefFulfilment")
+        if type(value) is not bool:
+            raise StudyError("development power inputs require a boolean outcome for every pair")
+        key = (trial.get("requestedModel"), trial.get("caseId"), trial.get("repetition"))
+        bucket = pairs.setdefault(key, {})
+        if condition in bucket:
+            raise StudyError("duplicate development power cell")
+        bucket[condition] = int(value)
+    if not pairs or any(set(pair) != {treatment, comparator} for pair in pairs.values()):
+        raise StudyError("development power inputs require complete selected/scaffold pairs")
+    ordered = [pairs[key] for key in sorted(pairs)]
+    baseline = sum(pair[comparator] for pair in ordered) / len(ordered)
+    treatment_rate = sum(pair[treatment] for pair in ordered) / len(ordered)
+    x = [pair[comparator] for pair in ordered]
+    y = [pair[treatment] for pair in ordered]
+    x_mean, y_mean = baseline, treatment_rate
+    numerator = sum((left - x_mean) * (right - y_mean) for left, right in zip(x, y))
+    x_sum = sum((value - x_mean) ** 2 for value in x)
+    y_sum = sum((value - y_mean) ** 2 for value in y)
+    correlation = numerator / math.sqrt(x_sum * y_sum) if x_sum > 0 and y_sum > 0 else None
+    return {"baselineRate": baseline, "treatmentRate": treatment_rate,
+            "effect": treatment_rate - baseline,
+            "withinPairCorrelation": correlation, "pairs": len(ordered)}
+
+
+def analyze_development(run_directory: Path, plan: dict[str, Any], *,
+                        bootstrap_replicates: int = 20_000,
+                        power_simulations: int = 10_000,
+                        seed: int = 20260915) -> dict[str, Any]:
+    """Estimate frozen power inputs from one complete, pinned development run."""
+    plan = validate_development_plan(plan)
+    precommit = read_json(run_directory / "precommit.json")
+    results = read_json(run_directory / "results.json")
+    retained_plan = read_json(run_directory / "development-plan.json")
+    journal = read_json(run_directory / "cell-journal.json")
+    trials = _read_jsonl(run_directory / "trials.jsonl")
+    plan_sha = digest(plan)
+    if retained_plan != plan or precommit.get("developmentPlan") != {
+            "file": "development-plan.json", "canonicalSha256": plan_sha}:
+        raise StudyError("development run does not bind the supplied plan")
+    if precommit.get("studyMode") != "exploratory" or precommit.get("schemaVersion") != VERSION:
+        raise StudyError("analysis requires a protocol 0.5 exploratory development run")
+    if results.get("status") != "complete" or results.get("runId") != precommit.get("runId"):
+        raise StudyError("development run is incomplete or internally inconsistent")
+    cells = journal.get("cells") if isinstance(journal, dict) else None
+    if not isinstance(cells, list) or any(cell.get("status") != "complete" for cell in cells):
+        raise StudyError("development analysis requires every journal cell to be complete")
+    expected_cells = (len(plan["fixtures"]) * len(plan["routes"])
+                      * len(plan["conditions"]) * plan["repetitions"])
+    if len(trials) != expected_cells or len(cells) != expected_cells:
+        raise StudyError("retained trials do not cover the complete development matrix")
+    _assert_declared_trials(trials, plan)
+    families = {route["modelId"]: route["modelFamily"] for route in plan["routes"]}
+    h1 = paired_binary_analysis(
+        trials, treatment="selected_context", comparator="scaffolded_html",
+        outcome="firstPassBriefFulfilment", model_families=families,
+        replicates=bootstrap_replicates, seed=seed, confidence_level=.95)
+    observed = _development_power_inputs(
+        trials, treatment="selected_context", comparator="scaffolded_html")
+    blockers: list[str] = []
+    power_plan = None
+    correlation = observed["withinPairCorrelation"]
+    if correlation is None:
+        blockers.append("selected/scaffold outcomes have insufficient variance to estimate correlation")
+    elif observed["treatmentRate"] <= observed["baselineRate"]:
+        blockers.append("observed selected-context rate does not exceed the scaffold rate")
+    elif observed["effect"] <= .10:
+        blockers.append("observed effect does not exceed the 10-point joint success threshold")
+    elif not .001 <= observed["baselineRate"] <= .999 \
+            or not .001 <= observed["treatmentRate"] <= .999:
+        blockers.append("observed rates are too extreme for the frozen power model")
+    else:
+        try:
+            power_plan = plan_paired_power(
+                baseline_rate=observed["baselineRate"],
+                treatment_rate=observed["treatmentRate"],
+                within_pair_correlation=correlation, alpha=.05, power=.9,
+                routes=6, fixtures=8, minimum_repetitions=5, maximum_repetitions=50,
+                estimated_cost_per_cell_gbp=plan["generation"]["worstCaseCallCostGbp"],
+                conditions=len(plan["conditions"]), maximum_budget_gbp=plan["budget"]["maximum"],
+                simulations=power_simulations, seed=seed + 1, minimum_effect=.10)
+        except StudyError as error:
+            blockers.append(str(error))
+    result = {
+        "schemaVersion": VERSION, "planId": plan["planId"],
+        "runId": precommit["runId"], "planSha256": plan_sha,
+        "runResultsSha256": digest(results),
+        "status": "power-plan-ready" if power_plan is not None else "power-plan-blocked",
+        "claims": {"status": "disabled", "interpretation": "development-estimation-only"},
+        "matrix": {"expectedCells": expected_cells, "retainedTrials": len(trials),
+                   "failedTrials": sum(trial.get("failure") is not None for trial in trials)},
+        "observedPowerInputs": observed, "h1": h1,
+        "confirmatoryPowerPlan": power_plan, "blockers": blockers,
+        "limitations": [
+            "Development estimates select a future confirmatory repetition plan; they establish no comparative claim.",
+            "The result is limited to the pinned development routes, fixtures, settings and release."],
+    }
+    validate_development_analysis(result)
+    return result
+
+
+def validate_development_analysis(value: Any) -> dict[str, Any]:
+    result = _exact(value, {
+        "schemaVersion", "planId", "runId", "planSha256", "runResultsSha256",
+        "status", "claims", "matrix", "observedPowerInputs", "h1",
+        "confirmatoryPowerPlan", "blockers", "limitations",
+    }, "development analysis")
+    if result["schemaVersion"] != VERSION or result["status"] not in {
+            "power-plan-ready", "power-plan-blocked"}:
+        raise StudyError("invalid development-analysis identity")
+    _identifier(result["planId"], "development analysis.planId")
+    _string(result["runId"], "development analysis.runId", 240)
+    for key in ("planSha256", "runResultsSha256"):
+        if not isinstance(result[key], str) or not HEX64.fullmatch(result[key]):
+            raise StudyError(f"development analysis.{key} must be SHA-256")
+    if result["claims"] != {"status": "disabled",
+                            "interpretation": "development-estimation-only"}:
+        raise StudyError("development analysis cannot enable comparative claims")
+    matrix = _exact(result["matrix"], {"expectedCells", "retainedTrials", "failedTrials"},
+                    "development analysis.matrix")
+    expected = _integer(matrix["expectedCells"], "development expected cells", 1, 1_000_000)
+    if _integer(matrix["retainedTrials"], "development retained trials", 1, 1_000_000) != expected:
+        raise StudyError("development analysis matrix is incomplete")
+    _integer(matrix["failedTrials"], "development failed trials", 0, expected)
+    observed = _exact(result["observedPowerInputs"], {
+        "baselineRate", "treatmentRate", "effect", "withinPairCorrelation", "pairs"},
+        "development analysis.observedPowerInputs")
+    baseline = _number(observed["baselineRate"], "development baseline rate", 0, 1)
+    treatment = _number(observed["treatmentRate"], "development treatment rate", 0, 1)
+    if abs(observed["effect"] - (treatment - baseline)) > 1e-12:
+        raise StudyError("development observed effect differs from its rates")
+    if observed["withinPairCorrelation"] is not None:
+        _number(observed["withinPairCorrelation"], "development pair correlation", -1, 1)
+    _integer(observed["pairs"], "development observed pairs", 1, expected)
+    _validate_paired_result(result["h1"])
+    if not isinstance(result["blockers"], list) or any(
+            not isinstance(item, str) or not item for item in result["blockers"]):
+        raise StudyError("development analysis blockers are invalid")
+    if result["status"] == "power-plan-ready":
+        if result["confirmatoryPowerPlan"] is None or result["blockers"]:
+            raise StudyError("ready development analysis lacks an unblocked power plan")
+    elif result["confirmatoryPowerPlan"] is not None or not result["blockers"]:
+        raise StudyError("blocked development analysis must retain blockers and no power plan")
+    if not isinstance(result["limitations"], list) or not result["limitations"]:
+        raise StudyError("development analysis must state limitations")
+    return result
+
+
 def _validate_analysis_plan(value: Any, conditions: list[str]) -> None:
     analysis = _exact(value, {
         "primary", "secondaryComparators", "h2", "bootstrap", "powerPlan",

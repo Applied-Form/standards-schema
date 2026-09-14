@@ -124,6 +124,21 @@ an unpinned endpoint, and insufficient remaining budget. It retains the plan wit
 and keeps comparative claims disabled; development results only supply variance and
 feasibility inputs for a later externally frozen confirmatory declaration.
 
+After the pinned development matrix completes, derive the observed H1 rates, paired
+correlation and 5–50 repetition recommendation with:
+
+```bash
+python3 -m evaluation.cli analyze-development \
+  --run /path/to/completed-development-run \
+  --plan /path/to/development-plan.json \
+  --out /path/to/development-analysis.json
+```
+
+Analysis refuses an incomplete or changed matrix. It also refuses to recommend a
+confirmatory repetition count when the observed effect does not exceed 10 points,
+correlation cannot be estimated, rates are degenerate, or the seeded 90%-power rule is
+infeasible. Its output always keeps comparative claims disabled.
+
 ## What is frozen before generation
 
 Before the first provider call, a run writes:

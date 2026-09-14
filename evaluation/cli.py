@@ -15,7 +15,8 @@ from .harness import (CONDITIONS, EVALUATION_ROOT, EvaluationError, UIRenderer,
 from .openrouter import (OpenRouterError, OpenRouterProvider, credential_status,
                          discover_free_models, validate_frozen_models)
 from .qualification import run_route_qualification
-from .study import (SpendLedger, StudyError, analyze_confirmatory, confirmatory_blockers,
+from .study import (SpendLedger, StudyError, analyze_confirmatory, analyze_development,
+                    confirmatory_blockers,
                     create_publication_bundle, digest, plan_paired_power,
                     read_json as read_study_json, seal_review_set,
                     development_plan_blockers, validate_declaration,
@@ -185,6 +186,13 @@ def parser() -> argparse.ArgumentParser:
     analyze.add_argument("--review-set", type=Path)
     analyze.add_argument("--out", type=Path)
 
+    analyze_dev = commands.add_parser(
+        "analyze-development",
+        help="derive claim-disabled power inputs from a complete pinned development run")
+    analyze_dev.add_argument("--run", type=Path, required=True)
+    analyze_dev.add_argument("--plan", type=Path, required=True)
+    analyze_dev.add_argument("--out", type=Path, required=True)
+
     bundle = commands.add_parser("bundle", help="copy and verify a publication-safe evidence bundle")
     bundle.add_argument("--run", type=Path, required=True)
     bundle.add_argument("--out", type=Path, required=True)
@@ -291,6 +299,12 @@ def main(argv=None) -> int:
         result = analyze_confirmatory(args.run.resolve(), declaration, review_set)
         if args.out:
             write_json(args.out.resolve(), result, exclusive=True)
+        _print(result)
+        return 0
+    if args.command == "analyze-development":
+        result = analyze_development(
+            args.run.resolve(), read_study_json(args.plan.resolve()))
+        write_json(args.out.resolve(), result, exclusive=True)
         _print(result)
         return 0
     if args.command == "bundle":

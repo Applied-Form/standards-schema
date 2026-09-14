@@ -8,13 +8,14 @@ from unittest.mock import patch
 
 from evaluation.openrouter import OpenRouterProvider
 from evaluation.study import (
-    CellJournal, SpendLedger, StudyError, analyze_confirmatory, canonical,
+    CellJournal, SpendLedger, StudyError, analyze_confirmatory, analyze_development, canonical,
     confirmatory_blockers, create_publication_bundle, digest, holm_adjust,
     development_plan_blockers,
     exploratory_h3_gate, krippendorff_alpha_ordinal, paired_binary_analysis,
     plan_paired_power,
     seal_review_set, validate_analysis_result, validate_declaration,
-    validate_development_plan, validate_spend_ledger, verify_publication_safe,
+    validate_development_analysis, validate_development_plan,
+    validate_spend_ledger, verify_publication_safe,
 )
 
 
@@ -179,6 +180,57 @@ def development_plan(declaration):
 
 
 class StudyProtocolTests(unittest.TestCase):
+    def test_development_analysis_estimates_power_without_enabling_claims(self):
+        declaration, _, _, _ = declaration_and_receipt()
+        plan = development_plan(declaration)
+        plan["fixtures"] = [{"id": f"dev-case-{index}", "sha256": "f" * 64}
+                            for index in range(6)]
+        trials = []
+        pair_index = 0
+        for route in plan["routes"]:
+            for fixture in plan["fixtures"]:
+                scaffold = pair_index % 2 == 0
+                selected = pair_index % 3 != 0
+                for condition in plan["conditions"]:
+                    value = (selected if condition == "selected_context" else
+                             scaffold if condition == "scaffolded_html" else False)
+                    trials.append({"trialId": f"trial-{len(trials)}",
+                                   "condition": condition,
+                                   "requestedModel": route["modelId"],
+                                   "caseId": fixture["id"], "repetition": 0,
+                                   "failure": None,
+                                   "metrics": {"firstPassBriefFulfilment": value}})
+                pair_index += 1
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "development-plan.json").write_text(json.dumps(plan))
+            (root / "precommit.json").write_text(json.dumps({
+                "schemaVersion": "0.5.0", "runId": "dev-run-a",
+                "studyMode": "exploratory",
+                "developmentPlan": {"file": "development-plan.json",
+                                    "canonicalSha256": digest(plan)}}))
+            results = {"schemaVersion": "0.5.0", "runId": "dev-run-a",
+                       "status": "complete"}
+            (root / "results.json").write_text(json.dumps(results))
+            (root / "cell-journal.json").write_text(json.dumps({
+                "cells": [{"status": "complete"} for _ in trials]}))
+            (root / "trials.jsonl").write_text(
+                "".join(canonical(trial) + "\n" for trial in trials))
+            result = analyze_development(
+                root, plan, bootstrap_replicates=20000, power_simulations=10000, seed=19)
+            self.assertEqual(validate_development_analysis(result), result)
+            self.assertEqual(result["matrix"]["expectedCells"], 180)
+            self.assertEqual(result["observedPowerInputs"]["pairs"], 36)
+            self.assertEqual(result["claims"]["status"], "disabled")
+            self.assertEqual(result["status"], "power-plan-ready")
+            self.assertIsNotNone(result["confirmatoryPowerPlan"])
+            (root / "trials.jsonl").write_text(
+                "".join(canonical(trial) + "\n" for trial in trials[:-1]))
+            with self.assertRaisesRegex(StudyError, "complete development matrix"):
+                analyze_development(
+                    root, plan, bootstrap_replicates=20000,
+                    power_simulations=10000, seed=19)
+
     def test_pinned_development_plan_is_qualified_and_claim_disabled(self):
         declaration, _, snapshot, ledger = declaration_and_receipt()
         plan = development_plan(declaration)
