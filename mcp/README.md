@@ -59,6 +59,10 @@ does not serve arbitrary host paths.
 | `check_artifact` | `plan`, `html`; optional `render_evidence` object | Rule-linked findings, failures and explicit unknowns |
 | `prepare_repair` | `plan`, `html`; optional `history` array and `render_evidence` object | A repair packet, history record and stop condition |
 
+Every advertised tool carries MCP read-only, non-destructive, idempotent and closed-world
+annotations. Clients can use those hints when applying their own approval policy; the server
+does not mutate files, call a model or contact the network.
+
 Workflow 0.2 admits six exact Instrument job/move pairs and static HTML only. See the
 [canonical support manifest](../workflow/support-manifest.json),
 [workflow guide](../workflow/README.md) and runnable example.

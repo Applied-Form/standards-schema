@@ -55,6 +55,12 @@ class MCPBoundaryTests(unittest.TestCase):
         self.assertEqual(self.request("initialize")["result"]["protocolVersion"], server.PROTOCOL_VERSION)
         tools = self.request("tools/list")["result"]["tools"]
         self.assertEqual({tool["name"] for tool in tools}, set(server.DISPATCH))
+        self.assertTrue(all(tool["annotations"] == {
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": False,
+        } for tool in tools))
         for uri, expected in (("standards://instrument/SKILL.md", "Full synthetic instructions"),
                               ("standards://instrument/assets/type%20scale.json", '{"size":12}')):
             response = self.request("resources/read", {"uri": uri})

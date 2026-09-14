@@ -150,6 +150,13 @@ TOOLS = [
                      "required": ["system", "job"], "additionalProperties": False}},
 ]
 
+READ_ONLY_ANNOTATIONS = {
+    "readOnlyHint": True,
+    "destructiveHint": False,
+    "idempotentHint": True,
+    "openWorldHint": False,
+}
+
 
 def tool_definitions():
     """Advertise the same nested input contracts used by the local workflow."""
@@ -171,7 +178,7 @@ def tool_definitions():
         return {"type": "object", "properties": properties, "required": required,
                 "additionalProperties": False}
 
-    return TOOLS + [
+    tools = TOOLS + [
         {"name": "get_workflow_capabilities",
          "description": "Return the canonical versioned support manifest before planning. "
                         "It declares exact job/move/format tuples, package bindings, runtime "
@@ -206,6 +213,7 @@ def tool_definitions():
                                     "render_evidence": evidence}, ["plan", "html"]),
          "outputSchema": repair_output},
     ]
+    return [{**tool, "annotations": dict(READ_ONLY_ANNOTATIONS)} for tool in tools]
 
 JOBS = {"e": "evidence", "s": "structure", "n": "narrative",
         "c": "change", "t": "transaction", "w": "wayfinding"}

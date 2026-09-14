@@ -182,6 +182,10 @@ class WorkflowEngineTests(unittest.TestCase):
         self.assertEqual(len(context["manifest"]["inputs"]), 4)
         self.assertEqual(context["manifest"]["inputs"][2]["path"], "workflow/support-manifest.json")
         self.assertIn("## Selected move", context["content"])
+        self.assertIn("data-std-fact set to its exact id", context["content"])
+        self.assertIn('data-standards-pack="instrument"', context["content"])
+        self.assertIn("class instrument-band", context["content"])
+        self.assertIn("start at x=0", context["content"])
         self.assertNotIn("| Evidence | **Datum**", context["content"])
         self.assertIn("eight unused move definitions", context["manifest"]["omitted"])
 
