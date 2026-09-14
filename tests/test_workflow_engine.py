@@ -102,6 +102,38 @@ def html_for(plan):
 
 
 class WorkflowEngineTests(unittest.TestCase):
+    def test_declared_client_receipts_are_complete_and_hash_bound(self):
+        manifest_path = ROOT / "workflow" / "support-manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+        traces_root = (ROOT / "examples" / "workflow" / "client-traces").resolve()
+
+        for client in manifest["testedClients"]:
+            relative_receipt = Path(client["receipt"])
+            self.assertFalse(relative_receipt.is_absolute())
+            receipt_path = (ROOT / relative_receipt).resolve()
+            self.assertTrue(receipt_path.is_relative_to(ROOT.resolve()))
+            self.assertTrue(receipt_path.is_file(), relative_receipt.as_posix())
+            receipt = json.loads(receipt_path.read_text(encoding="utf-8"))
+            self.assertEqual(receipt["status"], "pass")
+            self.assertEqual(receipt["client"], client["name"])
+            self.assertEqual(receipt["clientVersion"], client["version"])
+            self.assertEqual(receipt["transport"], client["transport"])
+            self.assertEqual(receipt["supportManifestSha256"], manifest_sha256)
+            body = {key: value for key, value in receipt.items()
+                    if key != "receiptSha256"}
+            self.assertEqual(receipt["receiptSha256"], hashlib.sha256(
+                json.dumps(body, sort_keys=True, separators=(",", ":"),
+                           ensure_ascii=False).encode("utf-8")).hexdigest())
+
+            for record in receipt["records"]:
+                record_path = (traces_root / record["path"]).resolve()
+                self.assertTrue(record_path.is_relative_to(traces_root))
+                self.assertTrue(record_path.is_file(), record["path"])
+                payload = record_path.read_bytes()
+                self.assertEqual(record["bytes"], len(payload))
+                self.assertEqual(record["sha256"], hashlib.sha256(payload).hexdigest())
+
     def test_manifest_and_all_six_plans_are_closed_versioned_and_reproducible(self):
         manifest = load_support_manifest()
         self.assertEqual(manifest["workflow"]["version"], "0.2.0")

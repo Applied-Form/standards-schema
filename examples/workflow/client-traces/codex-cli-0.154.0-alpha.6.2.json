@@ -1,0 +1,127 @@
+{
+  "schemaVersion": "client-trace.v1",
+  "status": "pass",
+  "recordedDate": "2026-09-14",
+  "client": "Codex CLI",
+  "clientVersion": "0.154.0-alpha.6.2",
+  "transport": "stdio",
+  "platform": "macOS arm64",
+  "pythonVersion": "3.14.3",
+  "temporaryProfile": true,
+  "profileRemoved": true,
+  "normalProfileChanged": false,
+  "sourceCommit": "a67a049808acc8f6a043e489ca55c70672196d38",
+  "uiCommit": "4972e592e4daf69bc8bc5fd852e611985b44e9fe",
+  "supportManifestSha256": "74bd6d275cec43dba6b45ab1ea42edd77e6d15fac2cda711092135989ee3a16e",
+  "steps": [
+    {
+      "id": "discover",
+      "status": "pass",
+      "evidence": "get_workflow_capabilities completed and advertised this exact client receipt."
+    },
+    {
+      "id": "plan",
+      "status": "pass",
+      "evidence": "Evidence/Datum plan bfbf2429997d9caf413a858e8175ef0d4936e9c05a65ca2b3569f06ddf54c515"
+    },
+    {
+      "id": "context",
+      "status": "pass",
+      "evidence": "Selected context 30e7282fa7a3a876f5a89f5f2b4163648b0bd1d090b5ad4ec6787c6e2e9aad52"
+    },
+    {
+      "id": "generate",
+      "status": "pass",
+      "evidence": "Self-contained HTML 7467f270eef935ca6d6b59b12e7a9418e422ec1e568122fcad378feb0a03d112"
+    },
+    {
+      "id": "render",
+      "status": "pass",
+      "evidence": "One declared 320x844 viewport with hash-bound PNG and zero external requests; evidence c3609ffe86c456385c8005f49f9cc7fcb4dc99de5dcf473a58e0c529c9e0a785"
+    },
+    {
+      "id": "check",
+      "status": "pass",
+      "evidence": "15/15 findings pass with zero fail or unknown; report 52a416cde4456264016f5542e92e213e7503d099d5dffd768a028a1b78dcbdb8"
+    },
+    {
+      "id": "repair-or-stop",
+      "status": "pass",
+      "evidence": "prepare_repair returned action=complete and disposition=complete; record b9f8f56409626955bbe8c739ce29329e5cd9e7cd15ecdd558485e72f7c1639eb"
+    },
+    {
+      "id": "unsupported-surface",
+      "status": "pass",
+      "evidence": "A deliberately unsupported Structure/Datum request failed closed and returned the capability-discovery instruction."
+    },
+    {
+      "id": "profile-isolation",
+      "status": "pass",
+      "evidence": "The disposable profile was removed and the normal configuration digest is unchanged."
+    }
+  ],
+  "unsupportedRequest": {
+    "job": "S",
+    "move": "Datum",
+    "isError": true
+  },
+  "modelCallMade": true,
+  "externalCostGbp": 0,
+  "records": [
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/artifact.html",
+      "bytes": 1613,
+      "sha256": "7467f270eef935ca6d6b59b12e7a9418e422ec1e568122fcad378feb0a03d112"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/context.json",
+      "bytes": 6923,
+      "sha256": "30e7282fa7a3a876f5a89f5f2b4163648b0bd1d090b5ad4ec6787c6e2e9aad52"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/plan.json",
+      "bytes": 6704,
+      "sha256": "bfbf2429997d9caf413a858e8175ef0d4936e9c05a65ca2b3569f06ddf54c515"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/render/artifact.html",
+      "bytes": 1613,
+      "sha256": "7467f270eef935ca6d6b59b12e7a9418e422ec1e568122fcad378feb0a03d112"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/render/datum-320x844.png",
+      "bytes": 14312,
+      "sha256": "1155b770a75dfcedc8d868b77522288bb5c7e337d01fd998c0bc73248b69fafd"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/render/render-evidence.json",
+      "bytes": 24224,
+      "sha256": "c3609ffe86c456385c8005f49f9cc7fcb4dc99de5dcf473a58e0c529c9e0a785"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/repair.json",
+      "bytes": 9040,
+      "sha256": "b9f8f56409626955bbe8c739ce29329e5cd9e7cd15ecdd558485e72f7c1639eb"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/report.json",
+      "bytes": 6309,
+      "sha256": "52a416cde4456264016f5542e92e213e7503d099d5dffd768a028a1b78dcbdb8"
+    },
+    {
+      "path": "codex-cli-0.154.0-alpha.6.2/unsupported.json",
+      "bytes": 169,
+      "sha256": "7b61087f50ed914657396a439cdafb3a626cf8dc5a6ba98d58e0f01fdaf5ca1f"
+    }
+  ],
+  "portableRecordScan": "pass: no credentials, account identifiers, private absolute paths or raw session trace retained",
+  "limitations": [
+    "This establishes client interoperability for the declared workflow, not model quality or comparative advantage.",
+    "Claude Code and Claude Desktop remain unverified."
+  ],
+  "decision": {
+    "outcome": "accepted",
+    "reason": "The clean-profile client completed discover, plan, context, generation, render, check and honest completion against the exact advertised manifest."
+  },
+  "receiptSha256": "8cea08001646f19d3e96590b4267d51c715b5c5acf7dbca83019801ea49ebb5d"
+}
