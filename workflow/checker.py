@@ -1,4 +1,4 @@
-"""Offline checks for the six supported Instrument HTML workflows.
+"""Offline checks for the nine supported Instrument HTML workflows.
 
 This is a content/structure/render-evidence check, not a design-quality scorer.
 It performs no filesystem reads, network requests or browser execution.
@@ -24,7 +24,7 @@ MAX_FACTS = 300
 MAX_FINDINGS = 1_000
 TOLERANCE_PX = 1
 LIMITATIONS = [
-    "Supports the six Instrument HTML workflows declared by the exact support-manifest bytes.",
+    "Supports the nine Instrument HTML workflows declared by the exact support-manifest bytes.",
     "Visual quality, rhetorical effectiveness and full accessibility compliance are unassessed.",
     "Source visibility is conservative; CSS layout and clipping require current browser evidence.",
     "Render evidence is caller supplied and hash-bound, not an attestation of browser execution.",
@@ -234,7 +234,52 @@ def _semantics(document, markers, expected, plan, add):
     kind = plan["content"]["kind"]
     data = plan["content"]["data"]
 
-    if kind == "datum":
+    if kind in ("plate", "register", "key"):
+        collection, fields = {"plate": ("rows", ("label", "value")),
+                              "register": ("figures", ("value", "unit", "term")),
+                              "key": ("entries", ("term", "gloss"))}[kind]
+        lists = [node for node in document.nodes if node.attrs.get("role") == "list" and _body_visible(node)]
+        listing = lists[0] if len(lists) == 1 else None
+        items = [node for node in document.nodes if node.parent is listing and node.attrs.get("role") == "listitem"] if listing else []
+        label = one(f"{kind}.{'title' if kind == 'plate' else 'label'}")
+        def inside(node, parent):
+            while node:
+                if node is parent: return True
+                node = node.parent
+            return False
+        passed = bool(listing and label and label.attrs.get("id")
+                      and listing.attrs.get("aria-labelledby") == label.attrs["id"]
+                      and len(items) == len(data[collection]))
+        for index, item in enumerate(items):
+            if index >= len(data[collection]):
+                passed = False
+                continue
+            values = [one(f"{kind}.{collection}.{index}.{field}") for field in fields if field in data[collection][index]]
+            passed = passed and all(value and inside(value, item) and _body_visible(value) for value in values)
+            passed = passed and all(order[id(a)] < order[id(b)] for a, b in zip(values, values[1:]) if a and b)
+        record(f"{kind}.{collection}", passed, "named list with exact ordered fact associations", {"itemCount": len(items)})
+        if kind == "plate":
+            scales = len(items) == len(data["rows"])
+            for index, item in enumerate(items):
+                bars = [node for node in document.nodes if "data-plate-bar" in node.attrs and inside(node, item)]
+                scales = scales and len(bars) == 1 and index < len(data["rows"])
+                if len(bars) == 1 and index < len(data["rows"]):
+                    width = re.search(r"(?:^|;)width:([0-9.]+)%(?:;|$)", bars[0].attrs.get("style", ""))
+                    scales = scales and bool(width and float(width[1]) == data["rows"][index]["pct"] and bars[0].attrs.get("aria-hidden") == "true")
+            selected = next((i for i, row in enumerate(data["rows"]) if row.get("emphasis")), -1)
+            cues = [node for node in document.nodes if "data-plate-selected" in node.attrs]
+            scales = scales and len(cues) == (0 if selected < 0 else 1)
+            if selected >= 0: scales = scales and selected < len(items) and inside(one("plate.selected"), items[selected])
+            record("plate.scales", scales, "exact percentages and one word-labelled selection", {"selected": selected})
+        elif kind == "key":
+            marks_ok = len(items) == len(data["entries"])
+            for index, item in enumerate(items):
+                marks = [node for node in document.nodes if "data-key-mark" in node.attrs and inside(node, item)]
+                marks_ok = marks_ok and len(marks) == 1 and index < len(data["entries"])
+                if len(marks) == 1 and index < len(data["entries"]):
+                    marks_ok = marks_ok and marks[0].attrs["data-key-mark"] == data["entries"][index]["mark"] and marks[0].attrs.get("aria-hidden") == "true"
+            record("key.marks", marks_ok, "planned decorative marks associated with labelled entries", {"itemCount": len(items)})
+    elif kind == "datum":
         label, value = one("datum.label"), one("datum.value")
         sections = [node for node in document.nodes if node.tag == "section" and _body_visible(node)]
         passed = bool(len(sections) == 1 and label and value

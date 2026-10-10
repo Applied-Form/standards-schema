@@ -1,7 +1,7 @@
 # Instrument agent workflow 0.2
 
 This is an agent-native, local workflow for turning fixed structured content into one
-of six deterministic Instrument surfaces:
+of nine deterministic Instrument surfaces:
 
 `capabilities → brief + renderer identity → immutable plan → selected context → HTML → browser evidence → findings → bounded repair`
 
@@ -21,6 +21,9 @@ package is 2.0.0. Those versions describe different things and are deliberately 
 | Job | Exact move | Content kind | Component |
 |---|---|---|---|
 | E · Evidence | Datum | `datum` | `Datum` |
+| E · Evidence | Plate | `plate` | `Plate` |
+| E · Evidence | Register | `register` | `Register` |
+| S · Structure | Key | `key` | `Key` |
 | S · Structure | Matrix | `matrix` | `Matrix` |
 | N · Narrative | Band statement | `bandStatement` | `BandStatement` |
 | C · Change | Series | `series` | `Series` |
@@ -77,7 +80,7 @@ python3 -m workflow.cli check \
   --evidence /tmp/standards-schedule-render/render-evidence.json
 ```
 
-The same planner accepts the other five content kinds when their exact job/move pair is
+The same planner accepts the other eight content kinds when their exact job/move pair is
 used. Read the [brief schema](schemas/brief.schema.json) or call
 `get_workflow_capabilities` before constructing one.
 

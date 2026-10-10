@@ -53,7 +53,7 @@ does not serve arbitrary host paths.
 
 | Tool | Arguments | Result |
 |---|---|---|
-| `get_workflow_capabilities` | none | Canonical workflow/MCP versions, six exact pairs, bindings, runtimes, tested-client receipts and unsupported surfaces |
+| `get_workflow_capabilities` | none | Canonical workflow/MCP versions, nine exact pairs, bindings, runtimes, tested-client receipts and unsupported surfaces |
 | `plan_artifact` | `brief`, `renderer` identity objects | A validated artifact plan with selected move and source/runtime provenance |
 | `assemble_context` | `plan` object | Selected source context and a manifest of what was supplied |
 | `check_artifact` | `plan`, `html`; optional `render_evidence` object | Rule-linked findings, failures and explicit unknowns |
@@ -63,7 +63,7 @@ Every advertised tool carries MCP read-only, non-destructive, idempotent and clo
 annotations. Clients can use those hints when applying their own approval policy; the server
 does not mutate files, call a model or contact the network.
 
-Workflow 0.2 admits six exact Instrument job/move pairs and static HTML only. See the
+Workflow 0.2 admits nine exact Instrument job/move pairs and static HTML only. See the
 [canonical support manifest](../workflow/support-manifest.json),
 [workflow guide](../workflow/README.md) and runnable example.
 The [brief schema](../workflow/schemas/brief.schema.json),

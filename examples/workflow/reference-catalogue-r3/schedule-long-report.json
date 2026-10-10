@@ -1,0 +1,297 @@
+{
+  "schemaVersion": "0.2.0",
+  "planSha256": "041d1524762335c65cf7a83572a6915b6882c10805d6ebd10c1ed56e6276c2fb",
+  "artifactSha256": "b7e235f4f9a9e1c1265d9ffc186300de2ac2a5b3e30c1523705454946e6edb5f",
+  "status": "pass",
+  "summary": {
+    "total": 19,
+    "pass": 19,
+    "fail": 0,
+    "unknown": 0,
+    "critical": 0,
+    "error": 0,
+    "warning": 0
+  },
+  "findings": [
+    {
+      "ruleId": "plan.valid",
+      "severity": "info",
+      "status": "pass",
+      "location": "plan",
+      "expected": "content, facts and binding agree with the support manifest",
+      "observed": true,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "html.structure",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "complete, balanced HTML document",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "html.self_contained",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "static self-contained HTML",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.unique",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "20 unique fact markers",
+      "observed": 20,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.exact",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "20 exact facts",
+      "observed": 20,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "body",
+      "expected": "all visible source text belongs to approved facts",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "title",
+      "expected": "the unique title fact in a level-one heading",
+      "observed": "present",
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "schedule.named-table",
+      "expected": "one table named by its checked Schedule caption",
+      "observed": {
+        "tableCount": 1,
+        "caption": true
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "schedule.column-headers",
+      "expected": "four ordered unspanned scope=col fact headers",
+      "observed": true,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "schedule.row-headers",
+      "expected": "one four-cell row with a scope=row fact header and associated text per line",
+      "observed": {
+        "expectedRows": 2,
+        "observedRows": 2,
+        "passed": true
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "schedule.numeric-order",
+      "expected": "duration and amount facts occupy columns three and four in every line",
+      "observed": true,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "schedule.footer",
+      "expected": "one exact associated footer row for a declared total, otherwise no footer",
+      "observed": {
+        "declared": true,
+        "footerCount": 1
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.binding",
+      "severity": "info",
+      "status": "pass",
+      "location": "render_evidence",
+      "expected": {
+        "planSha256": "041d1524762335c65cf7a83572a6915b6882c10805d6ebd10c1ed56e6276c2fb",
+        "artifactSha256": "b7e235f4f9a9e1c1265d9ffc186300de2ac2a5b3e30c1523705454946e6edb5f"
+      },
+      "observed": null,
+      "classification": "renderer-or-configuration"
+    },
+    {
+      "ruleId": "render.viewport_fit",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "horizontal fit, readable body and no browser/resource errors",
+      "observed": {
+        "clientWidth": 320,
+        "clientHeight": 844,
+        "scrollWidth": 320,
+        "scrollHeight": 1117
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.facts",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "20 exact, visible, unclipped and unobscured facts",
+      "observed": 20,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "no unapproved visible text",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": {
+        "move": "Schedule",
+        "oneVisibleH1": true,
+        "relationships": [
+          {
+            "id": "schedule.named-table",
+            "passed": true
+          },
+          {
+            "id": "schedule.column-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.row-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.numeric-order",
+            "passed": true
+          },
+          {
+            "id": "schedule.footer",
+            "passed": true
+          }
+        ]
+      },
+      "observed": {
+        "move": "Schedule",
+        "oneVisibleH1": true,
+        "relationships": [
+          {
+            "id": "schedule.named-table",
+            "passed": true
+          },
+          {
+            "id": "schedule.column-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.row-headers",
+            "passed": true
+          },
+          {
+            "id": "schedule.numeric-order",
+            "passed": true
+          },
+          {
+            "id": "schedule.footer",
+            "passed": true
+          }
+        ]
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "instrument.invariant_band",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": {
+        "count": 1,
+        "containsTitle": true,
+        "x": 0,
+        "width": 320,
+        "height": 32,
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "observed": {
+        "count": 1,
+        "containsTitle": true,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 320,
+          "height": 32
+        },
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.screenshot",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "hash-matched embedded PNG with declared width and captured height",
+      "observed": {
+        "file": "schedule-long-320x844.png",
+        "sha256": "2e4f3491921aa233fbace5e14c1ddf27bf6bb89c5aa08332ac9b6099fd8b2726"
+      },
+      "classification": "renderer-or-configuration"
+    }
+  ],
+  "limitations": [
+    "Supports the nine Instrument HTML workflows declared by the exact support-manifest bytes.",
+    "Visual quality, rhetorical effectiveness and full accessibility compliance are unassessed.",
+    "Source visibility is conservative; CSS layout and clipping require current browser evidence.",
+    "Render evidence is caller supplied and hash-bound, not an attestation of browser execution.",
+    "Vertical document scrolling is permitted; required horizontal viewport fit is checked."
+  ]
+}

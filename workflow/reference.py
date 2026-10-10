@@ -16,7 +16,7 @@ from .schema import load_schema, validate
 
 PUBLIC_ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW_EXAMPLES = PUBLIC_ROOT / "examples" / "workflow"
-REFERENCE_MANIFEST = WORKFLOW_EXAMPLES / "reference" / "manifest.json"
+REFERENCE_MANIFEST = WORKFLOW_EXAMPLES / "reference-catalogue-r3" / "manifest.json"
 MANIFEST_SCHEMA = Path(__file__).with_name("schemas") / "reference-manifest.schema.json"
 
 

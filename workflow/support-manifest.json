@@ -2,7 +2,9 @@
   "schemaVersion": "0.2.0",
   "workflow": {
     "version": "0.2.0",
-    "formats": ["html"],
+    "formats": [
+      "html"
+    ],
     "maxRepairTurns": 2
   },
   "mcp": {
@@ -33,6 +35,56 @@
     {
       "job": "E",
       "jobName": "Evidence",
+      "move": "Plate",
+      "format": "html",
+      "contentKind": "plate",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Plate",
+        "factPrefix": "plate"
+      },
+      "requiredRelationships": [
+        "plate.rows",
+        "plate.scales"
+      ]
+    },
+    {
+      "job": "E",
+      "jobName": "Evidence",
+      "move": "Register",
+      "format": "html",
+      "contentKind": "register",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Register",
+        "factPrefix": "register"
+      },
+      "requiredRelationships": [
+        "register.figures"
+      ]
+    },
+    {
+      "job": "S",
+      "jobName": "Structure",
+      "move": "Key",
+      "format": "html",
+      "contentKind": "key",
+      "binding": {
+        "package": "@standards/instrument",
+        "packageVersion": "2.0.0",
+        "component": "Key",
+        "factPrefix": "key"
+      },
+      "requiredRelationships": [
+        "key.entries",
+        "key.marks"
+      ]
+    },
+    {
+      "job": "E",
+      "jobName": "Evidence",
       "move": "Datum",
       "format": "html",
       "contentKind": "datum",
@@ -42,7 +94,9 @@
         "component": "Datum",
         "factPrefix": "datum"
       },
-      "requiredRelationships": ["datum.label-value"]
+      "requiredRelationships": [
+        "datum.label-value"
+      ]
     },
     {
       "job": "S",
@@ -56,7 +110,11 @@
         "component": "Matrix",
         "factPrefix": "matrix"
       },
-      "requiredRelationships": ["matrix.column-headers", "matrix.row-headers", "matrix.grid"]
+      "requiredRelationships": [
+        "matrix.column-headers",
+        "matrix.row-headers",
+        "matrix.grid"
+      ]
     },
     {
       "job": "N",
@@ -70,7 +128,9 @@
         "component": "BandStatement",
         "factPrefix": "bandStatement"
       },
-      "requiredRelationships": ["bandStatement.statement"]
+      "requiredRelationships": [
+        "bandStatement.statement"
+      ]
     },
     {
       "job": "C",
@@ -84,7 +144,10 @@
         "component": "Series",
         "factPrefix": "series"
       },
-      "requiredRelationships": ["series.period-order", "series.value-association"]
+      "requiredRelationships": [
+        "series.period-order",
+        "series.value-association"
+      ]
     },
     {
       "job": "T",
@@ -98,7 +161,13 @@
         "component": "Schedule",
         "factPrefix": "schedule"
       },
-      "requiredRelationships": ["schedule.named-table", "schedule.column-headers", "schedule.row-headers", "schedule.numeric-order", "schedule.footer"]
+      "requiredRelationships": [
+        "schedule.named-table",
+        "schedule.column-headers",
+        "schedule.row-headers",
+        "schedule.numeric-order",
+        "schedule.footer"
+      ]
     },
     {
       "job": "W",
@@ -112,18 +181,14 @@
         "component": "RunningIndex",
         "factPrefix": "runningIndex"
       },
-      "requiredRelationships": ["runningIndex.section-order", "runningIndex.current-section"]
+      "requiredRelationships": [
+        "runningIndex.section-order",
+        "runningIndex.current-section"
+      ]
     }
   ],
-  "testedClients": [
-    {
-      "name": "Codex CLI",
-      "version": "0.154.0-alpha.6.2",
-      "transport": "stdio",
-      "receipt": "examples/workflow/client-traces/codex-cli-0.154.0-alpha.6.2.json"
-    }
-  ],
-  "clientTestingStatus": "A clean-profile Codex CLI trace passes the complete workflow. Claude Code and Claude Desktop remain unverified.",
+  "testedClients": [],
+  "clientTestingStatus": "The expanded nine-move catalogue requires a fresh client trial. Historical six-move traces do not verify this candidate.",
   "runtimeRequirements": {
     "python": ">=3.10",
     "node": "22.x or 24.x LTS for the renderer",
@@ -132,7 +197,7 @@
   },
   "unsupportedSurfaces": [
     "Systems other than Instrument",
-    "Moves outside the six declared job/move pairs",
+    "Moves outside the nine declared moves",
     "Formats other than static self-contained HTML",
     "Native DOCX or PPTX planning, rendering and repair",
     "Model invocation or generated-code execution inside the MCP server",

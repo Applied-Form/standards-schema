@@ -3,140 +3,376 @@
   "title": "Standards workflow support manifest 0.2.0",
   "type": "object",
   "properties": {
-    "schemaVersion": { "const": "0.2.0" },
+    "schemaVersion": {
+      "const": "0.2.0"
+    },
     "workflow": {
       "type": "object",
       "properties": {
-        "version": { "const": "0.2.0" },
-        "formats": { "type": "array", "items": { "const": "html" }, "minItems": 1, "maxItems": 1 },
-        "maxRepairTurns": { "const": 2 }
+        "version": {
+          "const": "0.2.0"
+        },
+        "formats": {
+          "type": "array",
+          "items": {
+            "const": "html"
+          },
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "maxRepairTurns": {
+          "const": 2
+        }
       },
-      "required": ["version", "formats", "maxRepairTurns"],
+      "required": [
+        "version",
+        "formats",
+        "maxRepairTurns"
+      ],
       "additionalProperties": false
     },
     "mcp": {
       "type": "object",
       "properties": {
-        "version": { "const": "0.2.0" },
-        "protocolVersion": { "const": "2025-06-18" }
+        "version": {
+          "const": "0.2.0"
+        },
+        "protocolVersion": {
+          "const": "2025-06-18"
+        }
       },
-      "required": ["version", "protocolVersion"],
+      "required": [
+        "version",
+        "protocolVersion"
+      ],
       "additionalProperties": false
     },
     "system": {
       "type": "object",
       "properties": {
-        "slug": { "const": "instrument" },
-        "contentVersion": { "const": "1.0.0" },
-        "contentSchemaVersion": { "const": "v0.4" }
+        "slug": {
+          "const": "instrument"
+        },
+        "contentVersion": {
+          "const": "1.0.0"
+        },
+        "contentSchemaVersion": {
+          "const": "v0.4"
+        }
       },
-      "required": ["slug", "contentVersion", "contentSchemaVersion"],
+      "required": [
+        "slug",
+        "contentVersion",
+        "contentSchemaVersion"
+      ],
       "additionalProperties": false
     },
     "packages": {
       "type": "object",
       "properties": {
-        "core": { "$ref": "#/$defs/corePackage" },
-        "instrument": { "$ref": "#/$defs/instrumentPackage" }
+        "core": {
+          "$ref": "#/$defs/corePackage"
+        },
+        "instrument": {
+          "$ref": "#/$defs/instrumentPackage"
+        }
       },
-      "required": ["core", "instrument"],
+      "required": [
+        "core",
+        "instrument"
+      ],
       "additionalProperties": false
     },
     "renderer": {
       "type": "object",
       "properties": {
-        "name": { "const": "standards-ui-workflow-render" },
-        "version": { "const": "0.2.0" },
-        "evidenceVersion": { "const": "0.2.0" }
+        "name": {
+          "const": "standards-ui-workflow-render"
+        },
+        "version": {
+          "const": "0.2.0"
+        },
+        "evidenceVersion": {
+          "const": "0.2.0"
+        }
       },
-      "required": ["name", "version", "evidenceVersion"],
+      "required": [
+        "name",
+        "version",
+        "evidenceVersion"
+      ],
       "additionalProperties": false
     },
     "supported": {
       "type": "array",
-      "items": { "$ref": "#/$defs/support" },
-      "minItems": 6,
-      "maxItems": 6
+      "items": {
+        "$ref": "#/$defs/support"
+      },
+      "minItems": 9,
+      "maxItems": 9
     },
     "testedClients": {
       "type": "array",
-      "items": { "$ref": "#/$defs/testedClient" },
+      "items": {
+        "$ref": "#/$defs/testedClient"
+      },
       "minItems": 0,
       "maxItems": 20
     },
-    "clientTestingStatus": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "\\S" },
+    "clientTestingStatus": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1000,
+      "pattern": "\\S"
+    },
     "runtimeRequirements": {
       "type": "object",
       "properties": {
-        "python": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "\\S" },
-        "node": { "type": "string", "minLength": 1, "maxLength": 200, "pattern": "\\S" },
-        "browser": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "\\S" },
-        "network": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "\\S" }
+        "python": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100,
+          "pattern": "\\S"
+        },
+        "node": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200,
+          "pattern": "\\S"
+        },
+        "browser": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        },
+        "network": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        }
       },
-      "required": ["python", "node", "browser", "network"],
+      "required": [
+        "python",
+        "node",
+        "browser",
+        "network"
+      ],
       "additionalProperties": false
     },
     "unsupportedSurfaces": {
       "type": "array",
-      "items": { "type": "string", "minLength": 1, "maxLength": 1000, "pattern": "\\S" },
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 1000,
+        "pattern": "\\S"
+      },
       "minItems": 1,
       "maxItems": 30
     }
   },
-  "required": ["schemaVersion", "workflow", "mcp", "system", "packages", "renderer", "supported", "testedClients", "clientTestingStatus", "runtimeRequirements", "unsupportedSurfaces"],
+  "required": [
+    "schemaVersion",
+    "workflow",
+    "mcp",
+    "system",
+    "packages",
+    "renderer",
+    "supported",
+    "testedClients",
+    "clientTestingStatus",
+    "runtimeRequirements",
+    "unsupportedSurfaces"
+  ],
   "additionalProperties": false,
   "$defs": {
     "corePackage": {
       "type": "object",
-      "properties": { "name": { "const": "@standards/core" }, "version": { "const": "0.2.0" } },
-      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "const": "@standards/core"
+        },
+        "version": {
+          "const": "0.2.0"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
       "additionalProperties": false
     },
     "instrumentPackage": {
       "type": "object",
-      "properties": { "name": { "const": "@standards/instrument" }, "version": { "const": "2.0.0" } },
-      "required": ["name", "version"],
+      "properties": {
+        "name": {
+          "const": "@standards/instrument"
+        },
+        "version": {
+          "const": "2.0.0"
+        }
+      },
+      "required": [
+        "name",
+        "version"
+      ],
       "additionalProperties": false
     },
     "binding": {
       "type": "object",
       "properties": {
-        "package": { "const": "@standards/instrument" },
-        "packageVersion": { "const": "2.0.0" },
-        "component": { "enum": ["Datum", "Matrix", "BandStatement", "Series", "Schedule", "RunningIndex"] },
-        "factPrefix": { "enum": ["datum", "matrix", "bandStatement", "series", "schedule", "runningIndex"] }
+        "package": {
+          "const": "@standards/instrument"
+        },
+        "packageVersion": {
+          "const": "2.0.0"
+        },
+        "component": {
+          "enum": [
+            "Datum",
+            "Matrix",
+            "BandStatement",
+            "Series",
+            "Schedule",
+            "RunningIndex",
+            "Plate",
+            "Register",
+            "Key"
+          ]
+        },
+        "factPrefix": {
+          "enum": [
+            "datum",
+            "matrix",
+            "bandStatement",
+            "series",
+            "schedule",
+            "runningIndex",
+            "plate",
+            "register",
+            "key"
+          ]
+        }
       },
-      "required": ["package", "packageVersion", "component", "factPrefix"],
+      "required": [
+        "package",
+        "packageVersion",
+        "component",
+        "factPrefix"
+      ],
       "additionalProperties": false
     },
     "support": {
       "type": "object",
       "properties": {
-        "job": { "enum": ["E", "S", "N", "C", "T", "W"] },
-        "jobName": { "enum": ["Evidence", "Structure", "Narrative", "Change", "Transaction", "Wayfinding"] },
-        "move": { "enum": ["Datum", "Matrix", "Band statement", "Series", "Schedule", "Running index"] },
-        "format": { "const": "html" },
-        "contentKind": { "enum": ["datum", "matrix", "bandStatement", "series", "schedule", "runningIndex"] },
-        "binding": { "$ref": "#/$defs/binding" },
+        "job": {
+          "enum": [
+            "E",
+            "S",
+            "N",
+            "C",
+            "T",
+            "W"
+          ]
+        },
+        "jobName": {
+          "enum": [
+            "Evidence",
+            "Structure",
+            "Narrative",
+            "Change",
+            "Transaction",
+            "Wayfinding"
+          ]
+        },
+        "move": {
+          "enum": [
+            "Datum",
+            "Matrix",
+            "Band statement",
+            "Series",
+            "Schedule",
+            "Running index",
+            "Plate",
+            "Register",
+            "Key"
+          ]
+        },
+        "format": {
+          "const": "html"
+        },
+        "contentKind": {
+          "enum": [
+            "datum",
+            "matrix",
+            "bandStatement",
+            "series",
+            "schedule",
+            "runningIndex",
+            "plate",
+            "register",
+            "key"
+          ]
+        },
+        "binding": {
+          "$ref": "#/$defs/binding"
+        },
         "requiredRelationships": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1, "maxLength": 100, "pattern": "^[a-zA-Z0-9.-]+$" },
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "^[a-zA-Z0-9.-]+$"
+          },
           "minItems": 1,
           "maxItems": 10
         }
       },
-      "required": ["job", "jobName", "move", "format", "contentKind", "binding", "requiredRelationships"],
+      "required": [
+        "job",
+        "jobName",
+        "move",
+        "format",
+        "contentKind",
+        "binding",
+        "requiredRelationships"
+      ],
       "additionalProperties": false
     },
     "testedClient": {
       "type": "object",
       "properties": {
-        "name": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
-        "version": { "type": "string", "minLength": 1, "maxLength": 120, "pattern": "\\S" },
-        "transport": { "const": "stdio" },
-        "receipt": { "type": "string", "minLength": 1, "maxLength": 300, "pattern": "\\S" }
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "\\S"
+        },
+        "transport": {
+          "const": "stdio"
+        },
+        "receipt": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 300,
+          "pattern": "\\S"
+        }
       },
-      "required": ["name", "version", "transport", "receipt"],
+      "required": [
+        "name",
+        "version",
+        "transport",
+        "receipt"
+      ],
       "additionalProperties": false
     }
   }

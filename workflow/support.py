@@ -52,6 +52,9 @@ def load_support_manifest() -> dict:
     if len(keys) != len(set(keys)):
         raise ValueError("support manifest contains duplicate workflow tuples")
     expected = {
+        ("E", "Evidence", "Plate", "html", "plate", "Plate", "plate", ("plate.rows", "plate.scales")),
+        ("E", "Evidence", "Register", "html", "register", "Register", "register", ("register.figures",)),
+        ("S", "Structure", "Key", "html", "key", "Key", "key", ("key.entries", "key.marks")),
         ("E", "Evidence", "Datum", "html", "datum", "Datum", "datum",
          ("datum.label-value",)),
         ("S", "Structure", "Matrix", "html", "matrix", "Matrix", "matrix",
@@ -71,7 +74,7 @@ def load_support_manifest() -> dict:
                item["binding"]["factPrefix"], tuple(item["requiredRelationships"]))
               for item in supported}
     if actual != expected:
-        raise ValueError("support manifest differs from the six admitted workflow bindings")
+        raise ValueError("support manifest differs from the nine admitted workflow bindings")
     for item in supported:
         if (item["binding"]["package"] != manifest["packages"]["instrument"]["name"]
                 or item["binding"]["packageVersion"]

@@ -23,7 +23,7 @@ RULES = ["plan.valid", "html.structure", "html.self_contained", "facts.unique", 
          "facts.approved_text", "move.semantics", "render.binding", "render.viewport_fit",
          "render.facts", "render.semantics", "instrument.invariant_band", "render.screenshot"]
 LIMITATIONS = [
-    "Workflow 0.2 supports only the six Instrument job/move pairs and HTML declared by its support manifest.",
+    "Workflow 0.2 supports only the nine Instrument moves and HTML declared by its support manifest.",
     "Move selection is explicit in the brief; this workflow does not infer the reader's rhetorical job.",
     "The instruction build is explicitly selected by the brief; comparative benefit remains an evaluation question.",
     "Authoritative text is preserved after Unicode composition and whitespace normalization; arithmetic and real-world truth are not verified.",
@@ -83,6 +83,11 @@ def _normalized_content(kind, supplied):
 
 
 def _validate_content(kind, data):
+    if kind in ("plate", "register", "key"):
+        collection, field = {"plate": ("rows", "label"), "register": ("figures", "term"), "key": ("entries", "term")}[kind]
+        _unique_text([item[field] for item in data[collection]], f"{kind} labels")
+        if kind == "key" and sum(item["mark"] == "signal" for item in data["entries"]) > 1:
+            raise ValueError("Key permits only one signal mark")
     if kind == "datum" and data.get("supporting"):
         _unique_text([item["term"] for item in data["supporting"]],
                      "Datum supporting terms")
@@ -118,7 +123,23 @@ def facts_for(title, kind, data):
     def add(identifier, value):
         facts.append({"id": f"{kind}.{identifier}", "text": value})
 
-    if kind == "datum":
+    if kind == "plate":
+        add("number", data["number"]); add("title", data["title"])
+        selected = next((i for i, row in enumerate(data["rows"]) if row.get("emphasis")), -1)
+        for index, row in enumerate(data["rows"]):
+            add(f"rows.{index}.label", row["label"])
+            if index == selected: add("selected", "Selected")
+            add(f"rows.{index}.value", row["value"])
+        for field in ("caption", "reference"):
+            if field in data: add(field, data[field])
+    elif kind in ("register", "key"):
+        add("label", data["label"])
+        collection, fields = ("figures", ("value", "unit", "term")) if kind == "register" else ("entries", ("term", "gloss"))
+        for index, item in enumerate(data[collection]):
+            for field in fields:
+                if field in item: add(f"{collection}.{index}.{field}", item[field])
+        if "note" in data: add("note", data["note"])
+    elif kind == "datum":
         add("label", data["label"]); add("value", data["value"])
         if "unit" in data: add("unit", data["unit"])
         for index, item in enumerate(data.get("supporting", [])):

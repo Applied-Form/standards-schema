@@ -1,0 +1,229 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "E",
+  "move": "Plate",
+  "content": {
+    "kind": "plate",
+    "data": {
+      "number": "Plate 1",
+      "title": "Synthetic completion by stage",
+      "rows": [
+        {
+          "label": "Prepared",
+          "value": "100%",
+          "pct": 100
+        },
+        {
+          "label": "Reviewed",
+          "value": "75%",
+          "pct": 75,
+          "emphasis": true
+        },
+        {
+          "label": "Revised",
+          "value": "0%",
+          "pct": 0
+        },
+        {
+          "label": "Archived",
+          "value": "12.5%",
+          "pct": 12.5
+        }
+      ],
+      "caption": "Synthetic source / check / review / record. No business outcomes are asserted.",
+      "reference": "Fixture 01 · 2026-09-28"
+    }
+  },
+  "artifact": {
+    "format": "html",
+    "title": "Plate · synthetic narrow-screen reference",
+    "viewports": [
+      {
+        "width": 320,
+        "height": 844
+      }
+    ]
+  },
+  "context": {
+    "build": "full",
+    "reason": "Explicit brief choice; comparative benefit remains unproven."
+  },
+  "selection": {
+    "reason": "Makes the evidence quotable",
+    "trigger": "A figure needs a number and caption to be cited later",
+    "alternatives": []
+  },
+  "binding": {
+    "package": "@standards/instrument",
+    "packageVersion": "2.0.0",
+    "component": "Plate",
+    "props": {
+      "number": "Plate 1",
+      "title": "Synthetic completion by stage",
+      "rows": [
+        {
+          "label": "Prepared",
+          "value": "100%",
+          "pct": 100
+        },
+        {
+          "label": "Reviewed",
+          "value": "75%",
+          "pct": 75,
+          "emphasis": true
+        },
+        {
+          "label": "Revised",
+          "value": "0%",
+          "pct": 0
+        },
+        {
+          "label": "Archived",
+          "value": "12.5%",
+          "pct": 12.5
+        }
+      ],
+      "caption": "Synthetic source / check / review / record. No business outcomes are asserted.",
+      "reference": "Fixture 01 · 2026-09-28",
+      "factPrefix": "plate"
+    }
+  },
+  "renderer": {
+    "name": "standards-ui-workflow-render",
+    "version": "0.2.0",
+    "supportManifestSha256": "b9439e0a3c204a8df38e47ace8db1fe379733f8665d5231dd6f7b34783c727b6",
+    "sourceSha256": "30069fc0b5793e4f8d2a48fafe3921a8d27fa92e13c4d6e6027c110a1eb59d54",
+    "packageVersion": "2.0.0",
+    "packageEntrySha256": "8ca210f9c12fcd205173ec0c2574d0393746671cf49b7443dc354e84a9b15883",
+    "tokensSha256": "8be6bd4ecf13fcb63f2d891322192a923b0386020a797b6a0de9b1408ce2ae9b",
+    "fontAssetsSha256": "9abaec92be36ac7220c17a086a1b0f5fe4ce4eaf8eef41381ee0dd7986472746",
+    "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
+    "lockfileSha256": "a925a4da38ee888b07cfa1a3e105c0ba55473cd6ddef102c9cf82452f8f5d168",
+    "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
+    "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
+    "nodeExecutableSha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
+    "browserRevision": "1243",
+    "browser": "153.0.8010.12",
+    "platform": "darwin-arm64",
+    "nodeVersion": "v24.19.0"
+  },
+  "facts": [
+    {
+      "id": "title",
+      "text": "Plate · synthetic narrow-screen reference"
+    },
+    {
+      "id": "plate.number",
+      "text": "Plate 1"
+    },
+    {
+      "id": "plate.title",
+      "text": "Synthetic completion by stage"
+    },
+    {
+      "id": "plate.rows.0.label",
+      "text": "Prepared"
+    },
+    {
+      "id": "plate.rows.0.value",
+      "text": "100%"
+    },
+    {
+      "id": "plate.rows.1.label",
+      "text": "Reviewed"
+    },
+    {
+      "id": "plate.selected",
+      "text": "Selected"
+    },
+    {
+      "id": "plate.rows.1.value",
+      "text": "75%"
+    },
+    {
+      "id": "plate.rows.2.label",
+      "text": "Revised"
+    },
+    {
+      "id": "plate.rows.2.value",
+      "text": "0%"
+    },
+    {
+      "id": "plate.rows.3.label",
+      "text": "Archived"
+    },
+    {
+      "id": "plate.rows.3.value",
+      "text": "12.5%"
+    },
+    {
+      "id": "plate.caption",
+      "text": "Synthetic source / check / review / record. No business outcomes are asserted."
+    },
+    {
+      "id": "plate.reference",
+      "text": "Fixture 01 · 2026-09-28"
+    }
+  ],
+  "requiredRelationships": [
+    "plate.rows",
+    "plate.scales"
+  ],
+  "rules": [
+    "plan.valid",
+    "html.structure",
+    "html.self_contained",
+    "facts.unique",
+    "facts.exact",
+    "facts.approved_text",
+    "move.semantics",
+    "render.binding",
+    "render.viewport_fit",
+    "render.facts",
+    "render.semantics",
+    "instrument.invariant_band",
+    "render.screenshot"
+  ],
+  "maxRepairTurns": 2,
+  "source": {
+    "systemVersion": "1.0.0",
+    "schemaVersion": "v0.4",
+    "supportManifestSha256": "b9439e0a3c204a8df38e47ace8db1fe379733f8665d5231dd6f7b34783c727b6",
+    "files": {
+      "SOURCE.md": "6a2b794596f17bcc411164f6209812408b4b2e54c2cf0749e08a9f11b52a04d2",
+      "manifest.json": "67f82ee40cb3755c4d06206ad46d9725a32b0d1023c6f66deba46332d003721b",
+      "archetypes.json": "00c70b00e92e5bf5fb40eb879e210159bac1edb1cbd1c6512d8f29ae12392bb7",
+      "tokens.json": "d2c1890df830801e72d868ecd4db57e433340f935ddb8ac53d544f49be899d5b",
+      "SKILL.md": "3580aeeda02c4ead863f0bbb967cb4a2a28d48305983fb4319342c774eda41b8",
+      "SKILL-compact.md": "f8945420bb9796553f08c2129324054b945fff7daed03e557a6a1b08252d3d48",
+      "assets/tokens.css": "1d683bf49d6e92e165a51a3524c699cfd854ed082d8619ccfd392bd440eb7124"
+    },
+    "implementation": {
+      "workflow/engine.py": "b4273fad6228995c3f22d1dddd13613b39f34ec7531345facda05399a4efd4f0",
+      "workflow/schema.py": "3df73a7bf219104bb732b8c5c0ea5a5cf35154ed5d1e27ea020f1a4ac1aafe91",
+      "workflow/support.py": "92b35cc980b5cfa87835304a533f9555d0e06f21bcda3adcec9b438c66e27f6d",
+      "workflow/repair_policy.py": "e7faf9d1461a9fbb1b2af3b4f122cedc7416bcda26ca43d7854f60d552d5b2a2",
+      "workflow/checker.py": "a645a119ae2832f9c91cbea74560c25f47567e4164c38247fca81eb0ef62c6c7",
+      "workflow/support-manifest.json": "b9439e0a3c204a8df38e47ace8db1fe379733f8665d5231dd6f7b34783c727b6",
+      "workflow/schemas/support-manifest.schema.json": "5f76fe300241973ac1df315f24236c612cd8509990e18c93fdc349321238e1fb",
+      "workflow/schemas/brief.schema.json": "66458bc7f001cff7501f19e73fc59a54838b8ff49de32a87049ae8e6bb887ad1",
+      "workflow/schemas/plan.schema.json": "5d2327f47ba0a13dae6d7d171dadd3bcbe75ab3aec48ce9a2eec5b3664abbf51",
+      "workflow/schemas/report.schema.json": "88bab331929742dc91396342f5033bb74c00b06bb5ecdc2188935e3a05a399b2",
+      "workflow/schemas/history.schema.json": "36295bbda7a8cb789762a54443393fda6f361d652556b7ddaf14f2ca2a0b10bd",
+      "workflow/schemas/render-evidence.schema.json": "bc6192b9de1407f74fb90cfa6c34bcfe9f9b44bd5d09051d6a77b891307896c5",
+      "workflow/schemas/renderer-identity.schema.json": "f6c73138340e1c11dc942ac2240b16a41ee4f987daedc252005847e58667cf61",
+      "workflow/schemas/context.schema.json": "2f8089b68068244a5bb4e6efd05ec05e7a772e1cadaeaa942424182a0e3f5c7e",
+      "workflow/schemas/repair.schema.json": "0948ada301f52262ce27f5c414015000a4c042de89a6696a40c3bc48318bb266",
+      "schema/compile.py": "a4e4838f05c05921a39c6631b31849f71c341ac4fc333ce7cdc51b097f347308",
+      "schema/schema-v0.4.md": "6fd9263fdfe41e3d2b168705cc4794508be81ba2f0dbbeb92942dd280ea36e55"
+    }
+  },
+  "limitations": [
+    "Workflow 0.2 supports only the nine Instrument moves and HTML declared by its support manifest.",
+    "Move selection is explicit in the brief; this workflow does not infer the reader's rhetorical job.",
+    "The instruction build is explicitly selected by the brief; comparative benefit remains an evaluation question.",
+    "Authoritative text is preserved after Unicode composition and whitespace normalization; arithmetic and real-world truth are not verified.",
+    "Mechanical conformance does not establish visual quality, full accessibility, model superiority or a beneficial repair effect."
+  ]
+}

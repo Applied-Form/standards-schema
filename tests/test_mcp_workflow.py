@@ -78,7 +78,7 @@ class MCPWorkflowTests(unittest.TestCase):
         capabilities = self.decoded(self.call("get_workflow_capabilities", {}))
         self.assertEqual(capabilities, server.workflow_module("support").load_support_manifest())
         self.assertEqual(capabilities["workflow"]["version"], "0.2.0")
-        self.assertEqual(len(capabilities["supported"]), 6)
+        self.assertEqual(len(capabilities["supported"]), 9)
         self.assert_tool_error(self.call("get_workflow_capabilities", {"unexpected": True}))
 
     def test_existing_retrieval_tools_keep_their_result_shapes(self):

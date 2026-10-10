@@ -348,7 +348,10 @@
                   "Band statement",
                   "Series",
                   "Schedule",
-                  "Running index"
+                  "Running index",
+                  "Plate",
+                  "Register",
+                  "Key"
                 ]
               },
               "oneVisibleH1": {

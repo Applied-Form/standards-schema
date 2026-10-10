@@ -44,6 +44,9 @@ def six_briefs():
               "instructionBuild": "full", "title": "Synthetic workflow fixture",
               "viewports": [{"width": 1280, "height": 960}, {"width": 390, "height": 844}]}
     items = {
+        ("E", "Plate", "plate"): {"number": "Plate 1", "title": "Completion", "rows": [{"label": "Before", "value": "0%", "pct": 0}, {"label": "After", "value": "75%", "pct": 75, "emphasis": True}], "caption": "Synthetic", "reference": "Fixture 01"},
+        ("E", "Register", "register"): {"label": "Position", "figures": [{"value": "42", "unit": "%", "term": "Reach"}, {"value": "12", "term": "Cases"}, {"value": "3", "term": "Teams"}], "note": "Synthetic"},
+        ("S", "Key", "key"): {"label": "Legend", "entries": [{"mark": "solid", "term": "Completed", "gloss": "Closed"}, {"mark": "hatch", "term": "Provisional", "gloss": "Awaiting review"}], "note": "Synthetic"},
         ("E", "Datum", "datum"): {"label": "Verified total", "value": "42", "unit": "%",
                                       "supporting": [{"term": "Prior", "value": "38%"}],
                                       "note": "Synthetic data"},
@@ -140,12 +143,15 @@ class WorkflowEngineTests(unittest.TestCase):
         self.assertEqual(manifest["system"]["contentVersion"], "1.0.0")
         self.assertEqual(manifest["packages"]["instrument"]["version"], "2.0.0")
         self.assertEqual(manifest["packages"]["core"]["version"], "0.2.0")
-        self.assertEqual(len(manifest["supported"]), 6)
+        self.assertEqual(len(manifest["supported"]), 9)
         self.assertEqual(
             [(item["job"], item["jobName"], item["move"], item["contentKind"],
               item["binding"]["component"], tuple(item["requiredRelationships"]))
              for item in manifest["supported"]],
-            [("E", "Evidence", "Datum", "datum", "Datum", ("datum.label-value",)),
+            [("E", "Evidence", "Plate", "plate", "Plate", ("plate.rows", "plate.scales")),
+             ("E", "Evidence", "Register", "register", "Register", ("register.figures",)),
+             ("S", "Structure", "Key", "key", "Key", ("key.entries", "key.marks")),
+             ("E", "Evidence", "Datum", "datum", "Datum", ("datum.label-value",)),
              ("S", "Structure", "Matrix", "matrix", "Matrix",
               ("matrix.column-headers", "matrix.row-headers", "matrix.grid")),
              ("N", "Narrative", "Band statement", "bandStatement", "BandStatement",

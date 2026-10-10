@@ -1,0 +1,926 @@
+{
+  "schemaVersion": "0.2.0",
+  "recordedDate": "2026-09-28",
+  "purpose": "Synthetic retained review records for all nine Instrument workflow moves at standard and 320px widths; they prove deterministic plan/render/check mechanics, not designer approval or comparative model performance.",
+  "renderer": {
+    "name": "standards-ui-workflow-render",
+    "version": "0.2.0",
+    "supportManifestSha256": "b9439e0a3c204a8df38e47ace8db1fe379733f8665d5231dd6f7b34783c727b6",
+    "sourceSha256": "30069fc0b5793e4f8d2a48fafe3921a8d27fa92e13c4d6e6027c110a1eb59d54",
+    "packageVersion": "2.0.0",
+    "packageEntrySha256": "8ca210f9c12fcd205173ec0c2574d0393746671cf49b7443dc354e84a9b15883",
+    "tokensSha256": "8be6bd4ecf13fcb63f2d891322192a923b0386020a797b6a0de9b1408ce2ae9b",
+    "fontAssetsSha256": "9abaec92be36ac7220c17a086a1b0f5fe4ce4eaf8eef41381ee0dd7986472746",
+    "runtimeModulesSha256": "f72bdaf5672dbec88d108c2f8d273f2620854e5a2a3683ad41a6c805058ea270",
+    "lockfileSha256": "a925a4da38ee888b07cfa1a3e105c0ba55473cd6ddef102c9cf82452f8f5d168",
+    "browserLauncherSha256": "8319963f6625accf51c0dd4f55091ceaf9f09ed39e7a52fed4fae12b2a6b668a",
+    "browserPayloadSha256": "d17d20831fa431481e389a5b92db808835c37dc8ca260ab61f64033dfb9cf3c5",
+    "nodeExecutableSha256": "27db838bb204ef7c21df2931f5656e4c8fb32e6e947f363a402b49714d32b5b1",
+    "browserRevision": "1243",
+    "browser": "153.0.8010.12",
+    "platform": "darwin-arm64",
+    "nodeVersion": "v24.19.0"
+  },
+  "cases": [
+    {
+      "name": "plate-standard",
+      "brief": "../reference-briefs/plate-standard.json",
+      "planSha256": "dd0a467c25c4abd99b3384e2bc297ce60b1c4bb402bc53beed377cab5c003549",
+      "contextSha256": "10d1a9ca5bf83226f56104d5e7f6250e9819ee3972054bed2bbfcce98c9d26b4",
+      "artifactSha256": "5176ad35bd146605576ccf13938d38aef3e268290ed1d501f94fc15f211727aa",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "plate-standard-plan.json",
+          "sha256": "593ace87dd39d6470d6d0af6ed98c51fd3743d4f4f80511b6bcfaa41625f19ea"
+        },
+        "context": {
+          "file": "plate-standard-context.json",
+          "sha256": "13516a87c2d1154061baa89ad6133de172f39ae230088e4d6351cb94ffae4f60"
+        },
+        "artifact": {
+          "file": "plate-standard.html",
+          "sha256": "5176ad35bd146605576ccf13938d38aef3e268290ed1d501f94fc15f211727aa"
+        },
+        "evidence": {
+          "file": "plate-standard-render-evidence.json",
+          "sha256": "ac5d36d9258d6ffc2c52f76d6958f33bfb33e9d3cc2392b41c598f2f23482591"
+        },
+        "report": {
+          "file": "plate-standard-report.json",
+          "sha256": "d987d68e7fb9f59c867aa0742592cf9ef56c0f52809cd773ab4e5c7ada0d33b7"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "plate-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "2cd75bb2d9d79552cb5dee107c0bc6f907e1ada069117acfea6c5fc724c7ea0c"
+        },
+        {
+          "file": "plate-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "80e7b5026d897f243f1db3ca5d080d54ae48d48ccc9aa273980bda720a19b176"
+        }
+      ]
+    },
+    {
+      "name": "plate-320",
+      "brief": "../reference-briefs/plate-320.json",
+      "planSha256": "5bdb7e4fbba2f32d5bc68c00a803b7d20cfc0f787abdac3151be807b4ceb53c4",
+      "contextSha256": "8800320300616122a953e5c6756d92c7e121c6a1ff6a17ded6d8e2acb0e63d4c",
+      "artifactSha256": "289e90a04516b0b19c68e05e9769ba98a33742eb2168e523aa935111f17870e7",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "plate-320-plan.json",
+          "sha256": "0e396042c9cc7f3b02bd49f2a76271939fe3ab05ad73242680ee248be2b1951d"
+        },
+        "context": {
+          "file": "plate-320-context.json",
+          "sha256": "462f9395c2b6c0b095d6314bf82a157485ef18410b3a5177fdcee459ef509c55"
+        },
+        "artifact": {
+          "file": "plate-320.html",
+          "sha256": "289e90a04516b0b19c68e05e9769ba98a33742eb2168e523aa935111f17870e7"
+        },
+        "evidence": {
+          "file": "plate-320-render-evidence.json",
+          "sha256": "2fb33f0e3d5d61436162619400602b74680b1e39a6aed4ee05c59f006761f643"
+        },
+        "report": {
+          "file": "plate-320-report.json",
+          "sha256": "ff92dad81042c6b0b7fc79d88a47f342cb0c0f22a0f315698a2f8e6771ef724f"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "plate-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "a8b945cfa8dbbe09aac3269a89a1b38583f816dac193af633e963959488da7ea"
+        }
+      ]
+    },
+    {
+      "name": "register-standard",
+      "brief": "../reference-briefs/register-standard.json",
+      "planSha256": "126305fdb9bb820cb19e7fe3991a4df6167522fa9069eba23bf3beea3deb2897",
+      "contextSha256": "979c4c4d686e53e7694684040f55503057b5342d193768a5a0e9b55b395aead0",
+      "artifactSha256": "7ab08716b03ce6054b61f39c961210723387f814daab9b45f4a665cadd324fb3",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "register-standard-plan.json",
+          "sha256": "59d4f1a805996a9df7a3bcb24ed40ffb6a6a2961365734f10f3e810e7ad8839e"
+        },
+        "context": {
+          "file": "register-standard-context.json",
+          "sha256": "4a54e398a37a555c87cea44fcc7964a96441cdd4c6d39949cb133603d360c017"
+        },
+        "artifact": {
+          "file": "register-standard.html",
+          "sha256": "7ab08716b03ce6054b61f39c961210723387f814daab9b45f4a665cadd324fb3"
+        },
+        "evidence": {
+          "file": "register-standard-render-evidence.json",
+          "sha256": "5e4e6084769d62160cda1aee0b4991b4c656b1144af05d93a0f968d98e05bad6"
+        },
+        "report": {
+          "file": "register-standard-report.json",
+          "sha256": "7fb1a25741026e1b440d7b44ddf012ae6ee4f485c479495d5e43fc8c9f40aa0c"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "register-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "7321789a6eca6b7c5047805c9531fa64bac03159361260fe522f72b700e3609f"
+        },
+        {
+          "file": "register-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "003d2b39990e5daf739bbc9e839f345777dad955623dd18805d38f7608da5a55"
+        }
+      ]
+    },
+    {
+      "name": "register-320",
+      "brief": "../reference-briefs/register-320.json",
+      "planSha256": "57b019ffd76ceb18c22fb9826070f144405685786b633f33007ed5f0b7d634b1",
+      "contextSha256": "1828f293d676951fc2d03a8708d21a9fab590d0e35a7dcb46d1d8a432808748d",
+      "artifactSha256": "3e3b867e836aa540ac13c4d306b5516bc5bf792e44fc72de64009a19198c0251",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "register-320-plan.json",
+          "sha256": "6c2decbd9b2132f41bd91aa1dd62097ad910ad12e2950e03b894172a037341e2"
+        },
+        "context": {
+          "file": "register-320-context.json",
+          "sha256": "516ed27beb7e9e9e7ec7e139355a9a2640d6109c93b0e516ff4fe8adedc5275f"
+        },
+        "artifact": {
+          "file": "register-320.html",
+          "sha256": "3e3b867e836aa540ac13c4d306b5516bc5bf792e44fc72de64009a19198c0251"
+        },
+        "evidence": {
+          "file": "register-320-render-evidence.json",
+          "sha256": "fd1920622726ea42dd314408ee6da48855e0303b0e39ae73385fcacfc0c7be37"
+        },
+        "report": {
+          "file": "register-320-report.json",
+          "sha256": "f11edaaf31616293432e5d56a4568d913fe376cc8cc3306f09fd5e43d2bdad45"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "register-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "894815ad7c7fecf63b35a0d46beaf3af49e42a71b7ac4ae5f6995a3f44d72a5b"
+        }
+      ]
+    },
+    {
+      "name": "key-standard",
+      "brief": "../reference-briefs/key-standard.json",
+      "planSha256": "4cde00409d6d513e6f3be212fb0dace8d3f3a32cb0d70dca35e59e4c8c078f2c",
+      "contextSha256": "ad532b044784655a8ad994c0ed0c9eb4af48b0c081daa8280cd0237fc260b9e0",
+      "artifactSha256": "6ceb75ee45b28b25e0438949ed310e0c71b156f0dac6ae7177e9d3b9a6f440c4",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "key-standard-plan.json",
+          "sha256": "d82bc3ee1031828ab9771538da39df9e9c6dc8662d43963cab3be01eb184cbb3"
+        },
+        "context": {
+          "file": "key-standard-context.json",
+          "sha256": "f22170035bc4eb1074de375e28f6372105c9de725a403f01d5cdde36b0b0cb1c"
+        },
+        "artifact": {
+          "file": "key-standard.html",
+          "sha256": "6ceb75ee45b28b25e0438949ed310e0c71b156f0dac6ae7177e9d3b9a6f440c4"
+        },
+        "evidence": {
+          "file": "key-standard-render-evidence.json",
+          "sha256": "b860a131b4228cd5872f17a3734ea4a328eee18bd97bf513fcf237efefd281fa"
+        },
+        "report": {
+          "file": "key-standard-report.json",
+          "sha256": "eeb022ab49c4608843dd6fa370dfa595ea8bd1aa380e92788f0a2273cb5c88ce"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "key-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "22aceeec0b29cbb18fa3f8573aa73060ee06c0ce90c1ad901c34a07504f75ed4"
+        },
+        {
+          "file": "key-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "48694a1255cc22526599473d3b954af83d33984f58a2f37bccebe852ba0a6e21"
+        }
+      ]
+    },
+    {
+      "name": "key-320",
+      "brief": "../reference-briefs/key-320.json",
+      "planSha256": "247aaf08f3dcf00acf846ee252da6d6981870dc7dfead33ecbd2998c0feccc46",
+      "contextSha256": "adb04fbd9139e3bc5589b086a4a5e16454f4ae04d43c7338d23c360a523f839e",
+      "artifactSha256": "534bcbb7551da7e0ab0fc46a4b9bfcc26602a68ec0c5c80a0e2eaddbeab85a26",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "key-320-plan.json",
+          "sha256": "64496e3f72d8a1a7feda0a4835faa94443b121fb211265de4f4e8bb7ed9f4ae6"
+        },
+        "context": {
+          "file": "key-320-context.json",
+          "sha256": "f092f1969ee028b1d4c8eabdfa83e5bb6fe567b492afae845067a1ef6ad99b80"
+        },
+        "artifact": {
+          "file": "key-320.html",
+          "sha256": "534bcbb7551da7e0ab0fc46a4b9bfcc26602a68ec0c5c80a0e2eaddbeab85a26"
+        },
+        "evidence": {
+          "file": "key-320-render-evidence.json",
+          "sha256": "135f2cfc835bf4ce5c83db39401eddc77d8197267ee7406719f69b9e14279213"
+        },
+        "report": {
+          "file": "key-320-report.json",
+          "sha256": "2227871226628c7fdca4171d0f3e394560ceca21a85aaf6287cca732318ead79"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "key-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "857c495103da7a952aa6219a82b866436662c14d4ac2a315e55807bc46f3b8c3"
+        }
+      ]
+    },
+    {
+      "name": "reference",
+      "brief": "../schedule-brief.json",
+      "planSha256": "1fce2eb4716a93a4e1c387518ddc50ac485db94c7b9ffca016dcf4a84a5a98a4",
+      "contextSha256": "8bd0ae087da9cf4c0f79a920ae310187a0a4f799ebe54d5bb92cfda4298236a7",
+      "artifactSha256": "0f761c63fe3d2cb9196738a4ab39c8eba49da52b60ace6b00ee50dc9377fa5c2",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "schedule-plan.json",
+          "sha256": "e32c6b36597733aa7d6ef9972a358bd875011298b31328eee7991eb543d66245"
+        },
+        "context": {
+          "file": "schedule-context.json",
+          "sha256": "c10ed878b7b97a2546dd1cd656bd58dca4a94dfa6533c514c5a80bf6a7c78ea4"
+        },
+        "artifact": {
+          "file": "schedule.html",
+          "sha256": "0f761c63fe3d2cb9196738a4ab39c8eba49da52b60ace6b00ee50dc9377fa5c2"
+        },
+        "evidence": {
+          "file": "schedule-render-evidence.json",
+          "sha256": "1b1756797ea87e5c12f61e15080de5cdbab55c534568f15f98c1ea1aa6727879"
+        },
+        "report": {
+          "file": "schedule-report.json",
+          "sha256": "002940ebfd0da950088acfabe20d08415a9607c1a5f637832b5ea36f6b7ff200"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "schedule-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "46e0f6d7e10d650274cae44bb0bf10221c4afe7a9f58de15827c510222e38448"
+        },
+        {
+          "file": "schedule-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 924
+          },
+          "sha256": "cc267a395da69700c8d505ae03b023dca7755dd4f3d07b53caa4c078c2df281e"
+        }
+      ]
+    },
+    {
+      "name": "long-content",
+      "brief": "../schedule-long-brief.json",
+      "planSha256": "041d1524762335c65cf7a83572a6915b6882c10805d6ebd10c1ed56e6276c2fb",
+      "contextSha256": "4557a78bf375e332dc87dcf9d4714f63d48990e6d3056f5ba83c619f9f5f1eab",
+      "artifactSha256": "b7e235f4f9a9e1c1265d9ffc186300de2ac2a5b3e30c1523705454946e6edb5f",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "schedule-long-plan.json",
+          "sha256": "013a4a82ce49d7b07460af91afab0c829507051e420b8f1d88d70582bee104ec"
+        },
+        "context": {
+          "file": "schedule-long-context.json",
+          "sha256": "eae98dd194ecd3a5b7ed016559b01c0ad71d337bc384438d5c09d9e9d665dc3b"
+        },
+        "artifact": {
+          "file": "schedule-long.html",
+          "sha256": "b7e235f4f9a9e1c1265d9ffc186300de2ac2a5b3e30c1523705454946e6edb5f"
+        },
+        "evidence": {
+          "file": "schedule-long-render-evidence.json",
+          "sha256": "2cd7cd2370a9394789bae570ccd51af1b9291974e7fa8694166213e8156f0400"
+        },
+        "report": {
+          "file": "schedule-long-report.json",
+          "sha256": "c7406c3a22282d817d895e57ef13bb9bd65dccad963ad6e923353577f46309fb"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "schedule-long-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 1117
+          },
+          "sha256": "2e4f3491921aa233fbace5e14c1ddf27bf6bb89c5aa08332ac9b6099fd8b2726"
+        }
+      ]
+    },
+    {
+      "name": "datum-standard",
+      "brief": "../reference-briefs/datum-standard.json",
+      "planSha256": "e14c2ded70e661e4342f9de54d2cdf644abc9990e43e26f5eccebbbd8723b71b",
+      "contextSha256": "e862a738c38008ab5a317423cdf0c18acdffe8f0c44ec173204dcaf3635b4b47",
+      "artifactSha256": "791f703565b2485f21cf8e176c775460bb01d638442766b053ddd87ecbde6b74",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "datum-standard-plan.json",
+          "sha256": "0f8ee63d898ad1e63fe9ecc64fc2cdb3ed759e46a7082152aee91ff7f3c1ebba"
+        },
+        "context": {
+          "file": "datum-standard-context.json",
+          "sha256": "9fef6bcf844bbe5169188c2eb68c28ac2294fb47b16e230078ea66e7f36ec420"
+        },
+        "artifact": {
+          "file": "datum-standard.html",
+          "sha256": "791f703565b2485f21cf8e176c775460bb01d638442766b053ddd87ecbde6b74"
+        },
+        "evidence": {
+          "file": "datum-standard-render-evidence.json",
+          "sha256": "139ed657f77bb9caae0f636fc292d975b8ec912efda33b8ddff5a8ec4a84a862"
+        },
+        "report": {
+          "file": "datum-standard-report.json",
+          "sha256": "8ddebb60e1c88130c96b513941932142eb9b944d65403cc4a51338bb3394adeb"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "datum-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "219d5b37fe621c3e0b6b162ce45b441a387a0863290413582b9738650a46dd3a"
+        },
+        {
+          "file": "datum-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "55863e79e97e050e840993c9f325309cbd63accacee74545880bd09923cf3b70"
+        }
+      ]
+    },
+    {
+      "name": "datum-320",
+      "brief": "../reference-briefs/datum-320.json",
+      "planSha256": "f0fca88d56b1813564b672dd9d288b8be2c6fd9b0f79666e5c941a5940396136",
+      "contextSha256": "d9758f831ca36c70dea46aa46ad3ebeedf991f28924dca5907aa5151b6abbadf",
+      "artifactSha256": "567363056a5a7c015230eabb2c8af4b203b1bb121d2806456866c6fe449b3011",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "datum-320-plan.json",
+          "sha256": "33a35e4ed9d8b0be4a9fcf9731061f3580f5a8cb9022f2da7ae209d117bdda47"
+        },
+        "context": {
+          "file": "datum-320-context.json",
+          "sha256": "eed21302afada3ca370e27887af3e7cb2a923323c5a1f346ef7d6a8a6cec5ea8"
+        },
+        "artifact": {
+          "file": "datum-320.html",
+          "sha256": "567363056a5a7c015230eabb2c8af4b203b1bb121d2806456866c6fe449b3011"
+        },
+        "evidence": {
+          "file": "datum-320-render-evidence.json",
+          "sha256": "0eed847d738abb0e7a34a8abb31a24642816d10c57658274c0d854e2afa61f68"
+        },
+        "report": {
+          "file": "datum-320-report.json",
+          "sha256": "6722c9f74bb425b375369435e502c47c47c60c753d6e8d62afae5cba1a9c210a"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "datum-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "31c74b89cfd87e7081521b4cd7f3cded636541083462d7d4f993ea03cbf0e236"
+        }
+      ]
+    },
+    {
+      "name": "matrix-standard",
+      "brief": "../reference-briefs/matrix-standard.json",
+      "planSha256": "bea58f2d4ebabe48b1bcfaedd1b5ed3196d981506b5fb80b1510956308647c69",
+      "contextSha256": "572ceaf6621395b7f58ed48406099592ccb52fe24b045216123d741a51b3ec85",
+      "artifactSha256": "9f31786ff17afa63a4dec30c057aa7baaac5d4b65a32a5b0a142c2fc9b3e41ac",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "matrix-standard-plan.json",
+          "sha256": "08a60d3bafe3621736975042724ac2d9131b34d053d4e8a353619a3d5a977942"
+        },
+        "context": {
+          "file": "matrix-standard-context.json",
+          "sha256": "4d9e4c91a8fc06c767a42a335c1c4143bd616c7598a0351e71a92d2335a9a972"
+        },
+        "artifact": {
+          "file": "matrix-standard.html",
+          "sha256": "9f31786ff17afa63a4dec30c057aa7baaac5d4b65a32a5b0a142c2fc9b3e41ac"
+        },
+        "evidence": {
+          "file": "matrix-standard-render-evidence.json",
+          "sha256": "a738b80b08ebd02c80e6e708acb46344f0eaf6111921e086f61fbe39e813dfa8"
+        },
+        "report": {
+          "file": "matrix-standard-report.json",
+          "sha256": "d28c32b7dfc25eeac5a1974e9414f357758103e071a68653e61619a08b48f411"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "matrix-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "ce334e9e48cb9ae757c17cdede455b531e45aa2a079a0cea33295f96ce4ef99f"
+        },
+        {
+          "file": "matrix-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "b01b67208fb7ce346890ffc91515795a0705438dd3627cb909929c05a58ef846"
+        }
+      ]
+    },
+    {
+      "name": "matrix-320",
+      "brief": "../reference-briefs/matrix-320.json",
+      "planSha256": "7819cc4987e9e12eb80422cf37670a1fa343c038cc36e9af78aa2a14711ad53b",
+      "contextSha256": "38179983f7a03c98a8ef1464c530bcea83be405c21c8efaeb89909f622649d9f",
+      "artifactSha256": "8d4ef7d8e135474fc789c9d733faa3a48bd0b4e6b6d8d4bf7ad1cd3150b92e7a",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "matrix-320-plan.json",
+          "sha256": "35b2712897946a682a216527ef0d283d3b61fc296491bdd76f7c9ce1cb4ab2cb"
+        },
+        "context": {
+          "file": "matrix-320-context.json",
+          "sha256": "43c7c210d2b045b40cc2795c63c5316ac90de0067b076d2b7c9f1db6de7f54d2"
+        },
+        "artifact": {
+          "file": "matrix-320.html",
+          "sha256": "8d4ef7d8e135474fc789c9d733faa3a48bd0b4e6b6d8d4bf7ad1cd3150b92e7a"
+        },
+        "evidence": {
+          "file": "matrix-320-render-evidence.json",
+          "sha256": "d3e2640b87a9f69cf1b2a90d38a57c4b3f6cb910ff5c6523e71a8d5e14a478c4"
+        },
+        "report": {
+          "file": "matrix-320-report.json",
+          "sha256": "a5a05804a3e0536c1e9dc2c04a2e02c97f3924afcf240b253b01c42fd6e33761"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "matrix-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "a69acb7b1b17502886c4b64e32febcdbae978e7baf46d535c7c52a121774a3f3"
+        }
+      ]
+    },
+    {
+      "name": "band-statement-standard",
+      "brief": "../reference-briefs/band-statement-standard.json",
+      "planSha256": "97258588e672910c6f2e6ffc880c5b4883414670c73e9dd30b83cb31adc6f3c7",
+      "contextSha256": "53d059b26da3c3a3daf082f62813e9a60f9b6b88f0e839a28857b58fb2c38a4e",
+      "artifactSha256": "17d2c96c520391f11ea5c9f6e629d9b66d085f2191f691dfd2815721b66ddfbd",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "band-statement-standard-plan.json",
+          "sha256": "8b7f12630967c2e6f26f301fc69fb60082a241241613f934bd71583b46d81f90"
+        },
+        "context": {
+          "file": "band-statement-standard-context.json",
+          "sha256": "7a09dc972e71bd99f6dd507e9bf7ae7d06122ad4899877913e406f6184325f31"
+        },
+        "artifact": {
+          "file": "band-statement-standard.html",
+          "sha256": "17d2c96c520391f11ea5c9f6e629d9b66d085f2191f691dfd2815721b66ddfbd"
+        },
+        "evidence": {
+          "file": "band-statement-standard-render-evidence.json",
+          "sha256": "f36f4780e82b541e0cf426589c1143b203237efd5c1261cd02e7f6f7bd21bb55"
+        },
+        "report": {
+          "file": "band-statement-standard-report.json",
+          "sha256": "519d3e3723663f84746dbc47e5b61081916237b84ce33ca35eb3083b3289925b"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "band-statement-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "069799cfd88621256af77e174bf3a7d8c48e798086ce2b67ded0726415962c80"
+        },
+        {
+          "file": "band-statement-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "693035639d988d11e428406c21fd035f947b510b64b8987edbee505cafb5d000"
+        }
+      ]
+    },
+    {
+      "name": "band-statement-320",
+      "brief": "../reference-briefs/band-statement-320.json",
+      "planSha256": "a4c3f9d0275ba6a711b5fbf8726419228376b8bff48b63a2e09f89d062655240",
+      "contextSha256": "478390d83dd1ebc8dd172d5286a09a8e0397efd6cb5ceaf725a7d697b8c450f1",
+      "artifactSha256": "59540887c7a5dc2bcfc86e8a3339ab46e8f28a288613b0a092d12623b81edb3f",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "band-statement-320-plan.json",
+          "sha256": "a4721b276cbcc87b18a830051f620e90f87c81cb293214e27b3cdbd9bf462bd1"
+        },
+        "context": {
+          "file": "band-statement-320-context.json",
+          "sha256": "eb9e49c228473e1e0ac4d88009c2eb57375852e7266cdbc89d8982d6901ca488"
+        },
+        "artifact": {
+          "file": "band-statement-320.html",
+          "sha256": "59540887c7a5dc2bcfc86e8a3339ab46e8f28a288613b0a092d12623b81edb3f"
+        },
+        "evidence": {
+          "file": "band-statement-320-render-evidence.json",
+          "sha256": "2c516d9a389d8921dfbe89ee4d3916a64f1edc3493044ad5d134c790c4a34214"
+        },
+        "report": {
+          "file": "band-statement-320-report.json",
+          "sha256": "72907e79dbaea4e333652f7a179c62308b49d2c72323869dc600e8bbdd473195"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "band-statement-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "487b696e36b3600e77228512596b8e443077e026c41e8a9d3869c3a2f60c8ea5"
+        }
+      ]
+    },
+    {
+      "name": "series-standard",
+      "brief": "../reference-briefs/series-standard.json",
+      "planSha256": "7c1c80e0dd377df679aa76257f1fd8ee787032956317c02246c8e7266798a62c",
+      "contextSha256": "9edf6833a8a59daa16f690a9f99700077f2b157cc6e001cb57e8a38bf35fc5fa",
+      "artifactSha256": "bf337fe00e27ef338230af6ce62d72365db0a14aac1cdd06b3b6d556aed014ac",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "series-standard-plan.json",
+          "sha256": "80e35ef411bace38ab2cfbc328d4707c7d818ec6cc9b49a8a70917e0522c81b0"
+        },
+        "context": {
+          "file": "series-standard-context.json",
+          "sha256": "7ab12b8d49c5cee592fc5fb113ec9679c921cace10a5e8915cf6393aa0b9675e"
+        },
+        "artifact": {
+          "file": "series-standard.html",
+          "sha256": "bf337fe00e27ef338230af6ce62d72365db0a14aac1cdd06b3b6d556aed014ac"
+        },
+        "evidence": {
+          "file": "series-standard-render-evidence.json",
+          "sha256": "f5aa86cc35b8ca8bbf5d47cf553a2d7fcc3c7be7cc38b98e83fdca3dcb1834f7"
+        },
+        "report": {
+          "file": "series-standard-report.json",
+          "sha256": "efcd4f1d6b37cd972903812383c763ea7262c8dca3b556185bfa4626cc69fe3e"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "series-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "4ce141e044fb28252dab3e8b642c180eca51f6c3d1e8f97a27a81619f4451c5b"
+        },
+        {
+          "file": "series-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "78a425ec6c973e1f905cd23340cbfb4ac00042df4f93572d807e389019a66d01"
+        }
+      ]
+    },
+    {
+      "name": "series-320",
+      "brief": "../reference-briefs/series-320.json",
+      "planSha256": "533995365517a8d46c19f69781be6ae3cdcab89c15dc1609253d82a1a61a7239",
+      "contextSha256": "9967e0f9f0c2935fe8a0a346afc517d2cc05ef86a117fadf40bd2e330c376862",
+      "artifactSha256": "7788c332683f691f3b261d964182d83b70dd777847368749890bb443d7943977",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "series-320-plan.json",
+          "sha256": "e9b37ba54d6fe1a004733671a2bb4ef13f457912795e28d70b0bd2c24d870241"
+        },
+        "context": {
+          "file": "series-320-context.json",
+          "sha256": "35aa755bfe52b7ddb5c3721f3099e13195d77e0c914bfc9b2430aead99c0cdef"
+        },
+        "artifact": {
+          "file": "series-320.html",
+          "sha256": "7788c332683f691f3b261d964182d83b70dd777847368749890bb443d7943977"
+        },
+        "evidence": {
+          "file": "series-320-render-evidence.json",
+          "sha256": "8d7b9b29c75c6133f570fb5ec2b9e4ea656b019bd12a0bff0c3ffc5dfae2d37c"
+        },
+        "report": {
+          "file": "series-320-report.json",
+          "sha256": "b0d036e48d3e678ad2c60b3f49582887d63fd67a8c721eebb83573559e8c1421"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "series-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "51f0ea1af1667ed205b297fd15de60781775d82111760f2fa967781fa64cc478"
+        }
+      ]
+    },
+    {
+      "name": "running-index-standard",
+      "brief": "../reference-briefs/running-index-standard.json",
+      "planSha256": "a160235a82acb0ecb6c177f924901c2f4b8555ac1944dcf299d5f0d644ee6ec7",
+      "contextSha256": "1e387910ab62f35a308dd8c4ab4ac829e6c019a64cd18f95f647ce9163a6ccd5",
+      "artifactSha256": "f7f2ae32cc38ea82119267c6528d7b96511bb7314bc0c9a7b34ceccc95222ae3",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "running-index-standard-plan.json",
+          "sha256": "1642108fdacc8b97a2ab685662165bcc8f2007fdd3f4445c1aa4b1f910203486"
+        },
+        "context": {
+          "file": "running-index-standard-context.json",
+          "sha256": "8d2be87b85642cdcc592cfd4d9d792c57e7ec33797c43fbdeb0b59240d6937b6"
+        },
+        "artifact": {
+          "file": "running-index-standard.html",
+          "sha256": "f7f2ae32cc38ea82119267c6528d7b96511bb7314bc0c9a7b34ceccc95222ae3"
+        },
+        "evidence": {
+          "file": "running-index-standard-render-evidence.json",
+          "sha256": "0b9e7f3015c4cd865375c5ec0940eb4272b83e2f8051aefc2060f5073a555714"
+        },
+        "report": {
+          "file": "running-index-standard-report.json",
+          "sha256": "f7029de1f17025600f6c1b7cb0f1a3c871679ea94fbb9fae90287be4588c6791"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "running-index-standard-1280x960.png",
+          "declaredViewport": {
+            "width": 1280,
+            "height": 960
+          },
+          "capturedPixels": {
+            "width": 1280,
+            "height": 960
+          },
+          "sha256": "1fb795e9a1cf05d74f5c7ffee97b2207103881a84b6f251c1b0ddbc3558ac1f6"
+        },
+        {
+          "file": "running-index-standard-390x844.png",
+          "declaredViewport": {
+            "width": 390,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 390,
+            "height": 844
+          },
+          "sha256": "8d876f669fd7c892adf1b93ac246b4015b9dadb5ccd71a6cd0db4508403069f0"
+        }
+      ]
+    },
+    {
+      "name": "running-index-320",
+      "brief": "../reference-briefs/running-index-320.json",
+      "planSha256": "562f94006e994a443d4e25ac22bfae2c2db6dd4c7dcda2e80d53e57e237f23dc",
+      "contextSha256": "254266d1067e655d654e2001f7b2b74e6d6076563848d12ab4112e8927f0f685",
+      "artifactSha256": "c7283f178a908bac51ff4fc4998284ebd79536215cea8557219eb554790d4f0b",
+      "baselineStatus": "pass",
+      "records": {
+        "plan": {
+          "file": "running-index-320-plan.json",
+          "sha256": "9d63dfa4e8233805f4239bb25c430812eecae792eeb960175e2edd92d5c7497f"
+        },
+        "context": {
+          "file": "running-index-320-context.json",
+          "sha256": "d50f75bb08f26b07b47815b3796eb38bd394c84823f1f443ec53da324b606330"
+        },
+        "artifact": {
+          "file": "running-index-320.html",
+          "sha256": "c7283f178a908bac51ff4fc4998284ebd79536215cea8557219eb554790d4f0b"
+        },
+        "evidence": {
+          "file": "running-index-320-render-evidence.json",
+          "sha256": "fd87284019655601af8612c8337c594c06f1200f154ce18f93779c5da4698217"
+        },
+        "report": {
+          "file": "running-index-320-report.json",
+          "sha256": "2c4563d6b3ec02f3b2f2c9055ee1a4b25674505d69c729cc9fd4b2e4bbee3ecb"
+        }
+      },
+      "screenshots": [
+        {
+          "file": "running-index-320-320x844.png",
+          "declaredViewport": {
+            "width": 320,
+            "height": 844
+          },
+          "capturedPixels": {
+            "width": 320,
+            "height": 844
+          },
+          "sha256": "fd8b5f08aabac6409a7d4e7a7bcba44c9ceb0b38fd69c4cb91cdf6e9b9626490"
+        }
+      ]
+    }
+  ]
+}

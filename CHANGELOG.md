@@ -2,9 +2,11 @@
 
 ## Unreleased
 
-- Expand the agent-native workflow to six exact Instrument HTML pairs: Evidence/Datum,
-  Structure/Matrix, Narrative/Band statement, Change/Series, Transaction/Schedule and
-  Wayfinding/Running index. Add discriminated brief/plan content, complete visible-fact
+- Expand the agent-native workflow to nine exact Instrument HTML pairs: Evidence/Datum,
+  Structure/Matrix, Narrative/Band statement, Change/Series, Transaction/Schedule,
+  Wayfinding/Running index, and the Plate, Register and Key moves added on 2026-09-28.
+- Replace the six-move reference renders with catalogue r3 (`examples/workflow/reference-catalogue-r3/`):
+  nine moves at the standard width and at 320px, eighteen cases recorded 2026-09-28. Add discriminated brief/plan content, complete visible-fact
   ledgers, declared relationships, a byte-bound capability manifest and MCP discovery.
 - Replace last-attempt repair with a shared best-so-far policy. It retains accepted and
   rejected attempts, compares a frozen metric order, rolls back ties and regressions,

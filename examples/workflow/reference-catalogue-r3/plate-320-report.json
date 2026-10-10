@@ -1,0 +1,240 @@
+{
+  "schemaVersion": "0.2.0",
+  "planSha256": "5bdb7e4fbba2f32d5bc68c00a803b7d20cfc0f787abdac3151be807b4ceb53c4",
+  "artifactSha256": "289e90a04516b0b19c68e05e9769ba98a33742eb2168e523aa935111f17870e7",
+  "status": "pass",
+  "summary": {
+    "total": 16,
+    "pass": 16,
+    "fail": 0,
+    "unknown": 0,
+    "critical": 0,
+    "error": 0,
+    "warning": 0
+  },
+  "findings": [
+    {
+      "ruleId": "plan.valid",
+      "severity": "info",
+      "status": "pass",
+      "location": "plan",
+      "expected": "content, facts and binding agree with the support manifest",
+      "observed": true,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "html.structure",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "complete, balanced HTML document",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "html.self_contained",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "static self-contained HTML",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.unique",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "14 unique fact markers",
+      "observed": 14,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.exact",
+      "severity": "info",
+      "status": "pass",
+      "location": "artifact",
+      "expected": "14 exact facts",
+      "observed": 14,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "body",
+      "expected": "all visible source text belongs to approved facts",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "title",
+      "expected": "the unique title fact in a level-one heading",
+      "observed": "present",
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "plate.rows",
+      "expected": "named list with exact ordered fact associations",
+      "observed": {
+        "itemCount": 4
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "move.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "plate.scales",
+      "expected": "exact percentages and one word-labelled selection",
+      "observed": {
+        "selected": 1
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.binding",
+      "severity": "info",
+      "status": "pass",
+      "location": "render_evidence",
+      "expected": {
+        "planSha256": "5bdb7e4fbba2f32d5bc68c00a803b7d20cfc0f787abdac3151be807b4ceb53c4",
+        "artifactSha256": "289e90a04516b0b19c68e05e9769ba98a33742eb2168e523aa935111f17870e7"
+      },
+      "observed": null,
+      "classification": "renderer-or-configuration"
+    },
+    {
+      "ruleId": "render.viewport_fit",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "horizontal fit, readable body and no browser/resource errors",
+      "observed": {
+        "clientWidth": 320,
+        "clientHeight": 844,
+        "scrollWidth": 320,
+        "scrollHeight": 844
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.facts",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "14 exact, visible, unclipped and unobscured facts",
+      "observed": 14,
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "facts.approved_text",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "no unapproved visible text",
+      "observed": [],
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.semantics",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": {
+        "move": "Plate",
+        "oneVisibleH1": true,
+        "relationships": [
+          {
+            "id": "plate.rows",
+            "passed": true
+          },
+          {
+            "id": "plate.scales",
+            "passed": true
+          }
+        ]
+      },
+      "observed": {
+        "move": "Plate",
+        "oneVisibleH1": true,
+        "relationships": [
+          {
+            "id": "plate.rows",
+            "passed": true
+          },
+          {
+            "id": "plate.scales",
+            "passed": true
+          }
+        ]
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "instrument.invariant_band",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": {
+        "count": 1,
+        "containsTitle": true,
+        "x": 0,
+        "width": 320,
+        "height": 32,
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "observed": {
+        "count": 1,
+        "containsTitle": true,
+        "bounds": {
+          "x": 0,
+          "y": 0,
+          "width": 320,
+          "height": 32
+        },
+        "backgroundColor": "rgb(17, 17, 17)",
+        "titleColor": "rgb(255, 255, 255)",
+        "borderWidths": {
+          "top": 0,
+          "right": 0,
+          "bottom": 0,
+          "left": 0
+        }
+      },
+      "classification": "non-repairable"
+    },
+    {
+      "ruleId": "render.screenshot",
+      "severity": "info",
+      "status": "pass",
+      "location": "viewport:320x844",
+      "expected": "hash-matched embedded PNG with declared width and captured height",
+      "observed": {
+        "file": "plate-320-320x844.png",
+        "sha256": "a8b945cfa8dbbe09aac3269a89a1b38583f816dac193af633e963959488da7ea"
+      },
+      "classification": "renderer-or-configuration"
+    }
+  ],
+  "limitations": [
+    "Supports the nine Instrument HTML workflows declared by the exact support-manifest bytes.",
+    "Visual quality, rhetorical effectiveness and full accessibility compliance are unassessed.",
+    "Source visibility is conservative; CSS layout and clipping require current browser evidence.",
+    "Render evidence is caller supplied and hash-bound, not an attestation of browser execution.",
+    "Vertical document scrolling is permitted; required horizontal viewport fit is checked."
+  ]
+}

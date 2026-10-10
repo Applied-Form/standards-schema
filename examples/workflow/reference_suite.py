@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate the retained standard and 320px references for all six moves."""
+"""Regenerate the retained standard and 320px references for all nine moves."""
 from __future__ import annotations
 
 import argparse
@@ -16,7 +16,7 @@ import tempfile
 
 PUBLIC_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_UI = PUBLIC_ROOT.parent / "standards-ui"
-DEFAULT_OUT = Path(__file__).with_name("reference")
+DEFAULT_OUT = Path(__file__).with_name("reference-catalogue-r3")
 BRIEF_ROOT = Path(__file__).parent
 
 if str(PUBLIC_ROOT) not in sys.path:
@@ -28,6 +28,12 @@ from workflow.schema import load_schema, validate  # noqa: E402
 
 
 CASES = (
+    ("plate-standard", "plate-standard", Path("reference-briefs/plate-standard.json")),
+    ("plate-320", "plate-320", Path("reference-briefs/plate-320.json")),
+    ("register-standard", "register-standard", Path("reference-briefs/register-standard.json")),
+    ("register-320", "register-320", Path("reference-briefs/register-320.json")),
+    ("key-standard", "key-standard", Path("reference-briefs/key-standard.json")),
+    ("key-320", "key-320", Path("reference-briefs/key-320.json")),
     ("reference", "schedule", Path("schedule-brief.json")),
     ("long-content", "schedule-long", Path("schedule-long-brief.json")),
     ("datum-standard", "datum-standard", Path("reference-briefs/datum-standard.json")),
@@ -175,7 +181,7 @@ def regenerate(ui: Path, output: Path, recorded_date: str, build_ui: bool) -> di
         })
     manifest = {
         "schemaVersion": "0.2.0", "recordedDate": recorded_date,
-        "purpose": "Synthetic retained review records for all six workflow 0.2 moves at standard and 320px widths; they prove deterministic plan/render/check mechanics, not designer approval or comparative model performance.",
+        "purpose": "Synthetic retained review records for all nine Instrument workflow moves at standard and 320px widths; they prove deterministic plan/render/check mechanics, not designer approval or comparative model performance.",
         "renderer": identity, "cases": manifest_cases,
     }
     write_json(output / "manifest.json", manifest)

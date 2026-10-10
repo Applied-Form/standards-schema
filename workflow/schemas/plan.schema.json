@@ -26,7 +26,10 @@
         "Band statement",
         "Series",
         "Schedule",
-        "Running index"
+        "Running index",
+        "Plate",
+        "Register",
+        "Key"
       ]
     },
     "content": {
@@ -560,6 +563,229 @@
                 "document",
                 "folio",
                 "sections"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "plate"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "pct": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "emphasis": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "value",
+                      "pct"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "maxItems": 24
+                },
+                "caption": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 3000,
+                  "pattern": "\\S"
+                },
+                "reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                }
+              },
+              "required": [
+                "number",
+                "title",
+                "rows"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "register"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "figures": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "unit": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "term": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "term"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 3,
+                  "maxItems": 4
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 3000,
+                  "pattern": "\\S"
+                }
+              },
+              "required": [
+                "label",
+                "figures"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "kind",
+            "data"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "const": "key"
+            },
+            "data": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "entries": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "mark": {
+                        "enum": [
+                          "solid",
+                          "hatch",
+                          "dashed",
+                          "signal"
+                        ]
+                      },
+                      "term": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "gloss": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "mark",
+                      "term",
+                      "gloss"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "maxItems": 12
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 3000,
+                  "pattern": "\\S"
+                }
+              },
+              "required": [
+                "label",
+                "entries"
               ],
               "additionalProperties": false
             }
@@ -1273,6 +1499,265 @@
                 "document",
                 "folio",
                 "sections",
+                "factPrefix"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "package",
+            "packageVersion",
+            "component",
+            "props"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "package": {
+              "const": "@standards/instrument"
+            },
+            "packageVersion": {
+              "const": "2.0.0"
+            },
+            "component": {
+              "const": "Plate"
+            },
+            "props": {
+              "type": "object",
+              "properties": {
+                "number": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "title": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "rows": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "pct": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 100
+                      },
+                      "emphasis": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "value",
+                      "pct"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "maxItems": 24
+                },
+                "caption": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 3000,
+                  "pattern": "\\S"
+                },
+                "reference": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "factPrefix": {
+                  "const": "plate"
+                }
+              },
+              "required": [
+                "number",
+                "title",
+                "rows",
+                "factPrefix"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "package",
+            "packageVersion",
+            "component",
+            "props"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "package": {
+              "const": "@standards/instrument"
+            },
+            "packageVersion": {
+              "const": "2.0.0"
+            },
+            "component": {
+              "const": "Register"
+            },
+            "props": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "figures": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "unit": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "term": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "value",
+                      "term"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 3,
+                  "maxItems": 4
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 3000,
+                  "pattern": "\\S"
+                },
+                "factPrefix": {
+                  "const": "register"
+                }
+              },
+              "required": [
+                "label",
+                "figures",
+                "factPrefix"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "package",
+            "packageVersion",
+            "component",
+            "props"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "package": {
+              "const": "@standards/instrument"
+            },
+            "packageVersion": {
+              "const": "2.0.0"
+            },
+            "component": {
+              "const": "Key"
+            },
+            "props": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 240,
+                  "pattern": "\\S"
+                },
+                "entries": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "mark": {
+                        "enum": [
+                          "solid",
+                          "hatch",
+                          "dashed",
+                          "signal"
+                        ]
+                      },
+                      "term": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240,
+                        "pattern": "\\S"
+                      },
+                      "gloss": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 1000,
+                        "pattern": "\\S"
+                      }
+                    },
+                    "required": [
+                      "mark",
+                      "term",
+                      "gloss"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "maxItems": 12
+                },
+                "note": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 3000,
+                  "pattern": "\\S"
+                },
+                "factPrefix": {
+                  "const": "key"
+                }
+              },
+              "required": [
+                "label",
+                "entries",
                 "factPrefix"
               ],
               "additionalProperties": false

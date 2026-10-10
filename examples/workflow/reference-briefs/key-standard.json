@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "S",
+  "move": "Key",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Key · synthetic standard reference",
+  "content": {
+    "kind": "key",
+    "data": {
+      "label": "How to read this synthetic evidence",
+      "entries": [
+        {
+          "mark": "solid",
+          "term": "Complete",
+          "gloss": "All checks have passed for this fixture."
+        },
+        {
+          "mark": "hatch",
+          "term": "Provisional",
+          "gloss": "A human decision is still needed."
+        },
+        {
+          "mark": "dashed",
+          "term": "Planned",
+          "gloss": "Work has not started."
+        },
+        {
+          "mark": "signal",
+          "term": "Selected",
+          "gloss": "The one item currently under review."
+        }
+      ],
+      "note": "Labels and shapes preserve meaning without colour."
+    }
+  },
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ]
+}
