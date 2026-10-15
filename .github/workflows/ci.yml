@@ -21,7 +21,7 @@ jobs:
           - python-version: "3.14"
             node-version: "24"
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - uses: actions/setup-python@v5
