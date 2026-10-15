@@ -6,21 +6,22 @@ models.
 **Status:** current. Supersedes v0.3.
 
 v0.1 → v0.3 were derived by reverse-engineering historical manuals and revised against
-build evidence. v0.4 is the first version revised against the published
-instruction-following literature, after two internal studies returned null results that
-the literature had already predicted.
+build evidence. v0.4 is the first version revised against published
+instruction-following literature. Two internal development comparisons also shaped the
+questions, but a later-identified blinding defect invalidates their consistency outcome;
+no comparative result from those rounds is evidence for this revision.
 
 ---
 
 ## What changed, and why
 
-### The finding that forced the rewrite
+### The evidence issue that forced the rewrite
 
-Two blind studies compared a flat schema against a layered, precedence-ordered one, on the
-same brief, judged for artefact quality and for run-to-run consistency. Round 1 used
-Instrument, the least collision-prone system in the catalogue. Round 2 used Contra, the
-most. Both returned no clear difference on consistency. On Contra the flat variant made the
-stronger artefact in five of seven briefs.
+**Correction, 1 September 2026.** Two internal development rounds attempted to compare a
+flat schema with a layered, precedence-ordered one. Their consistency measure was collected
+through a blinding defect in `study.html`: identities were revealed after question 1 and
+question 2 re-rendered the same artefacts. The interface is fixed, but both rounds must be
+re-run. Their apparent outcomes, including any brief counts, must not be cited.
 
 The published work explains this precisely, and had already tested the same intervention on
 the same model class. A benchmark stacking verifier-checked instructions found that
@@ -35,15 +36,10 @@ the measured effect was −1.2 points and not statistically robust. The proposed
 that a strong model reconstructs the structure while reading the raw prompt, so writing it
 out helps a weaker model and adds little for a stronger one.
 
-**So the v0.3 conclusion was wrong in an instructive way.** Precedence is not useless. It is
-redundant on frontier models and valuable on small ones, and both studies were run on a
-frontier model.
-
-**Correction, 1 September 2026.** The consistency measure in both rounds was collected
-through a blinding defect in `study.html` — identities were revealed after question 1 and
-question 2 re-rendered the same artefacts. Fixed, but both rounds need re-running before
-the null result is cited. The v0.4 rewrite does not depend on them; it depends on the
-literature below, which is why the rewrite stands.
+**So the v0.3 conclusion was too broad.** Precedence is not useless, but the published
+capability-graded result is a hypothesis for this domain rather than proof about these
+design tasks. The v0.4 rewrite depends on the literature below and on a smaller active
+constraint set; the invalidated internal comparisons provide no supporting result.
 
 ### The finding I had underweighted
 
@@ -82,17 +78,15 @@ accessibility floors once, at the top, and never again.
 
 A system is authored once as `SOURCE.md` and compiled to two delivery formats.
 
-| Build | For | Structure |
+| Build | Evaluation condition | Structure |
 |---|---|---|
-| `SKILL.md` | Frontier models | Core only. Flat. Minimum viable constraint set |
-| `SKILL-compact.md` | Small and fast models | Category-clustered, precedence note, numbered checklist, verification line |
-| `REFERENCE.md` | Both, on demand | Full detail. Loaded when a specific answer is needed |
+| `SKILL.md` | Flat core | Core only. Minimum viable constraint set |
+| `SKILL-compact.md` | Clustered core | Same rules, with precedence, a numbered checklist and verification line |
+| `REFERENCE.md` | On demand | Full detail. Loaded when a specific answer is needed |
 
-The compact build follows the structure the literature found effective for weaker targets.
-The frontier build omits it, because on a strong model it costs tokens and returns nothing.
-
-This is a product feature, not an internal detail. State in the pack README which build to
-use with which model.
+The compact build follows the structure evaluated in the literature. Its benefit for a
+specific design task and model remains an empirical question. Treat both builds as named
+conditions, record the choice and do not infer it from a model label.
 
 ### 2. A constraint budget, enforced
 
@@ -112,7 +106,7 @@ floor, and cutting it would lose a real constraint.
 
 **Attach.** Every prohibition sits on the element it governs. A gathered list at the end is
 a checklist for the reference build, never the only home for a rule: a prohibition that
-exists only in that list does not reach the frontier build at all. Thirteen rules across
+exists only in that list does not reach the flat core build at all. Thirteen rules across
 five packs were lost this way before it was caught.
 
 **Tier.** Split into an always-loaded core and an on-demand reference. The core carries
@@ -167,7 +161,7 @@ once, in the middle, and accepts a lower compliance rate.
 The six-layer structure from v0.3 stays, demoted from delivery format to drafting method.
 Writing a conflict register is still what forces the author to decide what wins when density
 fights the measure ceiling. Those decisions belong in the system. The scaffolding that
-produced them does not have to ship to a frontier model.
+produced them does not have to ship in the core instruction context.
 
 **Layer 0 — Invariants.** Accessibility floors, licence terms, no asset dependency. Identical
 in every system. Appear at both ends of the core.

@@ -1,0 +1,9 @@
+{
+  "content": [
+    {
+      "type": "text",
+      "text": "unsupported workflow tuple; call get_workflow_capabilities for exact support"
+    }
+  ],
+  "isError": true
+}

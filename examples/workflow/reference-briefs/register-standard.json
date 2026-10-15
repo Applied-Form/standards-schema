@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "E",
+  "move": "Register",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Register · synthetic standard reference",
+  "content": {
+    "kind": "register",
+    "data": {
+      "label": "Synthetic review position",
+      "figures": [
+        {
+          "value": "42.8",
+          "unit": "%",
+          "term": "Coverage"
+        },
+        {
+          "value": "12",
+          "unit": "cases",
+          "term": "Prepared"
+        },
+        {
+          "value": "3",
+          "unit": "teams",
+          "term": "Reviewers"
+        }
+      ],
+      "note": "Fictional figures only; no customer results."
+    }
+  },
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ]
+}

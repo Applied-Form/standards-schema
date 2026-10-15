@@ -1,0 +1,65 @@
+name: Implementation bug
+description: Report a reproducible compiler, MCP, asset, distribution or documentation defect.
+title: "Bug: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use synthetic or shareable data. For security vulnerabilities, follow [SECURITY.md](https://github.com/appliedform/standards/blob/main/SECURITY.md) instead of posting details here. React-target bugs belong in appliedform/standards-ui.
+  - type: input
+    id: version
+    attributes:
+      label: Commit or release
+      description: Include the pack version if relevant.
+    validations:
+      required: true
+  - type: dropdown
+    id: component
+    attributes:
+      label: Affected component
+      options:
+        - Schema or compiler
+        - MCP server
+        - Workflow planner or checker
+        - Evaluation harness or provider adapter
+        - Instrument assets or templates
+        - Distribution or installation
+        - Documentation
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, runtime versions, install method and MCP client if relevant. Do not paste credentials or private configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Exact steps or commands, fixed inputs and relevant file paths. Use a small synthetic example.
+    validations:
+      required: true
+  - type: textarea
+    id: expected_actual
+    attributes:
+      label: Expected and actual behaviour
+      description: Include the error or output and explain the observable difference. Redact logs and screenshots before attaching them.
+    validations:
+      required: true
+  - type: textarea
+    id: checks
+    attributes:
+      label: Checks and scope
+      description: Which checks did you run, what passed or failed, and what remains untested? If agent output is involved, name the model/settings and distinguish a single example from a repeated comparison.
+  - type: checkboxes
+    id: rights_privacy
+    attributes:
+      label: Rights and privacy
+      options:
+        - label: I removed secrets, private conversations, client material and restricted third-party content; any attached material is mine to share or is identified with its licence.
+          required: true
+        - label: This public report does not disclose a security vulnerability; I will use the private reporting route for one.
+          required: true

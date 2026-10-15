@@ -1,0 +1,85 @@
+{
+  "id": "held-service-blueprint",
+  "split": "held-out",
+  "description": "Six-line held-out Schedule with long standards and Canadian-dollar amounts.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Public service blueprint",
+    "schedule": {
+      "label": "Delivery schedule · SB-204",
+      "columns": {
+        "ref": "STEP",
+        "description": "OUTPUT",
+        "duration": "ELAPSED",
+        "amount": "VALUE"
+      },
+      "lines": [
+        {
+          "ref": "B1",
+          "description": "Service evidence review",
+          "standard": "Policies, analytics and twelve supplied cases",
+          "duration": "3 days",
+          "amount": "C$3,300"
+        },
+        {
+          "ref": "B2",
+          "description": "Frontstage interview synthesis",
+          "standard": "Eight staff and six service-user interviews",
+          "duration": "4 days",
+          "amount": "C$4,800"
+        },
+        {
+          "ref": "B3",
+          "description": "Current-state journey and failure-demand map",
+          "standard": "One end-to-end service pathway",
+          "duration": "3 days",
+          "amount": "C$3,900"
+        },
+        {
+          "ref": "B4",
+          "description": "Cross-functional blueprint workshop",
+          "standard": "Maximum sixteen participants",
+          "duration": "2 days",
+          "amount": "C$3,200"
+        },
+        {
+          "ref": "B5",
+          "description": "Future-state service blueprint",
+          "standard": "Frontstage, backstage, systems and evidence layers",
+          "duration": "4 days",
+          "amount": "C$5,400"
+        },
+        {
+          "ref": "B6",
+          "description": "Prioritised handover backlog",
+          "standard": "Up to twenty-four sequenced actions",
+          "duration": "2 days",
+          "amount": "C$2,100"
+        }
+      ],
+      "total": {
+        "label": "Total · taxes excluded",
+        "duration": "18 days",
+        "amount": "C$22,700"
+      },
+      "note": "Participant incentives, recruitment and implementation are excluded. Research consent is managed by the client."
+    },
+    "viewports": [
+      {
+        "width": 1366,
+        "height": 1200
+      },
+      {
+        "width": 768,
+        "height": 1100
+      },
+      {
+        "width": 360,
+        "height": 1350
+      }
+    ]
+  }
+}

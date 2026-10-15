@@ -1,0 +1,542 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standards best-so-far repair decision 0.2.0",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "const": "0.2.0"
+    },
+    "action": {
+      "enum": [
+        "complete",
+        "repair",
+        "stop"
+      ]
+    },
+    "disposition": {
+      "enum": [
+        "baseline",
+        "accepted-improvement",
+        "complete",
+        "stopped-stale-evidence",
+        "rejected-regression",
+        "rejected-tie",
+        "rejected-non-improving",
+        "rejected-oscillation",
+        "rejected-repeated-findings",
+        "stopped-budget",
+        "stopped-non-repairable"
+      ]
+    },
+    "report": {
+      "type": "object"
+    },
+    "record": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "const": "0.2.0"
+        },
+        "planSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "artifactSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "reportSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "parentRecordSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "attempt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 19
+        },
+        "repairAttempt": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "baseArtifactSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "disposition": {
+          "enum": [
+            "baseline",
+            "accepted-improvement",
+            "complete",
+            "stopped-stale-evidence",
+            "rejected-regression",
+            "rejected-tie",
+            "rejected-non-improving",
+            "rejected-oscillation",
+            "rejected-repeated-findings",
+            "stopped-budget",
+            "stopped-non-repairable"
+          ]
+        },
+        "accepted": {
+          "type": "boolean"
+        },
+        "bestArtifactSha256": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nextAction": {
+          "enum": [
+            "repair",
+            "complete",
+            "stop"
+          ]
+        },
+        "snapshot": {
+          "type": "object",
+          "properties": {
+            "artifactSha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            "reportSha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$",
+              "minLength": 64,
+              "maxLength": 64
+            },
+            "status": {
+              "enum": [
+                "pass",
+                "fail",
+                "unknown"
+              ]
+            },
+            "freshEvidence": {
+              "type": "boolean"
+            },
+            "protected": {
+              "type": "object",
+              "properties": {
+                "plannedFacts": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 300
+                },
+                "sourceFailures": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "pattern": "\\S"
+                  },
+                  "minItems": 0,
+                  "maxItems": 600
+                },
+                "visibleFailures": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "pattern": "\\S"
+                  },
+                  "minItems": 0,
+                  "maxItems": 1200
+                },
+                "requiredRelationships": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 10
+                },
+                "relationshipFailures": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "pattern": "\\S"
+                  },
+                  "minItems": 0,
+                  "maxItems": 100
+                },
+                "criticalErrorFindings": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 300,
+                    "pattern": "\\S"
+                  },
+                  "minItems": 0,
+                  "maxItems": 2000
+                }
+              },
+              "required": [
+                "plannedFacts",
+                "sourceFailures",
+                "visibleFailures",
+                "requiredRelationships",
+                "relationshipFailures",
+                "criticalErrorFindings"
+              ],
+              "additionalProperties": false
+            },
+            "acceptanceMetrics": {
+              "type": "object",
+              "properties": {
+                "contractPass": {
+                  "type": "boolean"
+                },
+                "briefPass": {
+                  "type": "boolean"
+                },
+                "visibleFactCoverage": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "viewport": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 40,
+                        "pattern": "\\S"
+                      },
+                      "preserved": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 300
+                      },
+                      "total": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 300
+                      },
+                      "basisPoints": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 10000
+                      }
+                    },
+                    "required": [
+                      "viewport",
+                      "preserved",
+                      "total",
+                      "basisPoints"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "minItems": 1,
+                  "maxItems": 3
+                },
+                "minimumVisibleFactCoverageBps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "staticCoverageBps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "contractFactCoverageBps": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10000
+                },
+                "severityCounts": {
+                  "type": "object",
+                  "properties": {
+                    "critical": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2000
+                    },
+                    "error": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2000
+                    },
+                    "warning": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2000
+                    },
+                    "unknown": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 2000
+                    }
+                  },
+                  "required": [
+                    "critical",
+                    "error",
+                    "warning",
+                    "unknown"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "required": [
+                "contractPass",
+                "briefPass",
+                "visibleFactCoverage",
+                "minimumVisibleFactCoverageBps",
+                "staticCoverageBps",
+                "contractFactCoverageBps",
+                "severityCounts"
+              ],
+              "additionalProperties": false
+            },
+            "findingFingerprints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^[0-9a-f]{64}$",
+                "minLength": 64,
+                "maxLength": 64
+              },
+              "minItems": 0,
+              "maxItems": 2000
+            },
+            "selectionKey": {
+              "type": "array",
+              "items": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 10000
+              },
+              "minItems": 9,
+              "maxItems": 9
+            }
+          },
+          "required": [
+            "artifactSha256",
+            "reportSha256",
+            "status",
+            "freshEvidence",
+            "protected",
+            "acceptanceMetrics",
+            "findingFingerprints",
+            "selectionKey"
+          ],
+          "additionalProperties": false
+        },
+        "recordSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "planSha256",
+        "artifactSha256",
+        "reportSha256",
+        "parentRecordSha256",
+        "attempt",
+        "repairAttempt",
+        "baseArtifactSha256",
+        "disposition",
+        "accepted",
+        "bestArtifactSha256",
+        "nextAction",
+        "snapshot",
+        "recordSha256"
+      ],
+      "additionalProperties": false
+    },
+    "remainingRepairs": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 2
+    },
+    "bestArtifactSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "nextRepairBaseArtifactSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rollbackArtifactSha256": {
+      "anyOf": [
+        {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reasons": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 3000,
+        "pattern": "\\S"
+      },
+      "minItems": 1,
+      "maxItems": 100
+    },
+    "classifiedFindings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "findingId": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "minLength": 64,
+            "maxLength": 64
+          },
+          "classification": {
+            "enum": [
+              "safe-model-repair",
+              "renderer-or-configuration",
+              "human-decision",
+              "non-repairable"
+            ]
+          },
+          "ruleId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "pattern": "\\S"
+          },
+          "severity": {
+            "enum": [
+              "critical",
+              "error",
+              "warning",
+              "info"
+            ]
+          },
+          "status": {
+            "enum": [
+              "fail",
+              "unknown"
+            ]
+          },
+          "location": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
+            "pattern": "\\S"
+          },
+          "expected": {},
+          "observed": {},
+          "instruction": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 6000,
+            "pattern": "\\S"
+          }
+        },
+        "required": [
+          "findingId",
+          "classification",
+          "ruleId",
+          "severity",
+          "status",
+          "location",
+          "expected",
+          "observed",
+          "instruction"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 0,
+      "maxItems": 2000
+    },
+    "instructions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 6000,
+        "pattern": "\\S"
+      },
+      "minItems": 0,
+      "maxItems": 2000
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "action",
+    "disposition",
+    "report",
+    "record",
+    "remainingRepairs",
+    "bestArtifactSha256",
+    "nextRepairBaseArtifactSha256",
+    "rollbackArtifactSha256",
+    "reasons",
+    "classifiedFindings",
+    "instructions"
+  ],
+  "additionalProperties": false
+}

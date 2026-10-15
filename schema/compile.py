@@ -4,15 +4,14 @@
 One source, two delivery builds plus a reference.
 
     SOURCE.md          the system, authored once, full detail
-      -> SKILL.md          frontier build: core only, flat, minimum constraints
-      -> SKILL-compact.md  small-model build: clustered, precedence, checklist
+      -> SKILL.md          full build: core only, flat, minimum constraints
+      -> SKILL-compact.md  compact build: clustered, precedence, checklist
       -> REFERENCE.md      on-demand detail: rationales, registers, failure modes
 
-Why two builds. Published work on instruction stacking finds that a rewrite which
-clusters constraints, merges them and inserts precedence notes recovers roughly +11
-points of follow rate on the weakest model tested, +3.3 on the middle one, and
-essentially nothing on the strongest (-1.2, not statistically robust). Structure that
-helps a small model is dead weight on a frontier one. So we ship both.
+Why two builds. Published work on instruction stacking suggests that clustering,
+merging and precedence can affect instruction following differently by model. That
+result has not been established for these design tasks, so both structures remain
+explicit evaluation conditions rather than capability-based recommendations.
 
 Why a core/reference split. Follow rate falls from ~96% at one instruction to 20-60%
 at twenty. Every pack in this catalogue stacked 30-37 constraints. Only fewer active
@@ -25,7 +24,9 @@ Usage:
     python3 compile.py ../packs/instrument
     python3 compile.py --all ../packs
 """
-import argparse, os, re, shutil, sys
+import argparse, os, re, shutil, sys, tempfile
+from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 # Section routing. Order within each build is deliberate.
 CORE = [                      # always loaded, kept under the constraint budget
@@ -52,16 +53,15 @@ REFERENCE = [                 # loaded when a specific answer is needed
     "Failure mode",
     "Files",
 ]
-# Compact build order follows the category ordering the literature found effective:
+# Compact build order follows the category ordering evaluated in the literature:
 # reasoning-adjacent first (nearest "thinking"), format last (nearest token production).
 #
 # It carries the SAME rule set as the core, restructured — not a larger one. Schema v0.4
 # rule 1 describes the compact build as "category-clustered, precedence note, numbered
 # checklist, verification line", which is a change of structure. An earlier version of this
 # list also added Product register, State encoding, Interaction, Prohibitions and Data
-# treatment, so the build aimed at small models carried roughly twice the constraints of
-# the build aimed at frontier models — backwards, since the collapse curve is steepest
-# exactly where this build is used. Those sections are in REFERENCE.md.
+# treatment, so one build carried roughly twice the constraints of the other and
+# confounded a comparison of structure. Those sections are in REFERENCE.md.
 # The conflict register is the one addition, because the v0.4 authoring checklist places it
 # in the reference and the compact build by name.
 COMPACT_ORDER = [
@@ -231,12 +231,12 @@ def build_skill(fm, head, sections):
 
 
 def build_compact(fm, head, sections, name):
-    """Small-model build: clustered, precedence, numbered checklist, verification line."""
+    """Clustered build: precedence, numbered checklist and verification line."""
     ft, fb = floors(sections)
     parts = [fm, head, ""]
-    parts += ["> **Compact build.** Clustered by category with precedence made explicit, for",
-              "> small and fast models. On a frontier model use `SKILL.md` instead — the extra",
-              "> structure costs tokens and returns nothing there.", ""]
+    parts += ["> **Compact build.** The same core rules, clustered by category with precedence",
+              "> made explicit. Choose this or `SKILL.md` as an evaluation condition; the better",
+              "> structure for this task and model has not been established.", ""]
     if fb:
         parts += [f"## 0 · {ft} — these override everything below", fb, ""]
     n = 1
@@ -265,6 +265,63 @@ def build_reference(head, sections, name):
     return "\n".join(parts).rstrip() + "\n"
 
 
+def local_markdown_files(text):
+    """Explicit local file links and filename code spans, not prose guesses."""
+    extensions = r"md|json|css|mplstyle|docx|pptx|xlsx|pdf|csv|txt|html|svg|png|jpe?g|webp|woff2?|ttf|otf|ya?ml|toml|[cm]?js|tsx?|py"
+    targets = re.findall(r'\[[^\]\n]*\]\(\s*(<[^>]+>|[^\s)]+)(?:\s+[^)]*)?\)', text)
+    targets += re.findall(r'^\s*\[[^\]\n]+\]:\s*(<[^>]+>|\S+)', text, re.M)
+    for value in re.findall(r'(?<!`)`([^`\n]+)`(?!`)', text):
+        value = value.strip()
+        if value in ("LICENSE", "NOTICE") or re.search(rf'\.(?:{extensions})$', value, re.I):
+            # A code span is often how installation docs name an adjacent file.
+            # Spaces are valid filename characters; treating them as prose can
+            # silently omit an advertised dependency from the bundle. Ambiguous
+            # command-like spans now fail as missing paths instead of shipping an
+            # incomplete installation, so commands belong in fenced code blocks.
+            targets.append(value)
+    for target in targets:
+        target = target.strip("<>")
+        parsed = urlsplit(target)
+        if parsed.scheme in ("http", "https", "mailto", "data") or target.startswith("#"):
+            continue
+        if parsed.netloc or parsed.scheme:
+            raise ValueError(f"unsupported local bundle reference {target!r}")
+        if parsed.path:
+            yield unquote(parsed.path, errors="strict")
+
+
+def claude_bundle_sources(d):
+    """Map bundle paths to canonical files, including transitive Markdown refs.
+
+    LICENSE is the pack's unmodified notice. Repository-context links and web
+    links are not installed dependencies; local links in instruction/reference
+    Markdown and all authored assets are copied into the standalone bundle.
+    """
+    root = Path(d).resolve()
+    pending = [Path(name) for name in ("SKILL.md", "REFERENCE.md", "LICENSE")]
+    assets = root / "assets"
+    if assets.is_dir():
+        pending.extend(path.relative_to(root) for path in sorted(assets.rglob("*")) if path.is_file())
+    files = {}
+    while pending:
+        relative = pending.pop()
+        if relative.is_absolute():
+            raise ValueError(f"absolute bundle reference {relative}")
+        relative = Path(os.path.normpath(relative))
+        source = root / relative
+        if not source.resolve().is_relative_to(root) or (relative.parts and relative.parts[0] == "dist"):
+            raise ValueError(f"bundle reference escapes pack sources: {relative}")
+        if not source.is_file():
+            raise FileNotFoundError(f"bundle reference missing from {root.name}: {relative}")
+        name = relative.as_posix()
+        if name in files:
+            continue
+        files[name] = source
+        if source.suffix.lower() == ".md":
+            pending.extend(relative.parent / reference for reference in local_markdown_files(source.read_text(encoding="utf-8")))
+    return dict(sorted(files.items()))
+
+
 def emit_distribution(d, slug, skill, compact, fm):
     """Compile the pack to the two places a system is actually installed.
 
@@ -274,7 +331,8 @@ def emit_distribution(d, slug, skill, compact, fm):
 
       dist/claude/<slug>/SKILL.md   an Agent Skill. SKILL.md already carries the
                                     name and description in its frontmatter, so
-                                    the work is bundling it with its assets.
+                                    the work is bundling its references, assets,
+                                    advertised templates and pack licence.
       dist/cursor/<slug>.mdc        a Cursor rule. The compact build is used: a
                                     rule sits in context permanently, which is
                                     the case the compact build exists for.
@@ -282,18 +340,23 @@ def emit_distribution(d, slug, skill, compact, fm):
     dist = os.path.join(d, "dist")
     claude_dir = os.path.join(dist, "claude", slug)
     cursor_dir = os.path.join(dist, "cursor")
-    os.makedirs(claude_dir, exist_ok=True)
+    sources = claude_bundle_sources(d)
+    os.makedirs(os.path.dirname(claude_dir), exist_ok=True)
     os.makedirs(cursor_dir, exist_ok=True)
 
-    open(os.path.join(claude_dir, "SKILL.md"), "w", encoding="utf-8").write(skill)
-    assets = os.path.join(d, "assets")
-    if os.path.isdir(assets):
-        target = os.path.join(claude_dir, "assets")
-        os.makedirs(target, exist_ok=True)
-        for f in sorted(os.listdir(assets)):
-            src_f = os.path.join(assets, f)
-            if os.path.isfile(src_f):
-                shutil.copyfile(src_f, os.path.join(target, f))
+    # Stage a complete copy before replacing this generated target. Rebuilding
+    # its inventory removes obsolete assets/references instead of shipping them
+    # indefinitely, and a missing source cannot destroy the previous bundle.
+    with tempfile.TemporaryDirectory(prefix=f".{slug}-", dir=os.path.dirname(claude_dir)) as staging:
+        for relative, source in sources.items():
+            target = Path(staging) / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, target)
+        if os.path.islink(claude_dir):
+            os.unlink(claude_dir)
+        elif os.path.exists(claude_dir):
+            shutil.rmtree(claude_dir)
+        os.replace(staging, claude_dir)
 
     # Cursor wants its own frontmatter. Take the description from the source's,
     # rather than restating it, so the two cannot drift.
@@ -303,7 +366,7 @@ def emit_distribution(d, slug, skill, compact, fm):
         desc = m.group(1)
     rule = (f"---\ndescription: {desc}\nglobs:\nalwaysApply: false\n---\n\n"
             + compact.split("---\n", 2)[-1].lstrip())
-    open(os.path.join(cursor_dir, f"{slug}.mdc"), "w", encoding="utf-8").write(rule)
+    (Path(cursor_dir) / f"{slug}.mdc").write_text(rule, encoding="utf-8")
     return 2
 
 
@@ -327,11 +390,12 @@ def compile_pack(d, quiet=False):
     open(os.path.join(d, "REFERENCE.md"), "w", encoding="utf-8").write(reference)
 
     slug_for_dist = os.path.basename(os.path.normpath(d))
-    n_dist = emit_distribution(d, slug_for_dist, skill, compact, fm)
     c_src = count_constraints(open(src, encoding="utf-8").read())
     c_core = count_constraints(skill)      # identical statements dedupe, so the
     c_comp = count_constraints(compact)    # floors restated at both ends count once
     n_arch, n_col = emit_machine_layer(d, name, sections, c_core, c_comp)
+    # Referenced contracts/AGENTS must be current before packaging them.
+    n_dist = emit_distribution(d, slug_for_dist, skill, compact, fm)
     over = max(c_core, c_comp) > BUDGET
     if not quiet:
         flag = "OVER" if over else "ok  "
@@ -515,8 +579,8 @@ returns that component and nothing else, and the gaps get filled with assumption
 
 | Need | Read |
 |---|---|
-| The system's rules, on a frontier model | `SKILL.md` |
-| The system's rules, on a small or fast model | `SKILL-compact.md` |
+| The system's flat core rules | `SKILL.md` |
+| The same core rules, clustered with precedence | `SKILL-compact.md` |
 | Full rationales, conflict register, failure modes | `REFERENCE.md` |
 | Token contract, machine-readable | `tokens.json` |
 | Move index with triggers, machine-readable | `archetypes.json` |
@@ -584,7 +648,7 @@ if __name__ == "__main__":
                   f"from the largest archetype ---")
             for u in sorted(uncond):
                 print(f"    {u[:110]}")
-    print("\nBuilds: SKILL.md (frontier) · SKILL-compact.md (small models) · REFERENCE.md (on demand)")
+    print("\nBuilds: SKILL.md (flat core) · SKILL-compact.md (clustered core) · REFERENCE.md (on demand)")
     if over_any:
         print(f"\nAt least one build exceeds the budget of {BUDGET} active constraints.")
         print("Schema v0.4 rule 2: cut rather than reorganise.")

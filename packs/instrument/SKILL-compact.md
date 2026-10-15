@@ -9,9 +9,9 @@ description: "Apply the Instrument design system — technical modernism — to 
 A Standards pack, from Applied Form. Technical modernism. The page is an instrument: every mark earns its place by carrying
 information.
 
-> **Compact build.** Clustered by category with precedence made explicit, for
-> small and fast models. On a frontier model use `SKILL.md` instead — the extra
-> structure costs tokens and returns nothing there.
+> **Compact build.** The same core rules, clustered by category with precedence
+> made explicit. Choose this or `SKILL.md` as an evaluation condition; the better
+> structure for this task and model has not been established.
 
 ## 0 · Floors — never varied — these override everything below
 Body contrast 4.5:1, display 3:1. Colour never the only signal. Focus always visible.

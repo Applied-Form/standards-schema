@@ -1,0 +1,25 @@
+{
+  "id": "dev-workshop-programme",
+  "split": "dev",
+  "description": "Compact schedule with a zero-price line, long labels and a narrow viewport.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Research workshop programme",
+    "schedule": {
+      "label": "Delivery plan · workshop RW-17",
+      "columns": {"ref": "STAGE", "description": "WORK", "duration": "TIME", "amount": "COST"},
+      "lines": [
+        {"ref": "A", "description": "Participant interview synthesis", "standard": "Six supplied interview transcripts", "duration": "1.5 days", "amount": "£900"},
+        {"ref": "B", "description": "Facilitated decision workshop", "standard": "Up to twelve participants", "duration": "1 day", "amount": "£1,100"},
+        {"ref": "C", "description": "Accessible digital handover", "standard": "Included with the workshop", "duration": "0.5 day", "amount": "£0"}
+      ],
+      "total": {"label": "Total · fixed fee", "duration": "3 days", "amount": "£2,000"},
+      "note": "Venue, travel and participant recruitment are excluded. Prices remain fixed for this synthetic evaluation case."
+    },
+    "viewports": [{"width": 960, "height": 800}, {"width": 320, "height": 844}]
+  }
+}
+

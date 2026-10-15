@@ -23,4 +23,6 @@
   /* scale — nothing off it */
   --s1:8px; --s2:16px; --s3:24px; --s4:32px; --s5:48px; --s6:64px; --s7:96px;
 }
-/* series order for charts: ink, muted, signal */
+/* Series colours: ink and muted only. Data marks never use signal.
+   A selected datum may use one signal rule beside a neutral label, with an
+   explicit word or weight cue that remains legible in one colour. */

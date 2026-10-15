@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "E",
+  "move": "Datum",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Evidence narrow acceptance",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "datum",
+    "data": {
+      "label": "Verified annual recurring revenue",
+      "value": "£1,240,000",
+      "unit": "GBP",
+      "supporting": [
+        {
+          "term": "Accounts",
+          "value": "128"
+        },
+        {
+          "term": "Growth",
+          "value": "+24%"
+        },
+        {
+          "term": "Churn",
+          "value": "2.1%"
+        },
+        {
+          "term": "Period",
+          "value": "FY 2026"
+        }
+      ],
+      "note": "Figures are synthetic and shown to test the complete mobile surface."
+    }
+  }
+}

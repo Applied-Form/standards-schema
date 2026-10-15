@@ -1,0 +1,99 @@
+{
+  "id": "dev-localisation-sprint",
+  "split": "dev",
+  "description": "Eight-line dense Schedule with multiple currencies retained as literal source facts.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Interface localisation sprint",
+    "schedule": {
+      "label": "Work order · LOC-88",
+      "columns": {
+        "ref": "LOT",
+        "description": "DELIVERABLE",
+        "duration": "TURNAROUND",
+        "amount": "CHARGE"
+      },
+      "lines": [
+        {
+          "ref": "L1",
+          "description": "String inventory",
+          "standard": "English source · 480 strings",
+          "duration": "1 day",
+          "amount": "$600"
+        },
+        {
+          "ref": "L2",
+          "description": "French translation",
+          "standard": "fr-FR · human review",
+          "duration": "2 days",
+          "amount": "€1,400"
+        },
+        {
+          "ref": "L3",
+          "description": "German translation",
+          "standard": "de-DE · human review",
+          "duration": "2 days",
+          "amount": "€1,450"
+        },
+        {
+          "ref": "L4",
+          "description": "Japanese translation",
+          "standard": "ja-JP · human review",
+          "duration": "3 days",
+          "amount": "¥240,000"
+        },
+        {
+          "ref": "L5",
+          "description": "Pseudo-localisation build",
+          "standard": "Expansion and truncation sweep",
+          "duration": "1 day",
+          "amount": "$700"
+        },
+        {
+          "ref": "L6",
+          "description": "In-context linguistic QA",
+          "standard": "Three supplied test builds",
+          "duration": "2 days",
+          "amount": "$1,200"
+        },
+        {
+          "ref": "L7",
+          "description": "Accessibility terminology check",
+          "standard": "Approved glossary v1.3",
+          "duration": "1 day",
+          "amount": "$500"
+        },
+        {
+          "ref": "L8",
+          "description": "Handover register",
+          "standard": "CSV and issue summary",
+          "duration": "0.5 day",
+          "amount": "Included"
+        }
+      ],
+      "total": {
+        "label": "Total · currencies billed separately",
+        "duration": "12.5 days",
+        "amount": "See line items"
+      },
+      "note": "Exchange conversion is intentionally outside scope. Locale codes, punctuation and amounts must remain verbatim."
+    },
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1400
+      },
+      {
+        "width": 768,
+        "height": 1200
+      },
+      {
+        "width": 320,
+        "height": 1600
+      }
+    ]
+  }
+}

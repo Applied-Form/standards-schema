@@ -1,0 +1,49 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "T",
+  "move": "Schedule",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Museum archive digitisation and public access programme",
+  "content": {
+    "kind": "schedule",
+    "data": {
+      "label": "Scope, delivery stages and professional fees · proposal AF-2026-041",
+      "columns": {
+        "ref": "PROJECT REFERENCE",
+        "description": "DELIVERABLE AND STANDARD",
+        "duration": "ESTIMATED DELIVERY TIME",
+        "amount": "PROFESSIONAL FEE"
+      },
+      "lines": [
+        {
+          "ref": "AF-2026-01",
+          "description": "Collection discovery, rights review and digitisation roadmap",
+          "standard": "Includes a stakeholder workshop, item-level inventory and an approved representative sample.",
+          "duration": "12 working days",
+          "amount": "£18,750.00"
+        },
+        {
+          "ref": "AF-2026-02",
+          "description": "Accessible template system and component implementation",
+          "standard": "Conforms to WCAG 2.2 AA, current browser support and the approved component acceptance checklist.",
+          "duration": "6 working weeks",
+          "amount": "£42,500.00"
+        }
+      ],
+      "total": {
+        "label": "Total professional fees · excluding VAT and third-party licensing",
+        "duration": "8 working weeks",
+        "amount": "£61,250.00"
+      },
+      "note": "Programme dates assume approved source files, rights decisions and consolidated stakeholder feedback arrive by each agreed review milestone."
+    }
+  },
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844
+    }
+  ]
+}

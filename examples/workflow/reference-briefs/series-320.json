@@ -1,0 +1,56 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "C",
+  "move": "Series",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Change narrow acceptance",
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "series",
+    "data": {
+      "label": "Qualified opportunities",
+      "periods": [
+        {
+          "period": "Q1",
+          "value": -12,
+          "display": "−12"
+        },
+        {
+          "period": "Q2",
+          "value": 0,
+          "display": "0"
+        },
+        {
+          "period": "Q3",
+          "value": 18,
+          "display": "+18"
+        },
+        {
+          "period": "Q4",
+          "value": 31,
+          "display": "+31"
+        }
+      ],
+      "emphasiseLast": true,
+      "summary": [
+        {
+          "term": "Net change",
+          "value": "+43"
+        },
+        {
+          "term": "Current total",
+          "value": "31"
+        }
+      ],
+      "height": 240,
+      "note": "Signed values exercise both sides of the visible zero baseline."
+    }
+  }
+}

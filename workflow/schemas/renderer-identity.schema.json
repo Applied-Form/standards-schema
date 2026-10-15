@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Standards renderer identity 0.2.0",
+  "type": "object",
+  "properties": {
+    "name": {
+      "const": "standards-ui-workflow-render"
+    },
+    "version": {
+      "const": "0.2.0"
+    },
+    "supportManifestSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "sourceSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "packageVersion": {
+      "const": "2.0.0"
+    },
+    "packageEntrySha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "tokensSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "fontAssetsSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "runtimeModulesSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "lockfileSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "browserLauncherSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "browserPayloadSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "nodeExecutableSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "browserRevision": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "\\S"
+    },
+    "browser": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "pattern": "\\S"
+    },
+    "platform": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+-[a-z0-9_]+$",
+      "minLength": 3,
+      "maxLength": 80
+    },
+    "nodeVersion": {
+      "type": "string",
+      "pattern": "^v(?:22|24)\\.[0-9]+\\.[0-9]+",
+      "minLength": 3,
+      "maxLength": 80
+    }
+  },
+  "required": [
+    "name",
+    "version",
+    "supportManifestSha256",
+    "sourceSha256",
+    "packageVersion",
+    "packageEntrySha256",
+    "tokensSha256",
+    "fontAssetsSha256",
+    "runtimeModulesSha256",
+    "lockfileSha256",
+    "browserLauncherSha256",
+    "browserPayloadSha256",
+    "nodeExecutableSha256",
+    "browserRevision",
+    "browser",
+    "platform",
+    "nodeVersion"
+  ],
+  "additionalProperties": false
+}

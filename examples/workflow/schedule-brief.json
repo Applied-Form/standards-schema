@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "T",
+  "move": "Schedule",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Archive digitisation proposal",
+  "content": {
+    "kind": "schedule",
+    "data": {
+      "label": "Scope and fees · proposal AD-104",
+      "columns": {
+        "duration": "DURATION",
+        "amount": "FEE"
+      },
+      "lines": [
+        {
+          "ref": "01",
+          "description": "Catalogue and condition assessment",
+          "standard": "240 archive folders",
+          "duration": "2 days",
+          "amount": "£800"
+        },
+        {
+          "ref": "02",
+          "description": "Scan, name and index the approved collection",
+          "standard": "Up to 1,800 pages; searchable PDF files",
+          "duration": "5 days",
+          "amount": "£2,000"
+        },
+        {
+          "ref": "03",
+          "description": "Quality review and delivery",
+          "standard": "One consolidated correction round",
+          "duration": "1 day",
+          "amount": "£400"
+        }
+      ],
+      "total": {
+        "label": "Total · excluding VAT",
+        "duration": "8 days",
+        "amount": "£3,200"
+      },
+      "note": "The client supplies the archive and approves the catalogue before scanning begins. Storage and physical restoration are excluded."
+    }
+  }
+}

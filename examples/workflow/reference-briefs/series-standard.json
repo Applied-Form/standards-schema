@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "C",
+  "move": "Series",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Change review",
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 960
+    },
+    {
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "content": {
+    "kind": "series",
+    "data": {
+      "label": "Monthly retained revenue",
+      "periods": [
+        {
+          "period": "January",
+          "value": 18,
+          "display": "£18k"
+        },
+        {
+          "period": "February",
+          "value": 24,
+          "display": "£24k"
+        }
+      ],
+      "emphasiseLast": true,
+      "summary": [
+        {
+          "term": "Change",
+          "value": "+£6k"
+        }
+      ],
+      "height": 200,
+      "note": "Nominal values."
+    }
+  }
+}

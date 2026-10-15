@@ -1,0 +1,170 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://standards.local/evaluation/freeze-receipt.schema.json",
+  "title": "Standards protocol 0.5 external freeze receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "receiptId",
+    "studyId",
+    "declarationSha256",
+    "frozenAt",
+    "custodian",
+    "timestamp",
+    "signature",
+    "releaseCommit",
+    "modelSnapshotSha256",
+    "routeQualificationSha256",
+    "reviewerCommitments",
+    "budgetApproved",
+    "budgetMaximum",
+    "executionAuthorized",
+    "spendLedgerPreRunSha256"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "0.5.0"
+    },
+    "receiptId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+    },
+    "studyId": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._-]{1,119}$"
+    },
+    "declarationSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "frozenAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "custodian": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "organization",
+        "independent"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "organization": {
+          "type": "string",
+          "minLength": 1
+        },
+        "independent": {
+          "const": true
+        }
+      }
+    },
+    "timestamp": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "url",
+        "evidenceSha256"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "rfc3161",
+            "git-commit",
+            "human-countersignature"
+          ]
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^https://"
+        },
+        "evidenceSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "keyId",
+        "value",
+        "signedBytesSha256",
+        "locallyVerified"
+      ],
+      "properties": {
+        "method": {
+          "enum": [
+            "minisign-ed25519",
+            "human-countersignature-sha256"
+          ]
+        },
+        "keyId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signedBytesSha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "locallyVerified": {
+          "const": true
+        }
+      }
+    },
+    "releaseCommit": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{40}$"
+    },
+    "modelSnapshotSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "routeQualificationSha256": {
+      "type": "object",
+      "minProperties": 6,
+      "maxProperties": 6,
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      }
+    },
+    "reviewerCommitments": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "budgetApproved": {
+      "const": true
+    },
+    "budgetMaximum": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 500
+    },
+    "executionAuthorized": {
+      "const": true
+    },
+    "spendLedgerPreRunSha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "0.2.0",
+  "system": "instrument",
+  "job": "E",
+  "move": "Plate",
+  "format": "html",
+  "instructionBuild": "full",
+  "title": "Plate · synthetic narrow-screen reference",
+  "content": {
+    "kind": "plate",
+    "data": {
+      "number": "Plate 1",
+      "title": "Synthetic completion by stage",
+      "rows": [
+        {
+          "label": "Prepared",
+          "value": "100%",
+          "pct": 100
+        },
+        {
+          "label": "Reviewed",
+          "value": "75%",
+          "pct": 75,
+          "emphasis": true
+        },
+        {
+          "label": "Revised",
+          "value": "0%",
+          "pct": 0
+        },
+        {
+          "label": "Archived",
+          "value": "12.5%",
+          "pct": 12.5
+        }
+      ],
+      "caption": "Synthetic source / check / review / record. No business outcomes are asserted.",
+      "reference": "Fixture 01 · 2026-09-28"
+    }
+  },
+  "viewports": [
+    {
+      "width": 320,
+      "height": 844
+    }
+  ]
+}

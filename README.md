@@ -4,17 +4,27 @@ Design systems written as rulesets a language model can execute, not as mood boa
 
 This repository holds the open half: the **schema** systems are authored against, the
 **compiler** that turns one source into three builds, an **MCP server** that serves them to
-agents, and **Instrument** — one complete system, free and unrestricted.
+agents, and **Instrument** — an open reference system, available under CC BY 4.0.
 
 ## Start here
 
 | If you want to… | Open |
 |---|---|
-| Use a system today | `packs/instrument/` — the whole thing, CC BY 4.0 |
-| Understand how systems are written | `schema/schema-v0.4.md` |
-| Serve the system to an agent | `mcp/README.md` |
-| Write your own system | `schema/schema-v0.4.md`, then `CONTRIBUTING.md` |
-| Check the evidence | `schema/schema-v0.4.md` section 5, and `schema/RUNNING-THE-STUDY.md` |
+| Use a system today | [Instrument](packs/instrument/README.md) — CC BY 4.0 |
+| Understand how systems are written | [Schema v0.4](schema/schema-v0.4.md) |
+| Serve the system to an agent | [MCP setup and tools](mcp/README.md) |
+| Run the agent-native plan/check/repair workflow | [Nine-move Instrument workflow](workflow/README.md) |
+| Prepare a design contribution | [Design and rule challenges](CONTRIBUTING.md#choose-a-contribution-path) — no code required |
+| Prepare a developer contribution | [Developer quickstart](CONTRIBUTING.md#developer-quickstart) |
+| Write your own system | [Schema v0.4](schema/schema-v0.4.md), then [Contributing](CONTRIBUTING.md) |
+| Check the evidence | [Evaluation protocol and harness](evaluation/README.md), [reproducible workflow proof](examples/workflow/README.md), and [study run sheet](schema/RUNNING-THE-STUDY.md) |
+| See proposed work | [Open foundation roadmap](ROADMAP.md) |
+
+Project process: [governance](GOVERNANCE.md), [maintainer status](MAINTAINERS.md),
+[conduct](CODE_OF_CONDUCT.md), [private security reporting](SECURITY.md),
+[release process](RELEASING.md) and [changelog](CHANGELOG.md).
+The [CLA](CLA.md) is an unreviewed draft; legal review remains required before active
+contributor recruitment.
 
 ## The argument
 
@@ -41,6 +51,9 @@ packs/instrument/       technical modernism. Free, complete, CC BY 4.0
   dist/claude/          the pack as an Agent Skill, with its assets
   dist/cursor/          the pack as a Cursor rule (.mdc)
 mcp/server.py           MCP server. Standard library only, stdio
+workflow/               versioned plan, selected context, artifact checks and bounded repair
+evaluation/             fixed-condition, multi-model evaluation and blinded-review harness
+examples/workflow/      reproducible browser reference loop and synthetic review artifacts
 tests/check.py          the checks CI runs. No dependencies
 ```
 
@@ -52,40 +65,44 @@ and stale in another.
 
 | Target | Path | Notes |
 |---|---|---|
-| **Claude Agent Skill** | `packs/<pack>/dist/claude/<pack>/` | `SKILL.md` plus the pack's assets. Drop the directory into your skills folder |
+| **Claude Agent Skill** | `packs/<pack>/dist/claude/<pack>/` | Instructions, reference, licence, assets and referenced templates. Drop the complete directory into your skills folder |
 | **Cursor rule** | `packs/<pack>/dist/cursor/<pack>.mdc` | Put it in `.cursor/rules/`. Uses the compact build, because a rule sits in context permanently |
 | **MCP** | `mcp/server.py` | Serves every pack to any MCP client |
 | **Tokens / charts** | `packs/<pack>/assets/` | CSS custom properties, chart theme, matplotlib style |
 
-## The one rule
+## Edit sources, regenerate builds
 
-**Edit `SOURCE.md` and `assets/tokens.css`. Nothing else is written by hand.**
+Author rules in `SOURCE.md` and tokens in `assets/tokens.css`; keep hand-authored chart
+assets and templates consistent with them. Do not hand-edit generated instructions,
+contracts or distribution files. See [Contributing](CONTRIBUTING.md#edit-sources-then-regenerate).
 
 ```bash
 python3 schema/compile.py --all packs    # regenerate every build
 python3 tests/check.py                   # the checks CI runs
 ```
 
-CI recompiles and fails on any difference, so a hand-edited build cannot survive a pull
-request. It also fails if a build exceeds the constraint budget, or if a colour drops below
-the contrast floor.
+CI checks reproducible builds, distribution completeness, constraint budgets, declared
+colour pairs, chart semantics and MCP boundaries. These checks do not establish rendered
+accessibility or design quality; report what was actually tested.
 
 ## On the evidence
 
-Two internal studies compared a flat schema against a layered, precedence-ordered one and
-returned no clear difference on consistency. The published literature had already predicted
-that: the benefit of that structure is capability-graded, worth about +11 points of
-instruction-following on the weakest model tested and essentially nothing on the strongest,
-and both studies ran on a frontier model. Schema v0.4 is the response.
+Earlier internal comparisons did not show a clear consistency advantage for a layered,
+precedence-ordered schema over a flatter one. Their consistency measure was collected before
+a blinding defect in `study.html` was fixed, so those rounds cannot support a comparative
+claim and must be re-run before their result is quoted.
 
-Those rounds are written up in full, including where the conclusion drawn from them was
-wrong. Their consistency measure was collected before a blinding defect in `study.html` was
-fixed, so both need re-running before the result is quoted. The highest-value experiment
-remaining is in `schema/RUNNING-THE-STUDY.md`, and it is a decision gate rather than a
-formality — one outcome makes the product simpler.
+The repository therefore makes no current claim that Standards is superior to a strong
+brand guide, improves a particular model, or reduces human correction. The public
+[evaluation harness](evaluation/README.md) is built to test those questions across fixed
+conditions, development and held-out cases, frozen model routes, complete failure records,
+mechanical conformance and blinded human review. The deterministic
+[reference loop](examples/workflow/README.md) proves plan/check/repair/stop mechanics only; it
+makes no model call. The earlier study design remains documented in
+[`schema/RUNNING-THE-STUDY.md`](schema/RUNNING-THE-STUDY.md).
 
-Precision about your own evidence is the point. Two studies, seven briefs each, judged by one
-person: say so every time it is quoted.
+Precision about evidence is part of the product. Publish the fixtures, model identifiers,
+settings, failures, denominators, scoring records and limits with any result.
 
 ## Where things live
 
@@ -107,8 +124,8 @@ system sold once. Import it, fork it, put it in your own repo and let your tooli
 
 ## Licence
 
-Split deliberately: schema CC BY 4.0, tooling MIT, Instrument CC BY 4.0. See `LICENSE`.
-Contributions are covered by `CLA.md`.
+Split deliberately: schema CC BY 4.0, tooling MIT, Instrument CC BY 4.0. See [LICENSE](LICENSE).
+The current contribution terms are in the [draft CLA](CLA.md).
 
 Every system extends a design tradition. No organisation's marks, logotypes or identities are
 reproduced, and nothing here is affiliated with or endorsed by any institution referenced.

@@ -2,7 +2,7 @@
 
 **A Standards pack. Standards by Applied Form.**
 
-Free, complete, unrestricted — the whole system, not a sample.
+Free, complete and reusable under CC BY 4.0 — the whole system, not a sample.
 
 Technical modernism, for AI-assisted work. Public Sans and DM Mono on white, an ink band,
 high density, signal red used once. Descended from the institutional graphic programmes of
@@ -12,7 +12,7 @@ the 1960s and 70s.
 
 | File | What it is |
 |---|---|
-| `SKILL.md` · `SKILL-compact.md` · `REFERENCE.md` | The system, compiled for frontier models, small models, and on-demand detail |
+| `SKILL.md` · `SKILL-compact.md` · `REFERENCE.md` | Two core instruction structures and on-demand detail |
 | `SOURCE.md` | The single source the three builds are compiled from |
 | `assets/tokens.css` | Design tokens for any web project |
 | `assets/chart-theme.json` | Chart configuration for JS charting libraries |
@@ -22,19 +22,25 @@ the 1960s and 70s.
 
 ## Which build to use
 
-| File | Use with | Why |
+| File | Structure | Why it exists |
 |---|---|---|
-| `SKILL.md` | Frontier models (Opus, Sonnet, GPT-5, Gemini Pro) | Core only, flat, under the constraint budget. Strong models reconstruct structure themselves, so extra scaffolding costs tokens and returns nothing |
-| `SKILL-compact.md` | Small and fast models (Haiku, mini, Flash) | Clustered by category, precedence made explicit, numbered checklist, verification line. Published work measures roughly +9 to +11 points of instruction-following recovery from this restructuring on weaker targets |
+| `SKILL.md` | Flat core | Core only, under the constraint budget |
+| `SKILL-compact.md` | Clustered core | The same core rules grouped by category, with explicit precedence, a numbered checklist and a verification line |
 | `REFERENCE.md` | Either, on demand | Full archetype rationales, data treatment, conflict register, failure modes. Load when a specific answer is needed |
 | `SOURCE.md` | Authoring only | The single source. Edit this, then recompile — never edit the builds directly |
 
 Recompile with `python3 schema/compile.py --all packs`.
 
-**On constraint count.** Instruction-following degrades as constraints accumulate: measured
-follow rate falls from around 96% at one instruction to between 20% and 60% at twenty. The
-core build is held under twenty by design. Adding rules to it costs compliance on the rules
-already there.
+The two instruction structures are evaluation conditions. Published work motivates the
+comparison, but this repository has not yet established which performs better for a given
+design task or model. Choose explicitly and record the choice rather than inferring it from
+a model label.
+
+**On constraint count.** The core build is held under twenty active constraints as an
+explicit design hypothesis: shorter, prioritised instructions may be easier for an agent to
+apply consistently. This repository has not established the threshold or shown that adding
+one rule necessarily reduces compliance with another. The public evaluation protocol tests
+context length alongside conformance and design review before any such claim is made.
 
 ## Installing the skill
 
@@ -60,7 +66,10 @@ Public Sans and DM Mono, both open licence, both on Google Fonts:
 https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;800&family=DM+Mono:wght@400;500&display=swap
 ```
 
-Nothing in this pack requires a commercial font licence.
+Nothing in this pack requires a commercial font licence. The pack contains no font
+binaries. The retained React workflow examples embed redistributable WOFF2 files for
+offline reproduction and carry the complete SIL Open Font License 1.1 notices separately
+and inside the HTML metadata.
 
 ## The rules, in one screen
 

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://standards.local/evaluation/cell-journal.schema.json",
+  "title": "Deterministic resumable evaluation cell journal", "type": "object", "additionalProperties": false,
+  "required": ["schemaVersion", "runId", "matrixSha256", "cells"],
+  "properties": {"schemaVersion": {"const": "0.5.0"}, "runId": {"type": "string", "minLength": 1}, "matrixSha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}, "cells": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["cellId", "index", "cell", "status", "trialId", "trialSha256"], "properties": {"cellId": {"type": "string", "pattern": "^[0-9a-f]{24}$"}, "index": {"type": "integer", "minimum": 0}, "cell": {"type": "object"}, "status": {"enum": ["pending", "in-flight", "complete", "indeterminate"]}, "trialId": {"type": ["string", "null"]}, "trialSha256": {"type": ["string", "null"], "pattern": "^[0-9a-f]{64}$"}}}}}
+}

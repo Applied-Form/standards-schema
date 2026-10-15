@@ -1,0 +1,67 @@
+{
+  "id": "held-climate-inventory",
+  "split": "held-out",
+  "description": "Four-line held-out Schedule with tonnes, percentages and New Zealand dollars.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Operational emissions inventory",
+    "schedule": {
+      "label": "Inventory scope · FY26",
+      "columns": {
+        "ref": "SOURCE",
+        "description": "ASSESSMENT",
+        "duration": "EFFORT",
+        "amount": "PRICE"
+      },
+      "lines": [
+        {
+          "ref": "S1",
+          "description": "Electricity and purchased heat",
+          "standard": "12 sites · supplied meter data",
+          "duration": "2 days",
+          "amount": "NZ$2,300"
+        },
+        {
+          "ref": "S2",
+          "description": "Fleet fuel and refrigerants",
+          "standard": "68 vehicles; materiality threshold 1%",
+          "duration": "2.5 days",
+          "amount": "NZ$2,900"
+        },
+        {
+          "ref": "S3",
+          "description": "Business travel estimate",
+          "standard": "2025–26 booking export",
+          "duration": "1.5 days",
+          "amount": "NZ$1,700"
+        },
+        {
+          "ref": "S4",
+          "description": "Inventory workbook and methods note",
+          "standard": "tCO₂e factors dated 30 June 2026",
+          "duration": "3 days",
+          "amount": "NZ$3,600"
+        }
+      ],
+      "total": {
+        "label": "Total · excluding GST",
+        "duration": "9 days",
+        "amount": "NZ$10,500"
+      },
+      "note": "Independent assurance, supplier engagement and reduction planning are excluded. All activity data is client supplied."
+    },
+    "viewports": [
+      {
+        "width": 1200,
+        "height": 980
+      },
+      {
+        "width": 360,
+        "height": 1080
+      }
+    ]
+  }
+}

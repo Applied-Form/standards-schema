@@ -1,5 +1,8 @@
 name: checks
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [main]
@@ -8,14 +11,25 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - python-version: "3.12"
+            node-version: "22"
+          - python-version: "3.14"
+            node-version: "24"
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: ${{ matrix.node-version }}
       # The compiler is standard library only, by design. Nothing to install.
       - name: Run checks
         run: python3 tests/check.py

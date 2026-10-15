@@ -1,0 +1,113 @@
+{
+  "id": "held-clinical-content",
+  "split": "held-out",
+  "description": "Ten-line held-out maximum-density Schedule with version strings and US-dollar notation.",
+  "brief": {
+    "system": "instrument",
+    "job": "T",
+    "format": "html",
+    "instructionBuild": "full",
+    "title": "Clinical content governance package",
+    "schedule": {
+      "label": "Release plan · CG-7.2",
+      "columns": {
+        "ref": "CONTROL",
+        "description": "WORK PRODUCT",
+        "duration": "CYCLE",
+        "amount": "FEE"
+      },
+      "lines": [
+        {
+          "ref": "C01",
+          "description": "Content-source register",
+          "standard": "Guideline set v7.2; supplied citations",
+          "duration": "1 day",
+          "amount": "$1,000"
+        },
+        {
+          "ref": "C02",
+          "description": "Audience and reading-level rules",
+          "standard": "Patient and clinician pathways",
+          "duration": "1 day",
+          "amount": "$1,100"
+        },
+        {
+          "ref": "C03",
+          "description": "Terminology alignment",
+          "standard": "SNOMED CT subset supplied by client",
+          "duration": "2 days",
+          "amount": "$2,400"
+        },
+        {
+          "ref": "C04",
+          "description": "Draft patient guidance",
+          "standard": "Six priority topics",
+          "duration": "4 days",
+          "amount": "$5,600"
+        },
+        {
+          "ref": "C05",
+          "description": "Clinical reviewer packet",
+          "standard": "Tracked questions and evidence links",
+          "duration": "1 day",
+          "amount": "$1,300"
+        },
+        {
+          "ref": "C06",
+          "description": "Review reconciliation",
+          "standard": "One consolidated reviewer round",
+          "duration": "2 days",
+          "amount": "$2,600"
+        },
+        {
+          "ref": "C07",
+          "description": "Plain-language and accessibility edit",
+          "standard": "US English; WCAG-oriented content pass",
+          "duration": "2 days",
+          "amount": "$2,200"
+        },
+        {
+          "ref": "C08",
+          "description": "Structured-content handover",
+          "standard": "JSON and human-readable source",
+          "duration": "1.5 days",
+          "amount": "$1,800"
+        },
+        {
+          "ref": "C09",
+          "description": "Governance checklist",
+          "standard": "Owners, review dates and withdrawal triggers",
+          "duration": "1 day",
+          "amount": "$1,200"
+        },
+        {
+          "ref": "C10",
+          "description": "Release briefing",
+          "standard": "45-minute remote session",
+          "duration": "0.5 day",
+          "amount": "Included"
+        }
+      ],
+      "total": {
+        "label": "Total · professional fees",
+        "duration": "16 days",
+        "amount": "$19,200"
+      },
+      "note": "This synthetic case is not medical advice. Clinical approval, legal review, translation and publishing are excluded."
+    },
+    "viewports": [
+      {
+        "width": 1600,
+        "height": 1800
+      },
+      {
+        "width": 800,
+        "height": 1500
+      },
+      {
+        "width": 390,
+        "height": 2100
+      }
+    ]
+  }
+}
