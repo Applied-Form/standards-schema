@@ -15,9 +15,9 @@ promise that a proposal will be accepted, assigned or funded.
 Every brief applies only to the open foundation and Instrument. Use synthetic or clearly
 licensed inputs. Do not submit client work, private conversations, credentials, proprietary
 packs or an imitation of an organisation's identity. When recruitment opens, use the
-[design challenge](https://github.com/appliedform/standards/issues/new?template=design-rule-challenge.yml),
-[implementation bug](https://github.com/appliedform/standards/issues/new?template=implementation-bug.yml)
-or [evaluation and research](https://github.com/appliedform/standards/issues/new?template=evaluation-research.yml)
+[design challenge](https://github.com/Applied-Form/standards-schema/issues/new?template=design-rule-challenge.yml),
+[implementation bug](https://github.com/Applied-Form/standards-schema/issues/new?template=implementation-bug.yml)
+or [evaluation and research](https://github.com/Applied-Form/standards-schema/issues/new?template=evaluation-research.yml)
 form named in each brief.
 
 ## Design

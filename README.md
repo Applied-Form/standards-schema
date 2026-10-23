@@ -108,7 +108,7 @@ settings, failures, denominators, scoring records and limits with any result.
 
 | Repository | | Contents |
 |---|---|---|
-| [`appliedform/standards`](https://github.com/appliedform/standards) | public | **this one** — schema, compiler, MCP server, Instrument |
+| [`Applied-Form/standards-schema`](https://github.com/Applied-Form/standards-schema) | public | **this one** — schema, compiler, MCP server, Instrument |
 | [`appliedform/standards-ui`](https://github.com/appliedform/standards-ui) | public | React target — the shared job contract and Instrument |
 | `appliedform/standards-packs` | private | the five systems for sale |
 | `appliedform/standards-internal` | private | proof, handoff, commercial, handover |

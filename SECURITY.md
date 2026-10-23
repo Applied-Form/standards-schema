@@ -3,7 +3,7 @@
 ## Report privately
 
 Report vulnerabilities through this repository's **Security → Advisories → Report a
-vulnerability** route: [start a private vulnerability report](https://github.com/appliedform/standards/security/advisories/new).
+vulnerability** route: [start a private vulnerability report](https://github.com/Applied-Form/standards-schema/security/advisories/new).
 Do not put exploit details, credentials or private data in a public issue or pull request.
 
 The presence of this policy does not confirm that GitHub private vulnerability reporting

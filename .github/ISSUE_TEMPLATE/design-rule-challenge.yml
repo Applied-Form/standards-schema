@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        A counterexample, accessibility concern or reasoned proposal is useful without code or a paid model run. Separate observations from hypotheses. Use original or clearly licensed synthetic examples and follow [CONTRIBUTING.md](https://github.com/appliedform/standards/blob/main/CONTRIBUTING.md).
+        A counterexample, accessibility concern or reasoned proposal is useful without code or a paid model run. Separate observations from hypotheses. Use original or clearly licensed synthetic examples and follow [CONTRIBUTING.md](https://github.com/Applied-Form/standards-schema/blob/main/CONTRIBUTING.md).
   - type: input
     id: source
     attributes:

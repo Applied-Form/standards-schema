@@ -14,9 +14,9 @@ newline-delimited messages.
 
 Client config (Claude Code, Claude Desktop and anything else reading MCP stdio):
 
-    {"mcpServers": {"standards": {
+    {"mcpServers": {"standards-schema": {
         "command": "python3",
-        "args": ["/absolute/path/to/standards/mcp/server.py"]}}}
+        "args": ["/absolute/path/to/standards-schema/mcp/server.py"]}}}
 """
 import argparse, importlib, json, os, sys
 from pathlib import Path

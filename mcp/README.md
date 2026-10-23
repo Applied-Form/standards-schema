@@ -16,14 +16,16 @@ python3 mcp/server.py
 ```json
 {
   "mcpServers": {
-    "standards": {
+    "standards-schema": {
       "command": "python3",
-      "args": ["/absolute/path/to/standards/mcp/server.py"]
+      "args": ["/absolute/path/to/standards-schema/mcp/server.py"]
     }
   }
 }
 ```
 
+Use the key `standards-schema`, not `standards`: the `@appliedform/standards` engine uses the
+key `standards`, and two servers under one key overwrite each other in a client configuration.
 Replace the absolute path with your checkout. Add `"--packs", "/path/to/packs"` to the
 arguments to serve a different local catalogue. The workflow imports code from the
 server's repository, independently of the client's working directory. Client setup

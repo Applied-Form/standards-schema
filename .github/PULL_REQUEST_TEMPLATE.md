@@ -19,9 +19,9 @@ Validation performed and remaining gaps:
 
 - [ ] Claims match the evidence. Any model comparison identifies its conditions, settings,
   repetitions, failures and review method; exploratory results are labelled as such.
-- [ ] I read the [draft CLA](https://github.com/appliedform/standards/blob/main/CLA.md), understand its proprietary-relicensing and
+- [ ] I read the [draft CLA](https://github.com/Applied-Form/standards-schema/blob/main/CLA.md), understand its proprietary-relicensing and
   no-compensation terms, and followed its current signing process in
-  [CONTRIBUTORS.md](https://github.com/appliedform/standards/blob/main/CONTRIBUTORS.md) for a first contribution. I have any required
+  [CONTRIBUTORS.md](https://github.com/Applied-Form/standards-schema/blob/main/CONTRIBUTORS.md) for a first contribution. I have any required
   employer permission. Legal review remains a maintainer gate before active recruitment.
 - [ ] I identified third-party material and its licence, preserved required attribution and
   introduced only open-licence fonts (or no such material).
