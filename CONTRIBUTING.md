@@ -19,10 +19,10 @@ cleared.
 
 | Your contribution | Start with | Useful evidence |
 |---|---|---|
-| Designer: challenge a rule, hierarchy or compositional move | [Design or rule challenge](https://github.com/appliedform/standards/issues/new?template=design-rule-challenge.yml) | A fixed brief, the rule and an annotated counterexample; no code required |
-| Developer: reproduce or fix a compiler, MCP or distribution defect | [Implementation bug](https://github.com/appliedform/standards/issues/new?template=implementation-bug.yml) | Version, minimal reproduction, expected result and a focused regression check |
+| Designer: challenge a rule, hierarchy or compositional move | [Design or rule challenge](https://github.com/Applied-Form/standards-schema/issues/new?template=design-rule-challenge.yml) | A fixed brief, the rule and an annotated counterexample; no code required |
+| Developer: reproduce or fix a compiler, MCP or distribution defect | [Implementation bug](https://github.com/Applied-Form/standards-schema/issues/new?template=implementation-bug.yml) | Version, minimal reproduction, expected result and a focused regression check |
 | Designer or developer: improve an example, accessibility or documentation | A [starter issue brief](STARTER-ISSUES.md) or a small pull request | The reader's task and the observable improvement |
-| Researcher: test a design or agent-workflow claim | [Evaluation or research proposal](https://github.com/appliedform/standards/issues/new?template=evaluation-research.yml) | Fixed inputs, explicit conditions, retained failures, review method and limits |
+| Researcher: test a design or agent-workflow claim | [Evaluation or research proposal](https://github.com/Applied-Form/standards-schema/issues/new?template=evaluation-research.yml) | Fixed inputs, explicit conditions, retained failures, review method and limits |
 | Author: build an independent system | [Schema v0.4](schema/schema-v0.4.md) | An original stance, licensed assets and a rendered example |
 
 Browse the [starter issue briefs](STARTER-ISSUES.md) for concrete first slices and the
@@ -37,9 +37,9 @@ The supported contributor baseline is Git and Python 3.12, matching CI. The comp
 server and checks use only the Python standard library.
 
 ```bash
-git clone https://github.com/YOUR-HANDLE/standards.git
-cd standards
-git remote add upstream https://github.com/appliedform/standards.git
+git clone https://github.com/YOUR-HANDLE/standards-schema.git
+cd standards-schema
+git remote add upstream https://github.com/Applied-Form/standards-schema.git
 git switch -c your-name/focused-change
 python3 schema/compile.py --all packs
 python3 tests/check.py

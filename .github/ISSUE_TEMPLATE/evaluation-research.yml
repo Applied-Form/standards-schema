@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use this form before investing in a large run. A useful proposal can be a protocol, rubric, fixed brief, adapter or replication; it does not need paid model access. Keep observations separate from hypotheses, retain failures and bound every claim to the tested conditions. Read [CONTRIBUTING.md](https://github.com/appliedform/standards/blob/main/CONTRIBUTING.md) and use only synthetic or clearly licensed material.
+        Use this form before investing in a large run. A useful proposal can be a protocol, rubric, fixed brief, adapter or replication; it does not need paid model access. Keep observations separate from hypotheses, retain failures and bound every claim to the tested conditions. Read [CONTRIBUTING.md](https://github.com/Applied-Form/standards-schema/blob/main/CONTRIBUTING.md) and use only synthetic or clearly licensed material.
   - type: dropdown
     id: contribution_type
     attributes:

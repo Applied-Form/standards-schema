@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Security report
-    url: https://github.com/appliedform/standards/security/policy
+    url: https://github.com/Applied-Form/standards-schema/security/policy
     about: Use the private security route for vulnerabilities.
   - name: React implementation report
     url: https://github.com/appliedform/standards-ui/issues/new/choose
