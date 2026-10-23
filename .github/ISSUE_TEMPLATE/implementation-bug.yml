@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Use synthetic or shareable data. For security vulnerabilities, follow [SECURITY.md](https://github.com/appliedform/standards/blob/main/SECURITY.md) instead of posting details here. React-target bugs belong in appliedform/standards-ui.
+        Use synthetic or shareable data. For security vulnerabilities, follow [SECURITY.md](https://github.com/Applied-Form/standards-schema/blob/main/SECURITY.md) instead of posting details here. React-target bugs belong in appliedform/standards-ui.
   - type: input
     id: version
     attributes:

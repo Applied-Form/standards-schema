@@ -37,8 +37,8 @@ The supported contributor baseline is Git and Python 3.12, matching CI. The comp
 server and checks use only the Python standard library.
 
 ```bash
-git clone https://github.com/YOUR-HANDLE/standards.git
-cd standards
+git clone https://github.com/YOUR-HANDLE/standards-schema.git
+cd standards-schema
 git remote add upstream https://github.com/Applied-Form/standards-schema.git
 git switch -c your-name/focused-change
 python3 schema/compile.py --all packs
